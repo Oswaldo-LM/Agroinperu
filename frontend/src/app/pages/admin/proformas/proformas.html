@@ -1,0 +1,1229 @@
+<div class="proformas-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Proformas
+      </h2>
+
+      <p class="text-muted mb-0">
+        Cotizaciones comerciales para clientes.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="nuevaProforma()">
+
+      Nueva proforma
+
+    </button>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+      {{ mensaje() }}
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
+
+  }
+
+
+  <!-- ========================================================
+       CREAR PROFORMA
+       ======================================================== -->
+
+  @if (mostrarFormulario()) {
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body p-4">
+
+        <h4 class="mb-4">
+          Nueva proforma
+        </h4>
+
+
+        <form
+          [formGroup]="form">
+
+          <div class="row g-3">
+
+            <div class="col-12 col-md-7">
+
+              <label class="form-label">
+                Cliente
+              </label>
+
+
+              <select
+                class="form-select"
+                formControlName="cliente_id">
+
+                <option [ngValue]="0">
+                  Seleccionar cliente...
+                </option>
+
+
+                @for (
+                  cliente
+                  of clientesActivos();
+                  track cliente.id_cliente
+                ) {
+
+                  <option
+                    [ngValue]="cliente.id_cliente">
+
+                    {{ nombreCliente(cliente) }}
+
+                    @if (
+                      cliente.numero_documento
+                    ) {
+
+                      -
+                      {{ cliente.tipo_documento }}
+                      {{ cliente.numero_documento }}
+
+                    }
+
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-12 col-md-5">
+
+              <label class="form-label">
+                Válida hasta
+              </label>
+
+
+              <input
+                type="date"
+                class="form-control"
+                formControlName="fecha_vencimiento"
+                [min]="fechaHoy()">
+
+            </div>
+
+
+            <div class="col-12">
+
+              <label class="form-label">
+                Observación
+              </label>
+
+
+              <textarea
+                class="form-control"
+                rows="2"
+                maxlength="500"
+                formControlName="observacion"
+                placeholder="Condiciones o notas de la cotización...">
+              </textarea>
+
+            </div>
+
+          </div>
+
+        </form>
+
+
+        <hr class="my-4">
+
+
+        <h5 class="mb-3">
+          Productos
+        </h5>
+
+
+        <form
+          [formGroup]="productoForm"
+          (ngSubmit)="agregarProducto()">
+
+          <div class="row g-3">
+
+            <div class="col-12 col-md-7">
+
+              <label class="form-label">
+                Producto
+              </label>
+
+
+              <select
+                class="form-select"
+                formControlName="producto_id">
+
+                <option [ngValue]="0">
+                  Seleccionar...
+                </option>
+
+
+                @for (
+                  producto
+                  of productosActivos();
+                  track producto.id_producto
+                ) {
+
+                  <option
+                    [ngValue]="producto.id_producto">
+
+                    {{ producto.codigo }}
+                    -
+                    {{ producto.nombre }}
+
+                    |
+                    S/
+                    {{ producto.precio }}
+
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-12 col-md-3">
+
+              <label class="form-label">
+                Cantidad
+              </label>
+
+
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                class="form-control"
+                formControlName="cantidad">
+
+            </div>
+
+
+            <div
+              class="col-12 col-md-2
+                     d-flex align-items-end">
+
+              <button
+                type="submit"
+                class="btn btn-outline-success w-100">
+
+                Agregar
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </form>
+
+
+        @if (
+          productoSeleccionado();
+          as producto
+        ) {
+
+          <div
+            class="producto-info mt-3">
+
+            Precio actual:
+
+            <strong>
+              S/
+              {{
+                producto.precio
+                  | number:'1.2-2'
+              }}
+            </strong>
+
+            &nbsp; | &nbsp;
+
+            Unidad:
+
+            <strong>
+              {{ producto.unidad_medida }}
+            </strong>
+
+            &nbsp; | &nbsp;
+
+            Stock actual:
+
+            <strong>
+              {{ producto.stock_disponible }}
+            </strong>
+
+            <div class="small text-muted mt-1">
+
+              El stock es informativo.
+              Crear la proforma no lo reserva.
+
+            </div>
+
+          </div>
+
+        }
+
+
+        @if (
+          items().length > 0
+        ) {
+
+          <div class="table-responsive mt-4">
+
+            <table
+              class="table align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Producto
+                  </th>
+
+                  <th>
+                    Unidad
+                  </th>
+
+                  <th class="text-end">
+                    Precio
+                  </th>
+
+                  <th style="width: 140px;">
+                    Cantidad
+                  </th>
+
+                  <th class="text-end">
+                    Subtotal
+                  </th>
+
+                  <th></th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  item
+                  of items();
+                  track item.producto.id_producto
+                ) {
+
+                  <tr>
+
+                    <td>
+
+                      <div class="fw-semibold">
+                        {{ item.producto.nombre }}
+                      </div>
+
+                      <small class="text-muted">
+                        {{ item.producto.codigo }}
+                      </small>
+
+                    </td>
+
+
+                    <td>
+                      {{ item.producto.unidad_medida }}
+                    </td>
+
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        item.producto.precio
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td>
+
+                      <input
+                        type="number"
+                        min="0.01"
+                        step="0.01"
+                        class="form-control
+                               form-control-sm"
+                        [value]="item.cantidad"
+                        (change)="cambiarCantidad(
+                          item.producto.id_producto,
+                          $any($event.target).value
+                        )">
+
+                    </td>
+
+
+                    <td
+                      class="text-end fw-semibold">
+
+                      S/
+                      {{
+                        item.subtotal
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      <button
+                        type="button"
+                        class="btn btn-sm
+                               btn-outline-danger"
+                        (click)="quitarProducto(
+                          item.producto.id_producto
+                        )">
+
+                        Quitar
+
+                      </button>
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <div
+            class="totales mt-4 ms-auto">
+
+            <div>
+
+              <span>
+                Subtotal
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  subtotal()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                IGV (18%)
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  igv()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div class="total-final">
+
+              <span>
+                Total
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  total()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+        } @else {
+
+          <div
+            class="alert alert-secondary mt-4">
+
+            Agrega productos a la proforma.
+
+          </div>
+
+        }
+
+
+        <div
+          class="d-flex gap-2
+                 justify-content-end mt-4">
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            [disabled]="guardando()"
+            (click)="cancelarFormulario()">
+
+            Cancelar
+
+          </button>
+
+
+          <button
+            type="button"
+            class="btn btn-success"
+            [disabled]="
+              guardando() ||
+              items().length === 0
+            "
+            (click)="crearProforma()">
+
+            @if (guardando()) {
+
+              Generando...
+
+            } @else {
+
+              Generar proforma
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- ========================================================
+       LISTADO
+       ======================================================== -->
+
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      <div
+        class="d-flex flex-wrap
+               justify-content-between
+               align-items-center
+               gap-3 mb-3">
+
+        <h5 class="mb-0">
+          Proformas registradas
+        </h5>
+
+
+        <div class="buscador">
+
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Código, cliente, estado..."
+            [value]="busqueda()"
+            (input)="cambiarBusqueda(
+              $any($event.target).value
+            )">
+
+        </div>
+
+      </div>
+
+
+      @if (cargando()) {
+
+        <div class="text-center py-5">
+
+          <div class="spinner-border"></div>
+
+          <div class="text-muted mt-3">
+            Cargando proformas...
+          </div>
+
+        </div>
+
+      } @else if (
+        proformasFiltradas().length === 0
+      ) {
+
+        <div
+          class="alert alert-secondary mb-0">
+
+          No existen proformas para mostrar.
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table table-hover align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Código
+                </th>
+
+                <th>
+                  Cliente
+                </th>
+
+                <th>
+                  Responsable
+                </th>
+
+                <th>
+                  Vencimiento
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th class="text-end">
+                  Total
+                </th>
+
+                <th>
+                  Creación
+                </th>
+
+                <th class="text-end">
+                  Acción
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                proforma
+                of proformasFiltradas();
+                track proforma.id_proforma
+              ) {
+
+                <tr>
+
+                  <td class="font-monospace fw-semibold">
+
+                    {{ proforma.codigo_proforma }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ proforma.cliente_nombre }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ proforma.usuario_nombre }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      proforma.fecha_vencimiento
+                        | date:'dd/MM/yyyy':'UTC'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="badge"
+                      [class]="
+                        'badge ' +
+                        claseEstado(
+                          proforma.estado
+                        )
+                      ">
+
+                      {{ proforma.estado }}
+
+                    </span>
+
+                  </td>
+
+
+                  <td
+                    class="text-end fw-semibold">
+
+                    S/
+                    {{
+                      proforma.total
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      proforma.fecha_creacion
+                        | date:'dd/MM/yyyy HH:mm'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm
+                             btn-outline-primary"
+                      (click)="verDetalle(
+                        proforma
+                      )">
+
+                      Ver
+
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================
+       DETALLE
+       ======================================================== -->
+
+  @if (cargandoDetalle()) {
+
+    <div class="card shadow-sm">
+
+      <div
+        class="card-body text-center py-5">
+
+        <div class="spinner-border"></div>
+
+        <div class="text-muted mt-3">
+          Cargando proforma...
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else if (
+    detalle();
+    as proforma
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div class="card-body p-4">
+
+        <div
+          class="d-flex flex-wrap
+                 justify-content-between
+                 align-items-start
+                 gap-3 mb-4">
+
+          <div>
+
+            <small class="text-muted">
+              PROFORMA
+            </small>
+
+            <h3 class="mb-2">
+              {{ proforma.codigo_proforma }}
+            </h3>
+
+            <span
+              class="badge"
+              [class]="
+                'badge ' +
+                claseEstado(
+                  proforma.estado
+                )
+              ">
+
+              {{ proforma.estado }}
+
+            </span>
+
+          </div>
+
+
+          <div
+            class="d-flex flex-wrap gap-2">
+
+            @if (
+              authService.esAdmin() &&
+              proforma.estado !==
+                'ANULADA'
+            ) {
+
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                [disabled]="guardando()"
+                (click)="anular(proforma)">
+
+                Anular
+
+              </button>
+
+            }
+
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="cerrarDetalle()">
+
+              Cerrar
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="row g-4 mb-4">
+
+          <div class="col-12 col-md-6">
+
+            <div class="detalle-box">
+
+              <small class="text-muted">
+                Cliente
+              </small>
+
+              <div class="fw-semibold">
+
+                {{
+                  nombreClienteDetalle(
+                    proforma
+                  )
+                }}
+
+              </div>
+
+
+              <div class="small mt-2">
+
+                {{ proforma.tipo_documento }}
+
+                {{
+                  proforma.numero_documento
+                    ?? ''
+                }}
+
+              </div>
+
+
+              @if (proforma.email) {
+
+                <div class="small">
+                  {{ proforma.email }}
+                </div>
+
+              }
+
+
+              @if (proforma.telefono) {
+
+                <div class="small">
+                  {{ proforma.telefono }}
+                </div>
+
+              }
+
+
+              @if (proforma.direccion) {
+
+                <div class="small">
+                  {{ proforma.direccion }}
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-6">
+
+            <div class="detalle-box">
+
+              <small class="text-muted">
+                Emitida por
+              </small>
+
+              <div class="fw-semibold">
+                {{ proforma.usuario_nombre }}
+              </div>
+
+
+              <div class="mt-3">
+
+                <small class="text-muted">
+                  Fecha de emisión
+                </small>
+
+                <div>
+
+                  {{
+                    proforma.fecha_creacion
+                      | date:'dd/MM/yyyy HH:mm'
+                  }}
+
+                </div>
+
+              </div>
+
+
+              <div class="mt-3">
+
+                <small class="text-muted">
+                  Válida hasta
+                </small>
+
+                <div>
+
+                  {{
+                    proforma.fecha_vencimiento
+                      | date:'dd/MM/yyyy':'UTC'
+                  }}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        @if (proforma.observacion) {
+
+          <div
+            class="alert alert-light border">
+
+            <strong>
+              Observación:
+            </strong>
+
+            {{ proforma.observacion }}
+
+          </div>
+
+        }
+
+
+        @if (
+          proforma.estado ===
+          'ANULADA'
+        ) {
+
+          <div class="alert alert-danger">
+
+            <strong>
+              Proforma anulada
+            </strong>
+
+            @if (
+              proforma.motivo_anulacion
+            ) {
+
+              <div class="mt-1">
+
+                Motivo:
+                {{ proforma.motivo_anulacion }}
+
+              </div>
+
+            }
+
+
+            @if (
+              proforma.fecha_anulacion
+            ) {
+
+              <div class="small mt-1">
+
+                {{
+                  proforma.fecha_anulacion
+                    | date:'dd/MM/yyyy HH:mm'
+                }}
+
+              </div>
+
+            }
+
+          </div>
+
+        }
+
+
+        <h5 class="mt-4 mb-3">
+          Productos cotizados
+        </h5>
+
+
+        <div class="table-responsive">
+
+          <table class="table align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Producto
+                </th>
+
+                <th>
+                  Unidad
+                </th>
+
+                <th class="text-end">
+                  Precio unitario
+                </th>
+
+                <th class="text-end">
+                  Cantidad
+                </th>
+
+                <th class="text-end">
+                  Subtotal
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                item
+                of proforma.detalles;
+                track item.id_detalle_proforma
+              ) {
+
+                <tr>
+
+                  <td class="fw-semibold">
+
+                    {{ item.producto_nombre }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ item.unidad_medida }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      item.precio_unitario
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    {{
+                      item.cantidad
+                        | number:'1.0-2'
+                    }}
+
+                  </td>
+
+
+                  <td
+                    class="text-end fw-semibold">
+
+                    S/
+                    {{
+                      item.subtotal
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          class="totales ms-auto mt-4">
+
+          <div>
+
+            <span>
+              Subtotal
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                proforma.subtotal
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              IGV (18%)
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                proforma.igv
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-final">
+
+            <span>
+              Total
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                proforma.total
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="alert alert-info mt-4 mb-0">
+
+          Esta proforma es una cotización.
+
+          No constituye una venta,
+          no registra un pago y no reserva
+          existencias de inventario.
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

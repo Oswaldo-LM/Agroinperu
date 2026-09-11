@@ -1,0 +1,19 @@
+.dashboard {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table thead th {
+  white-space: nowrap;
+}

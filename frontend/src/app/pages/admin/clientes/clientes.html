@@ -1,0 +1,656 @@
+<div class="clientes-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Clientes
+      </h2>
+
+      <p class="text-muted mb-0">
+        Registro y administración de clientes.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="nuevoCliente()">
+
+      Nuevo cliente
+
+    </button>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+      {{ mensaje() }}
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
+
+  }
+
+
+  @if (mostrarFormulario()) {
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-4">
+
+          @if (clienteEditando()) {
+            Editar cliente
+          } @else {
+            Registrar cliente
+          }
+
+        </h5>
+
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="guardar()">
+
+          <div class="row g-3">
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="tipo-cliente">
+
+                Tipo de cliente
+
+              </label>
+
+
+              <select
+                id="tipo-cliente"
+                class="form-select"
+                formControlName="tipo_cliente"
+                (change)="cambiarTipoCliente()">
+
+                <option value="PERSONA">
+                  Persona
+                </option>
+
+                <option value="EMPRESA">
+                  Empresa
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="tipo-documento">
+
+                Tipo de documento
+
+              </label>
+
+
+              <select
+                id="tipo-documento"
+                class="form-select"
+                formControlName="tipo_documento"
+                (change)="cambiarTipoDocumento()">
+
+                @for (
+                  tipo
+                  of tiposDocumento;
+                  track tipo
+                ) {
+
+                  <option [value]="tipo">
+                    {{ tipo }}
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="numero-documento">
+
+                Número de documento
+
+              </label>
+
+
+              <input
+                    id="numero-documento"
+                    type="text"
+                    class="form-control"
+                    formControlName="numero_documento">
+
+                    @if (
+                          form.controls.tipo_documento.value ===
+                          'SIN_DOCUMENTO'
+                        ) {
+
+              <div class="form-text">
+                           No se requiere número de documento.
+              </div>
+
+              }
+
+            </div>
+
+
+            @if (
+              form.controls.tipo_cliente.value ===
+              'PERSONA'
+            ) {
+
+              <div class="col-12 col-md-6">
+
+                <label
+                  class="form-label"
+                  for="nombres">
+
+                  Nombres
+
+                </label>
+
+
+                <input
+                  id="nombres"
+                  type="text"
+                  class="form-control"
+                  formControlName="nombres">
+
+              </div>
+
+
+              <div class="col-12 col-md-6">
+
+                <label
+                  class="form-label"
+                  for="apellidos">
+
+                  Apellidos
+
+                </label>
+
+
+                <input
+                  id="apellidos"
+                  type="text"
+                  class="form-control"
+                  formControlName="apellidos">
+
+              </div>
+
+            }
+
+
+            @if (
+              form.controls.tipo_cliente.value ===
+              'EMPRESA'
+            ) {
+
+              <div class="col-12">
+
+                <label
+                  class="form-label"
+                  for="razon-social">
+
+                  Razón social
+
+                </label>
+
+
+                <input
+                  id="razon-social"
+                  type="text"
+                  class="form-control"
+                  formControlName="razon_social">
+
+              </div>
+
+            }
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="telefono">
+
+                Teléfono
+
+              </label>
+
+
+              <input
+                id="telefono"
+                type="text"
+                class="form-control"
+                formControlName="telefono">
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="email">
+
+                Correo electrónico
+
+              </label>
+
+
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email">
+
+
+              @if (
+                form.controls.email.touched &&
+                form.controls.email.hasError(
+                  'email'
+                )
+              ) {
+
+                <div
+                  class="text-danger small mt-1">
+
+                  Ingresa un correo válido.
+
+                </div>
+
+              }
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <label
+                class="form-label"
+                for="direccion">
+
+                Dirección
+
+              </label>
+
+
+              <input
+                id="direccion"
+                type="text"
+                class="form-control"
+                formControlName="direccion">
+
+            </div>
+
+          </div>
+
+
+          <div class="d-flex gap-2 mt-4">
+
+            <button
+              type="submit"
+              class="btn btn-success"
+              [disabled]="guardando()">
+
+              @if (guardando()) {
+
+                Guardando...
+
+              } @else if (clienteEditando()) {
+
+                Guardar cambios
+
+              } @else {
+
+                Registrar cliente
+
+              }
+
+            </button>
+
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [disabled]="guardando()"
+              (click)="cancelarFormulario()">
+
+              Cancelar
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div
+        class="d-flex flex-wrap
+               justify-content-between
+               align-items-center
+               gap-3 mb-3">
+
+        <h5 class="mb-0">
+          Clientes registrados
+        </h5>
+
+
+        <div class="buscador">
+
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Buscar cliente..."
+            [value]="busqueda()"
+            (input)="cambiarBusqueda(
+              $any($event.target).value
+            )">
+
+        </div>
+
+      </div>
+
+
+      @if (cargando()) {
+
+        <div class="text-center py-5">
+
+          <div class="spinner-border"></div>
+
+          <div class="text-muted mt-3">
+            Cargando clientes...
+          </div>
+
+        </div>
+
+      } @else if (
+        clientesFiltrados().length === 0
+      ) {
+
+        <div
+          class="alert alert-secondary mb-0">
+
+          No existen clientes para mostrar.
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table table-hover align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Cliente
+                </th>
+
+                <th>
+                  Documento
+                </th>
+
+                <th>
+                  Tipo
+                </th>
+
+                <th>
+                  Teléfono
+                </th>
+
+                <th>
+                  Correo
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th class="text-end">
+                  Acciones
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                cliente
+                of clientesFiltrados();
+                track cliente.id_cliente
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <div class="fw-semibold">
+
+                      {{ nombreCliente(cliente) }}
+
+                    </div>
+
+
+                    @if (cliente.direccion) {
+
+                      <small class="text-muted">
+
+                        {{ cliente.direccion }}
+
+                      </small>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+
+                    @if (
+                      cliente.tipo_documento ===
+                      'SIN_DOCUMENTO'
+                    ) {
+
+                      <span class="text-muted">
+                        Sin documento
+                      </span>
+
+                    } @else {
+
+                      <div>
+
+                        {{ cliente.tipo_documento }}
+
+                      </div>
+
+                      <small class="text-muted">
+
+                        {{
+                          cliente.numero_documento
+                            ?? '—'
+                        }}
+
+                      </small>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+                    {{ cliente.tipo_cliente }}
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      cliente.telefono
+                        ?? '—'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      cliente.email
+                        ?? '—'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    @if (
+                      cliente.estado ===
+                      'ACTIVO'
+                    ) {
+
+                      <span
+                        class="badge text-bg-success">
+
+                        ACTIVO
+
+                      </span>
+
+                    } @else if (
+                      cliente.estado ===
+                      'BLOQUEADO'
+                    ) {
+
+                      <span
+                        class="badge text-bg-warning">
+
+                        BLOQUEADO
+
+                      </span>
+
+                    } @else {
+
+                      <span
+                        class="badge text-bg-secondary">
+
+                        INACTIVO
+
+                      </span>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+
+                    <div
+                      class="d-flex gap-2
+                             justify-content-end">
+
+                      <button
+                        type="button"
+                        class="btn btn-sm
+                               btn-outline-primary"
+                        (click)="editarCliente(
+                          cliente
+                        )">
+
+                        Editar
+
+                      </button>
+
+
+                      @if (
+                        authService.esAdmin() &&
+                        cliente.estado ===
+                          'ACTIVO'
+                      ) {
+
+                        <button
+                          type="button"
+                          class="btn btn-sm
+                                 btn-outline-danger"
+                          (click)="inactivarCliente(
+                            cliente
+                          )">
+
+                          Inactivar
+
+                        </button>
+
+                      }
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

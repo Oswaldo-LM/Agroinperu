@@ -1,0 +1,22 @@
+.card {
+  border: 0;
+}
+
+
+.estado-exito {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 70px;
+  height: 70px;
+
+  border-radius: 50%;
+
+  background-color: #198754;
+  color: white;
+
+  font-size: 2rem;
+  font-weight: 700;
+}

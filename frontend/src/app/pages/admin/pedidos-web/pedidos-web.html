@@ -1,0 +1,791 @@
+<div class="pedidos-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Pedidos web
+      </h2>
+
+      <p class="text-muted mb-0">
+        Gestión de compras realizadas por clientes.
+      </p>
+
+    </div>
+
+
+    <div class="d-flex gap-2">
+
+      <select
+        class="form-select"
+        (change)="cambiarFiltro(
+          $any($event.target).value
+        )">
+
+        <option value="">
+          Todos los estados
+        </option>
+
+
+        @for (
+          estado
+          of estados;
+          track estado
+        ) {
+
+          <option [value]="estado">
+
+            {{ nombreEstado(estado) }}
+
+          </option>
+
+        }
+
+      </select>
+
+
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="cargarVentas()"
+        [disabled]="cargando()">
+
+        Actualizar
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+      {{ mensaje() }}
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
+
+  }
+
+
+  <!-- LISTADO -->
+
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      @if (cargando()) {
+
+        <div class="text-center py-5">
+
+          <div class="spinner-border"></div>
+
+          <div class="text-muted mt-3">
+            Cargando pedidos...
+          </div>
+
+        </div>
+
+      } @else if (
+        ventas().length === 0
+      ) {
+
+        <div
+          class="alert alert-secondary mb-0">
+
+          No existen pedidos para mostrar.
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table table-hover align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Código
+                </th>
+
+                <th>
+                  Cliente
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th class="text-end">
+                  Total
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th class="text-end">
+                  Acción
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                venta
+                of ventas();
+                track venta.id_venta
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <span class="font-monospace">
+                      {{ venta.codigo_venta }}
+                    </span>
+
+                  </td>
+
+
+                  <td>
+
+                    <div class="fw-semibold">
+
+                      {{ venta.cliente_nombre }}
+
+                    </div>
+
+                    <small class="text-muted">
+
+                      {{
+                        venta.cliente_email
+                          ?? 'Sin correo'
+                      }}
+
+                    </small>
+
+                  </td>
+
+
+                  <td>
+
+                    <span
+                      class="badge"
+                      [class]="
+                        'badge ' +
+                        claseEstado(
+                          venta.estado
+                        )
+                      ">
+
+                      {{
+                        nombreEstado(
+                          venta.estado
+                        )
+                      }}
+
+                    </span>
+
+                  </td>
+
+
+                  <td
+                    class="text-end fw-semibold">
+
+                    S/
+                    {{
+                      venta.total
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      venta.fecha_creacion
+                        | date:'dd/MM/yyyy HH:mm'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm
+                             btn-outline-primary"
+                      (click)="verDetalle(
+                        venta
+                      )">
+
+                      Ver pedido
+
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- DETALLE -->
+
+  @if (cargandoDetalle()) {
+
+    <div class="card shadow-sm">
+
+      <div class="card-body text-center py-5">
+
+        <div class="spinner-border"></div>
+
+        <div class="mt-3 text-muted">
+          Cargando pedido...
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else if (
+    ventaSeleccionada();
+    as venta
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div class="card-body p-4">
+
+        <div
+          class="d-flex flex-wrap
+                 justify-content-between
+                 gap-3 mb-4">
+
+          <div>
+
+            <h4 class="mb-1">
+              {{ venta.codigo_venta }}
+            </h4>
+
+            <span
+              class="badge"
+              [class]="
+                'badge ' +
+                claseEstado(
+                  venta.estado
+                )
+              ">
+
+              {{
+                nombreEstado(
+                  venta.estado
+                )
+              }}
+
+            </span>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="cerrarDetalle()">
+
+            Cerrar
+
+          </button>
+
+        </div>
+
+
+        <!-- CLIENTE -->
+
+        <div class="row g-3 mb-4">
+
+          <div class="col-12 col-md-4">
+
+            <small class="text-muted">
+              Cliente
+            </small>
+
+            <div class="fw-semibold">
+              {{ venta.cliente_nombre }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-4">
+
+            <small class="text-muted">
+              Correo
+            </small>
+
+            <div>
+              {{ venta.cliente_email ?? '—' }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-4">
+
+            <small class="text-muted">
+              Fecha
+            </small>
+
+            <div>
+
+              {{
+                venta.fecha_creacion
+                  | date:'dd/MM/yyyy HH:mm'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- PRODUCTOS -->
+
+        <h5 class="mb-3">
+          Productos
+        </h5>
+
+
+        <div class="table-responsive mb-4">
+
+          <table class="table align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Producto
+                </th>
+
+                <th>
+                  Unidad
+                </th>
+
+                <th class="text-end">
+                  Precio
+                </th>
+
+                <th class="text-end">
+                  Cantidad
+                </th>
+
+                <th class="text-end">
+                  Subtotal
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                detalle
+                of venta.detalles;
+                track detalle.id_detalle_venta
+              ) {
+
+                <tr>
+
+                  <td class="fw-semibold">
+                    {{ detalle.producto_nombre }}
+                  </td>
+
+                  <td>
+                    {{ detalle.unidad_medida }}
+                  </td>
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      detalle.precio_unitario
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                  <td class="text-end">
+
+                    {{
+                      detalle.cantidad
+                        | number:'1.0-2'
+                    }}
+
+                  </td>
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      detalle.subtotal
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- TOTALES -->
+
+        <div
+          class="totales ms-auto mb-4">
+
+          <div>
+            <span>Subtotal</span>
+
+            <strong>
+              S/
+              {{
+                venta.subtotal
+                  | number:'1.2-2'
+              }}
+            </strong>
+          </div>
+
+
+          <div>
+            <span>IGV</span>
+
+            <strong>
+              S/
+              {{
+                venta.igv
+                  | number:'1.2-2'
+              }}
+            </strong>
+          </div>
+
+
+          <div class="total-final">
+
+            <span>Total</span>
+
+            <strong>
+              S/
+              {{
+                venta.total
+                  | number:'1.2-2'
+              }}
+            </strong>
+          </div>
+
+        </div>
+
+
+        <!-- PAGOS -->
+
+        <h5 class="mb-3">
+          Pagos
+        </h5>
+
+
+        @if (
+          pagos().length === 0
+        ) {
+
+          <div
+            class="alert alert-warning">
+
+            El cliente todavía no ha registrado
+            un pago.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive mb-4">
+
+            <table class="table align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Método
+                  </th>
+
+                  <th>
+                    Referencia
+                  </th>
+
+                  <th class="text-end">
+                    Monto
+                  </th>
+
+                  <th>
+                    Estado
+                  </th>
+
+                  <th>
+                    Fecha
+                  </th>
+
+                  <th class="text-end">
+                    Acción
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  pago
+                  of pagos();
+                  track pago.id_pago
+                ) {
+
+                  <tr>
+
+                    <td>
+                      {{ pago.metodo_pago }}
+                    </td>
+
+                    <td>
+
+                      {{
+                        pago.referencia_transaccion
+                          ?? '—'
+                      }}
+
+                    </td>
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        pago.monto
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+                    <td>
+
+                      @if (
+                        pago.estado_pago ===
+                        'PENDIENTE'
+                      ) {
+
+                        <span
+                          class="badge text-bg-warning">
+
+                          PENDIENTE
+
+                        </span>
+
+                      } @else if (
+                        pago.estado_pago ===
+                        'APROBADO'
+                      ) {
+
+                        <span
+                          class="badge text-bg-success">
+
+                          APROBADO
+
+                        </span>
+
+                      } @else {
+
+                        <span
+                          class="badge text-bg-secondary">
+
+                          {{ pago.estado_pago }}
+
+                        </span>
+
+                      }
+
+                    </td>
+
+                    <td>
+
+                      {{
+                        pago.fecha_creacion
+                          | date:'dd/MM/yyyy HH:mm'
+                      }}
+
+                    </td>
+
+                    <td class="text-end">
+
+                      @if (
+                        pago.estado_pago ===
+                        'PENDIENTE'
+                      ) {
+
+                        <div
+                          class="d-flex gap-2
+                                 justify-content-end">
+
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-success"
+                            [disabled]="procesando()"
+                            (click)="aprobarPago(
+                              pago
+                            )">
+
+                            Aprobar
+
+                          </button>
+
+
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            [disabled]="procesando()"
+                            (click)="rechazarPago(
+                              pago
+                            )">
+
+                            Rechazar
+
+                          </button>
+
+                        </div>
+
+                      }
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+
+        <!-- FLUJO DEL PEDIDO -->
+
+        @if (
+          siguienteEstado();
+          as siguiente
+        ) {
+
+          <div
+            class="d-flex justify-content-end">
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="procesando()"
+              (click)="avanzarEstado()">
+
+              {{ textoSiguienteEstado() }}
+
+            </button>
+
+          </div>
+
+        }
+
+
+        @if (
+          venta.estado ===
+          'ENTREGADA'
+        ) {
+
+          <div
+            class="alert alert-success mb-0">
+
+            Pedido entregado al cliente.
+
+          </div>
+
+        }
+
+
+        @if (
+          venta.estado ===
+          'PENDIENTE_PAGO' &&
+          pagos().length === 0
+        ) {
+
+          <div
+            class="alert alert-info mb-0">
+
+            Esperando que el cliente registre
+            su pago.
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

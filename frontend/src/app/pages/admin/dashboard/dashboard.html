@@ -1,0 +1,678 @@
+<div class="dashboard">
+
+  <div
+    class="d-flex justify-content-between
+           align-items-center mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Dashboard
+      </h2>
+
+      <p class="text-muted mb-0">
+        Resumen general de AGROINPERU
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="cargarDashboard()"
+      [disabled]="cargando()">
+
+      Actualizar
+
+    </button>
+
+  </div>
+
+
+  @if (cargando()) {
+
+    <div
+      class="alert alert-info">
+
+      Cargando información...
+
+    </div>
+
+  } @else if (error()) {
+
+    <div
+      class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  } @else if (dashboard(); as datos) {
+
+
+    <!-- INDICADORES PRINCIPALES -->
+
+    <div class="row g-3 mb-4">
+
+      <div
+        class="col-12 col-md-6 col-xl-3">
+
+        <div class="card h-100 shadow-sm">
+
+          <div class="card-body">
+
+            <div class="text-muted">
+              Ventas de hoy
+            </div>
+
+            <div class="display-6 fw-bold">
+
+              {{
+                datos.ventas
+                  .cantidad_ventas
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="col-12 col-md-6 col-xl-3">
+
+        <div class="card h-100 shadow-sm">
+
+          <div class="card-body">
+
+            <div class="text-muted">
+              Total vendido
+            </div>
+
+            <div class="h2 fw-bold">
+
+              S/
+              {{
+                datos.ventas
+                  .total_vendido
+                  | number:'1.2-2'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="col-12 col-md-6 col-xl-3">
+
+        <div class="card h-100 shadow-sm">
+
+          <div class="card-body">
+
+            <div class="text-muted">
+              Pedidos web pendientes
+            </div>
+
+            <div class="display-6 fw-bold">
+
+              {{
+                datos.pedidos_web
+                  .total_pendientes
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="col-12 col-md-6 col-xl-3">
+
+        <div class="card h-100 shadow-sm">
+
+          <div class="card-body">
+
+            <div class="text-muted">
+              Productos con stock bajo
+            </div>
+
+            <div class="display-6 fw-bold">
+
+              {{
+                datos
+                  .productos_bajo_stock
+                  .length
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- VENTAS POR CANAL -->
+
+    <div class="row g-4 mb-4">
+
+      <div class="col-12 col-xl-6">
+
+        <div class="card shadow-sm h-100">
+
+          <div class="card-body">
+
+            <h5 class="card-title mb-4">
+              Ventas por canal
+            </h5>
+
+
+            <div
+              class="d-flex justify-content-between
+                     border-bottom py-3">
+
+              <div>
+                WEB
+              </div>
+
+              <div class="text-end">
+
+                <strong>
+                  {{
+                    datos.ventas
+                      .ventas_web
+                  }}
+                  ventas
+                </strong>
+
+                <div class="text-muted">
+
+                  S/
+                  {{
+                    datos.ventas
+                      .total_web
+                      | number:'1.2-2'
+                  }}
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div
+              class="d-flex justify-content-between
+                     py-3">
+
+              <div>
+                TIENDA
+              </div>
+
+              <div class="text-end">
+
+                <strong>
+                  {{
+                    datos.ventas
+                      .ventas_tienda
+                  }}
+                  ventas
+                </strong>
+
+                <div class="text-muted">
+
+                  S/
+                  {{
+                    datos.ventas
+                      .total_tienda
+                      | number:'1.2-2'
+                  }}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- PEDIDOS WEB -->
+
+      <div class="col-12 col-xl-6">
+
+        <div class="card shadow-sm h-100">
+
+          <div class="card-body">
+
+            <h5 class="card-title mb-4">
+              Pedidos web
+            </h5>
+
+
+            <div
+              class="d-flex justify-content-between
+                     py-2">
+
+              <span>
+                Pendiente de pago
+              </span>
+
+              <strong>
+                {{
+                  datos.pedidos_web
+                    .pendiente_pago
+                }}
+              </strong>
+
+            </div>
+
+
+            <div
+              class="d-flex justify-content-between
+                     py-2">
+
+              <span>
+                Pagados
+              </span>
+
+              <strong>
+                {{
+                  datos.pedidos_web
+                    .pagada
+                }}
+              </strong>
+
+            </div>
+
+
+            <div
+              class="d-flex justify-content-between
+                     py-2">
+
+              <span>
+                En preparación
+              </span>
+
+              <strong>
+                {{
+                  datos.pedidos_web
+                    .en_preparacion
+                }}
+              </strong>
+
+            </div>
+
+
+            <div
+              class="d-flex justify-content-between
+                     py-2">
+
+              <span>
+                Listos para recoger
+              </span>
+
+              <strong>
+                {{
+                  datos.pedidos_web
+                    .lista_para_recoger
+                }}
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PAGOS -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="card-title mb-4">
+          Pagos de hoy
+        </h5>
+
+
+        <div class="row g-3 text-center">
+
+          <div class="col-6 col-md">
+
+            <small class="text-muted">
+              Pendientes
+            </small>
+
+            <div class="h4">
+              {{ datos.pagos.pendientes }}
+            </div>
+
+          </div>
+
+
+          <div class="col-6 col-md">
+
+            <small class="text-muted">
+              Aprobados
+            </small>
+
+            <div class="h4">
+              {{ datos.pagos.aprobados }}
+            </div>
+
+          </div>
+
+
+          <div class="col-6 col-md">
+
+            <small class="text-muted">
+              Rechazados
+            </small>
+
+            <div class="h4">
+              {{ datos.pagos.rechazados }}
+            </div>
+
+          </div>
+
+
+          <div class="col-6 col-md">
+
+            <small class="text-muted">
+              Reembolsados
+            </small>
+
+            <div class="h4">
+              {{ datos.pagos.reembolsados }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md">
+
+            <small class="text-muted">
+              Monto aprobado
+            </small>
+
+            <div class="h4">
+
+              S/
+              {{
+                datos.pagos
+                  .monto_aprobado
+                  | number:'1.2-2'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- STOCK BAJO -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="card-title">
+          Productos con stock bajo
+        </h5>
+
+
+        @if (
+          datos.productos_bajo_stock
+            .length === 0
+        ) {
+
+          <div
+            class="alert alert-success mb-0">
+
+            No hay productos con stock bajo.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Código
+                  </th>
+
+                  <th>
+                    Producto
+                  </th>
+
+                  <th>
+                    Disponible
+                  </th>
+
+                  <th>
+                    Reservado
+                  </th>
+
+                  <th>
+                    Mínimo
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  producto
+                  of datos.productos_bajo_stock;
+                  track producto.id_producto
+                ) {
+
+                  <tr>
+
+                    <td>
+                      {{ producto.codigo }}
+                    </td>
+
+                    <td>
+                      {{ producto.nombre }}
+                    </td>
+
+                    <td>
+                      {{ producto.stock_disponible }}
+                    </td>
+
+                    <td>
+                      {{ producto.stock_reservado }}
+                    </td>
+
+                    <td>
+                      {{ producto.stock_minimo }}
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ÚLTIMAS VENTAS -->
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <h5 class="card-title">
+          Últimas ventas
+        </h5>
+
+
+        @if (
+          datos.ultimas_ventas.length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            Todavía no existen ventas registradas.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Código
+                  </th>
+
+                  <th>
+                    Canal
+                  </th>
+
+                  <th>
+                    Cliente
+                  </th>
+
+                  <th>
+                    Estado
+                  </th>
+
+                  <th>
+                    Total
+                  </th>
+
+                  <th>
+                    Fecha
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  venta
+                  of datos.ultimas_ventas;
+                  track venta.id_venta
+                ) {
+
+                  <tr>
+
+                    <td>
+                      {{ venta.codigo_venta }}
+                    </td>
+
+                    <td>
+                      {{ venta.canal_venta }}
+                    </td>
+
+                    <td>
+
+                      {{
+                        venta.cliente_nombre
+                          ?? 'Cliente general'
+                      }}
+
+                    </td>
+
+                    <td>
+                      {{ venta.estado }}
+                    </td>
+
+                    <td>
+
+                      S/
+                      {{
+                        venta.total
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+                    <td>
+
+                      {{
+                        venta.fecha_creacion
+                          | date:'dd/MM/yyyy HH:mm'
+                      }}
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

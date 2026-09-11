@@ -1,0 +1,884 @@
+<div class="reportes-page">
+
+  <div class="mb-4">
+
+    <h2 class="mb-1">
+      Reportes de ventas
+    </h2>
+
+    <p class="text-muted mb-0">
+      Consulta y exporta los resultados
+      comerciales dentro de un período.
+    </p>
+
+  </div>
+
+
+  <!-- ==========================================================
+       FILTROS
+       ========================================================== -->
+
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="generarReporte()">
+
+        <div
+          class="row g-3
+                 align-items-end">
+
+          <!-- DESDE -->
+
+          <div class="col-12 col-md-3">
+
+            <label
+              for="desde"
+              class="form-label">
+
+              Desde
+
+            </label>
+
+
+            <input
+              id="desde"
+              type="date"
+              class="form-control"
+              formControlName="desde">
+
+          </div>
+
+
+          <!-- HASTA -->
+
+          <div class="col-12 col-md-3">
+
+            <label
+              for="hasta"
+              class="form-label">
+
+              Hasta
+
+            </label>
+
+
+            <input
+              id="hasta"
+              type="date"
+              class="form-control"
+              formControlName="hasta">
+
+          </div>
+
+
+          <!-- GENERAR -->
+
+          <div
+            class="col-12 col-md-auto">
+
+            <button
+              type="submit"
+              class="btn btn-success"
+              [disabled]="
+                cargando() ||
+                exportando()
+              ">
+
+              @if (cargando()) {
+
+                Generando...
+
+              } @else {
+
+                Generar reporte
+
+              }
+
+            </button>
+
+          </div>
+
+
+          <!-- EXPORTAR CSV -->
+
+          <div
+            class="col-12 col-md-auto">
+
+            <button
+              type="button"
+              class="btn btn-outline-success"
+              [disabled]="
+                cargando() ||
+                exportando()
+              "
+              (click)="exportarCsv()">
+
+              @if (exportando()) {
+
+                Exportando...
+
+              } @else {
+
+                Exportar CSV
+
+              }
+
+            </button>
+
+          </div>
+
+
+          <!-- HOY -->
+
+          <div
+            class="col-12 col-md-auto">
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [disabled]="
+                cargando() ||
+                exportando()
+              "
+              (click)="seleccionarHoy()">
+
+              Hoy
+
+            </button>
+
+          </div>
+
+
+          <!-- MES ACTUAL -->
+
+          <div
+            class="col-12 col-md-auto">
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [disabled]="
+                cargando() ||
+                exportando()
+              "
+              (click)="seleccionarMesActual()">
+
+              Mes actual
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ==========================================================
+       MENSAJES
+       ========================================================== -->
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+
+      {{ mensaje() }}
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  <!-- ==========================================================
+       CARGANDO
+       ========================================================== -->
+
+  @if (cargando()) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border"></div>
+
+      <div class="text-muted mt-3">
+        Generando reporte...
+      </div>
+
+    </div>
+
+  } @else if (
+    reporte();
+    as datos
+  ) {
+
+    <!-- ======================================================
+         RESUMEN
+         ====================================================== -->
+
+    <div
+      class="d-flex flex-wrap
+             justify-content-between
+             align-items-center
+             gap-2 mb-3">
+
+      <h4 class="mb-0">
+        Resumen
+      </h4>
+
+
+      <span class="text-muted">
+
+        {{ datos.resumen.desde }}
+
+        al
+
+        {{ datos.resumen.hasta }}
+
+      </span>
+
+    </div>
+
+
+    <div class="row g-3 mb-5">
+
+      <!-- CANTIDAD -->
+
+      <div
+        class="col-12 col-sm-6 col-xl">
+
+        <div
+          class="card resumen-card
+                 shadow-sm h-100">
+
+          <div class="card-body">
+
+            <small class="text-muted">
+              Cantidad de ventas
+            </small>
+
+
+            <div class="valor-resumen">
+
+              {{
+                datos.resumen
+                  .cantidad_ventas
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SUBTOTAL -->
+
+      <div
+        class="col-12 col-sm-6 col-xl">
+
+        <div
+          class="card resumen-card
+                 shadow-sm h-100">
+
+          <div class="card-body">
+
+            <small class="text-muted">
+              Subtotal
+            </small>
+
+
+            <div class="valor-resumen">
+
+              S/
+              {{
+                datos.resumen
+                  .subtotal
+                  | number:'1.2-2'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- IGV -->
+
+      <div
+        class="col-12 col-sm-6 col-xl">
+
+        <div
+          class="card resumen-card
+                 shadow-sm h-100">
+
+          <div class="card-body">
+
+            <small class="text-muted">
+              IGV
+            </small>
+
+
+            <div class="valor-resumen">
+
+              S/
+              {{
+                datos.resumen
+                  .igv
+                  | number:'1.2-2'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- TOTAL -->
+
+      <div
+        class="col-12 col-sm-6 col-xl">
+
+        <div
+          class="card resumen-card
+                 shadow-sm h-100">
+
+          <div class="card-body">
+
+            <small class="text-muted">
+              Total vendido
+            </small>
+
+
+            <div
+              class="valor-resumen
+                     text-success">
+
+              S/
+              {{
+                datos.resumen
+                  .total_vendido
+                  | number:'1.2-2'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         POR CANAL
+         ====================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-3">
+          Ventas por canal
+        </h5>
+
+
+        @if (
+          datos.por_canal.length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            No hay ventas por canal
+            para este período.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover
+                     align-middle">
+
+              <thead>
+
+                <tr>
+
+                  @for (
+                    columna
+                    of columnas(
+                      datos.por_canal
+                    );
+                    track columna
+                  ) {
+
+                    <th>
+
+                      {{
+                        nombreColumna(
+                          columna
+                        )
+                      }}
+
+                    </th>
+
+                  }
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  fila
+                  of datos.por_canal;
+                  track $index
+                ) {
+
+                  <tr>
+
+                    @for (
+                      columna
+                      of columnas(
+                        datos.por_canal
+                      );
+                      track columna
+                    ) {
+
+                      <td>
+
+                        {{
+                          formatearValor(
+                            columna,
+                            valor(
+                              fila,
+                              columna
+                            )
+                          )
+                        }}
+
+                      </td>
+
+                    }
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         PRODUCTOS MÁS VENDIDOS
+         ====================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-3">
+          Productos más vendidos
+        </h5>
+
+
+        @if (
+          datos
+            .productos_mas_vendidos
+            .length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            No existen productos vendidos
+            en el período seleccionado.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover
+                     align-middle">
+
+              <thead>
+
+                <tr>
+
+                  @for (
+                    columna
+                    of columnas(
+                      datos
+                        .productos_mas_vendidos
+                    );
+                    track columna
+                  ) {
+
+                    <th>
+
+                      {{
+                        nombreColumna(
+                          columna
+                        )
+                      }}
+
+                    </th>
+
+                  }
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  fila
+                  of datos
+                    .productos_mas_vendidos;
+                  track $index
+                ) {
+
+                  <tr>
+
+                    @for (
+                      columna
+                      of columnas(
+                        datos
+                          .productos_mas_vendidos
+                      );
+                      track columna
+                    ) {
+
+                      <td>
+
+                        {{
+                          formatearValor(
+                            columna,
+                            valor(
+                              fila,
+                              columna
+                            )
+                          )
+                        }}
+
+                      </td>
+
+                    }
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         MÉTODOS DE PAGO
+         ====================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-3">
+          Métodos de pago
+        </h5>
+
+
+        @if (
+          datos.metodos_pago.length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            No existen pagos aprobados
+            en el período seleccionado.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover
+                     align-middle">
+
+              <thead>
+
+                <tr>
+
+                  @for (
+                    columna
+                    of columnas(
+                      datos.metodos_pago
+                    );
+                    track columna
+                  ) {
+
+                    <th>
+
+                      {{
+                        nombreColumna(
+                          columna
+                        )
+                      }}
+
+                    </th>
+
+                  }
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  fila
+                  of datos.metodos_pago;
+                  track $index
+                ) {
+
+                  <tr>
+
+                    @for (
+                      columna
+                      of columnas(
+                        datos.metodos_pago
+                      );
+                      track columna
+                    ) {
+
+                      <td>
+
+                        {{
+                          formatearValor(
+                            columna,
+                            valor(
+                              fila,
+                              columna
+                            )
+                          )
+                        }}
+
+                      </td>
+
+                    }
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         DETALLE DE VENTAS
+         ====================================================== -->
+
+    <div class="card shadow-sm">
+
+      <div class="card-body">
+
+        <div
+          class="d-flex flex-wrap
+                 justify-content-between
+                 align-items-center
+                 gap-2 mb-3">
+
+          <h5 class="mb-0">
+            Detalle de ventas
+          </h5>
+
+
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-success"
+            [disabled]="exportando()"
+            (click)="exportarCsv()">
+
+            @if (exportando()) {
+
+              Exportando...
+
+            } @else {
+
+              Exportar CSV
+
+            }
+
+          </button>
+
+        </div>
+
+
+        @if (
+          datos.ventas.length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            No existen ventas
+            en el período seleccionado.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover
+                     align-middle">
+
+              <thead>
+
+                <tr>
+
+                  @for (
+                    columna
+                    of columnas(
+                      datos.ventas
+                    );
+                    track columna
+                  ) {
+
+                    <th>
+
+                      {{
+                        nombreColumna(
+                          columna
+                        )
+                      }}
+
+                    </th>
+
+                  }
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  fila
+                  of datos.ventas;
+                  track $index
+                ) {
+
+                  <tr>
+
+                    @for (
+                      columna
+                      of columnas(
+                        datos.ventas
+                      );
+                      track columna
+                    ) {
+
+                      <td>
+
+                        {{
+                          formatearValor(
+                            columna,
+                            valor(
+                              fila,
+                              columna
+                            )
+                          )
+                        }}
+
+                      </td>
+
+                    }
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

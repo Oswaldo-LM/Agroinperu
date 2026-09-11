@@ -1,0 +1,773 @@
+<div class="usuarios-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Usuarios
+      </h2>
+
+      <p class="text-muted mb-0">
+        Administración del personal interno.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="nuevoUsuario()">
+
+      Nuevo usuario
+
+    </button>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+
+      {{ mensaje() }}
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  <!-- ========================================================
+       FORMULARIO
+       ======================================================== -->
+
+  @if (mostrarFormulario()) {
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-4">
+
+          @if (usuarioEditando()) {
+
+            Editar usuario
+
+          } @else {
+
+            Nuevo usuario
+
+          }
+
+        </h5>
+
+
+        @if (
+          usuarioEditando();
+          as usuarioActual
+        ) {
+
+          @if (
+            esUsuarioActual(
+              usuarioActual
+            )
+          ) {
+
+            <div class="alert alert-info">
+
+              Estás editando tu propia cuenta.
+
+              Por seguridad no puedes cambiar
+              aquí tu rol ni desactivar tu usuario.
+
+            </div>
+
+          }
+
+        }
+
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="guardar()">
+
+          <div class="row g-3">
+
+
+            <div class="col-12 col-md-6">
+
+              <label
+                for="nombre"
+                class="form-label">
+
+                Nombre
+
+              </label>
+
+
+              <input
+                id="nombre"
+                type="text"
+                class="form-control"
+                formControlName="nombre">
+
+            </div>
+
+
+            <div class="col-12 col-md-6">
+
+              <label
+                for="email"
+                class="form-label">
+
+                Correo electrónico
+
+              </label>
+
+
+              <input
+                id="email"
+                type="email"
+                class="form-control"
+                formControlName="email">
+
+
+              @if (
+                form.controls.email.touched &&
+                form.controls.email.hasError(
+                  'email'
+                )
+              ) {
+
+                <div
+                  class="text-danger small mt-1">
+
+                  Ingresa un correo válido.
+
+                </div>
+
+              }
+
+            </div>
+
+
+            @if (!usuarioEditando()) {
+
+              <div class="col-12 col-md-6">
+
+                <label
+                  for="password"
+                  class="form-label">
+
+                  Contraseña
+
+                </label>
+
+
+                <input
+                  id="password"
+                  type="password"
+                  class="form-control"
+                  formControlName="password">
+
+
+                <div class="form-text">
+
+                  Entre 8 y 72 caracteres.
+
+                </div>
+
+              </div>
+
+            }
+
+
+            <div class="col-12 col-md-3">
+
+              <label
+                for="rol"
+                class="form-label">
+
+                Rol
+
+              </label>
+
+
+              @if (
+                usuarioEditando();
+                as usuarioActual
+              ) {
+
+                <select
+                  id="rol"
+                  class="form-select"
+                  formControlName="rol"
+                  [attr.disabled]="
+                    esUsuarioActual(usuarioActual)
+                      ? ''
+                      : null
+                  ">
+
+                  @for (
+                    rol
+                    of roles;
+                    track rol
+                  ) {
+
+                    <option [value]="rol">
+
+                      {{ rol }}
+
+                    </option>
+
+                  }
+
+                </select>
+
+              } @else {
+
+                <select
+                  id="rol"
+                  class="form-select"
+                  formControlName="rol">
+
+                  @for (
+                    rol
+                    of roles;
+                    track rol
+                  ) {
+
+                    <option [value]="rol">
+
+                      {{ rol }}
+
+                    </option>
+
+                  }
+
+                </select>
+
+              }
+
+            </div>
+
+
+            @if (
+              usuarioEditando();
+              as usuarioActual
+            ) {
+
+              <div class="col-12 col-md-3">
+
+                <label
+                  for="estado"
+                  class="form-label">
+
+                  Estado
+
+                </label>
+
+
+                <select
+                  id="estado"
+                  class="form-select"
+                  formControlName="estado"
+                  [attr.disabled]="
+                    esUsuarioActual(usuarioActual)
+                      ? ''
+                      : null
+                  ">
+
+                  @for (
+                    estado
+                    of estados;
+                    track estado
+                  ) {
+
+                    <option [value]="estado">
+
+                      {{ estado }}
+
+                    </option>
+
+                  }
+
+                </select>
+
+              </div>
+
+            }
+
+          </div>
+
+
+          <div
+            class="d-flex gap-2 mt-4">
+
+            <button
+              type="submit"
+              class="btn btn-success"
+              [disabled]="guardando()">
+
+              @if (guardando()) {
+
+                Guardando...
+
+              } @else if (
+                usuarioEditando()
+              ) {
+
+                Guardar cambios
+
+              } @else {
+
+                Crear usuario
+
+              }
+
+            </button>
+
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [disabled]="guardando()"
+              (click)="cancelarFormulario()">
+
+              Cancelar
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- ========================================================
+       CAMBIO DE CONTRASEÑA
+       ======================================================== -->
+
+  @if (
+    mostrarPassword() &&
+    usuarioPassword();
+    as usuario
+  ) {
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-1">
+          Cambiar contraseña
+        </h5>
+
+
+        <p class="text-muted">
+
+          Usuario:
+          <strong>
+            {{ usuario.nombre }}
+          </strong>
+
+        </p>
+
+
+        <form
+          [formGroup]="passwordForm"
+          (ngSubmit)="guardarPassword()">
+
+          <div class="row g-3">
+
+            <div class="col-12 col-md-6">
+
+              <label
+                for="nueva-password"
+                class="form-label">
+
+                Nueva contraseña
+
+              </label>
+
+
+              <input
+                id="nueva-password"
+                type="password"
+                class="form-control"
+                formControlName="password">
+
+            </div>
+
+
+            <div class="col-12 col-md-6">
+
+              <label
+                for="confirmar-password"
+                class="form-label">
+
+                Confirmar contraseña
+
+              </label>
+
+
+              <input
+                id="confirmar-password"
+                type="password"
+                class="form-control"
+                formControlName="confirmar_password">
+
+            </div>
+
+          </div>
+
+
+          <div class="d-flex gap-2 mt-4">
+
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="cambiandoPassword()">
+
+              @if (
+                cambiandoPassword()
+              ) {
+
+                Actualizando...
+
+              } @else {
+
+                Cambiar contraseña
+
+              }
+
+            </button>
+
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              [disabled]="cambiandoPassword()"
+              (click)="cancelarPassword()">
+
+              Cancelar
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- ========================================================
+       LISTADO
+       ======================================================== -->
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <div
+        class="d-flex flex-wrap
+               justify-content-between
+               align-items-center
+               gap-3 mb-3">
+
+        <h5 class="mb-0">
+          Usuarios registrados
+        </h5>
+
+
+        <div class="buscador">
+
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Buscar usuario..."
+            [value]="busqueda()"
+            (input)="cambiarBusqueda(
+              $any($event.target).value
+            )">
+
+        </div>
+
+      </div>
+
+
+      @if (cargando()) {
+
+        <div class="text-center py-5">
+
+          <div class="spinner-border"></div>
+
+          <div class="text-muted mt-3">
+
+            Cargando usuarios...
+
+          </div>
+
+        </div>
+
+      } @else if (
+        usuariosFiltrados().length ===
+        0
+      ) {
+
+        <div
+          class="alert alert-secondary mb-0">
+
+          No existen usuarios para mostrar.
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table table-hover align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Usuario
+                </th>
+
+                <th>
+                  Correo
+                </th>
+
+                <th>
+                  Rol
+                </th>
+
+                <th>
+                  Estado
+                </th>
+
+                <th class="text-end">
+                  Acciones
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                usuario
+                of usuariosFiltrados();
+                track usuario.id_usuario
+              ) {
+
+                <tr>
+
+                  <td>
+
+                    <div class="fw-semibold">
+
+                      {{ usuario.nombre }}
+
+                    </div>
+
+
+                    @if (
+                      esUsuarioActual(
+                        usuario
+                      )
+                    ) {
+
+                      <small
+                        class="text-success">
+
+                        Tu cuenta
+
+                      </small>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+
+                    {{ usuario.email }}
+
+                  </td>
+
+
+                  <td>
+
+                    @if (
+                      usuario.rol ===
+                      'ADMIN'
+                    ) {
+
+                      <span
+                        class="badge text-bg-dark">
+
+                        ADMIN
+
+                      </span>
+
+                    } @else {
+
+                      <span
+                        class="badge text-bg-primary">
+
+                        CAJERO
+
+                      </span>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+
+                    @if (
+                      usuario.estado ===
+                      'ACTIVO'
+                    ) {
+
+                      <span
+                        class="badge text-bg-success">
+
+                        ACTIVO
+
+                      </span>
+
+                    } @else if (
+                      usuario.estado ===
+                      'BLOQUEADO'
+                    ) {
+
+                      <span
+                        class="badge text-bg-warning">
+
+                        BLOQUEADO
+
+                      </span>
+
+                    } @else {
+
+                      <span
+                        class="badge text-bg-secondary">
+
+                        INACTIVO
+
+                      </span>
+
+                    }
+
+                  </td>
+
+
+                  <td>
+
+                    <div
+                      class="d-flex flex-wrap
+                             gap-2
+                             justify-content-end">
+
+                      <button
+                        type="button"
+                        class="btn btn-sm
+                               btn-outline-primary"
+                        (click)="editarUsuario(
+                          usuario
+                        )">
+
+                        Editar
+
+                      </button>
+
+
+                      <button
+                        type="button"
+                        class="btn btn-sm
+                               btn-outline-dark"
+                        (click)="abrirCambioPassword(
+                          usuario
+                        )">
+
+                        Contraseña
+
+                      </button>
+
+
+                      @if (
+                        usuario.estado ===
+                          'ACTIVO' &&
+
+                        !esUsuarioActual(
+                          usuario
+                        )
+                      ) {
+
+                        <button
+                          type="button"
+                          class="btn btn-sm
+                                 btn-outline-danger"
+                          (click)="inactivarUsuario(
+                            usuario
+                          )">
+
+                          Inactivar
+
+                        </button>
+
+                      }
+
+                    </div>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

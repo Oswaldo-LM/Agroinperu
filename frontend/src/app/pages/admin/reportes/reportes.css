@@ -1,0 +1,37 @@
+.reportes-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.resumen-card {
+  min-height: 120px;
+}
+
+
+.valor-resumen {
+  margin-top: 8px;
+
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}

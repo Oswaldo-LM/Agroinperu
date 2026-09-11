@@ -1,0 +1,80 @@
+.inventario-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}
+
+
+.stock-resumen {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(120px, 1fr));
+
+  gap: 12px;
+
+  padding: 16px;
+
+  border-radius: 8px;
+
+  background-color: #f8f9fa;
+}
+
+
+.stock-resumen div {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.stock-resumen small {
+  color: #6c757d;
+}
+
+
+.stock-resumen strong {
+  margin-top: 3px;
+
+  font-size: 1.1rem;
+}
+
+
+.filtro-producto {
+  width: min(100%, 380px);
+}
+
+
+.movimiento-badge {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+
+@media (
+  max-width: 768px
+) {
+
+  .stock-resumen {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+}

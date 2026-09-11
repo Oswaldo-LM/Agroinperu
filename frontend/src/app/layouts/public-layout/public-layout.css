@@ -1,0 +1,25 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
+main {
+  flex: 1;
+}
+
+
+.footer-publico {
+  margin-top: 60px;
+
+  border-top:
+    1px solid #dee2e6;
+
+  background-color: #f8f9fa;
+}
+
+
+.navbar-brand {
+  letter-spacing: 0.5px;
+}

@@ -1,0 +1,1119 @@
+<div class="venta-page">
+
+  <div class="mb-4">
+
+    <h2 class="mb-1">
+      Venta presencial
+    </h2>
+
+    <p class="text-muted mb-0">
+      Registro de ventas realizadas en tienda.
+    </p>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+
+      {{ mensaje() }}
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  @if (cargando()) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border"></div>
+
+      <div class="text-muted mt-3">
+        Cargando información...
+      </div>
+
+    </div>
+
+  } @else {
+
+
+    <!-- ==========================================================
+         RESULTADO DE VENTA
+         ========================================================== -->
+
+    @if (
+      ventaResultado();
+      as resultado
+    ) {
+
+      <div class="card shadow-sm mb-4">
+
+        <div class="card-body p-4">
+
+          <div
+            class="d-flex flex-wrap
+                   justify-content-between
+                   gap-3">
+
+            <div>
+
+              <h4 class="text-success">
+                Venta registrada
+              </h4>
+
+              <div class="text-muted">
+                {{ resultado.codigo_venta }}
+              </div>
+
+            </div>
+
+
+            <div class="text-end">
+
+              <small class="text-muted">
+                Total
+              </small>
+
+              <div class="display-6 fw-bold">
+
+                S/
+                {{
+                  resultado.total
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <hr>
+
+
+          <div class="row g-3">
+
+            <div class="col-12 col-md-4">
+
+              <small class="text-muted">
+                Estado
+              </small>
+
+              <div class="fw-semibold">
+                {{ resultado.estado }}
+              </div>
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <small class="text-muted">
+                Método de pago
+              </small>
+
+              <div class="fw-semibold">
+                {{ resultado.metodo_pago }}
+              </div>
+
+            </div>
+
+
+            <div class="col-12 col-md-4">
+
+              <small class="text-muted">
+                Comprobante
+              </small>
+
+              <div class="fw-semibold">
+
+                {{
+                  resultado.comprobante
+                    .tipo_comprobante
+                }}
+
+                &nbsp;
+
+                {{
+                  resultado.comprobante
+                    .serie
+                }}-{{ resultado.comprobante.numero }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="row g-3 mt-2">
+
+            <div class="col-4">
+
+              <small class="text-muted">
+                Subtotal
+              </small>
+
+              <div>
+
+                S/
+                {{
+                  resultado.subtotal
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+
+            <div class="col-4">
+
+              <small class="text-muted">
+                IGV
+              </small>
+
+              <div>
+
+                S/
+                {{
+                  resultado.igv
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+
+            <div class="col-4">
+
+              <small class="text-muted">
+                Total
+              </small>
+
+              <div class="fw-bold">
+
+                S/
+                {{
+                  resultado.total
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-success mt-4"
+            (click)="nuevaVenta()">
+
+            Registrar otra venta
+
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- ==========================================================
+         DATOS DE LA VENTA
+         ========================================================== -->
+
+    @if (!ventaResultado()) {
+
+      <div class="row g-4">
+
+
+        <!-- COLUMNA PRINCIPAL -->
+
+        <div class="col-12 col-xl-8">
+
+
+          <!-- ======================================================
+               CLIENTE
+               ====================================================== -->
+
+          <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+              <h5 class="mb-3">
+                1. Cliente
+              </h5>
+
+
+              <select
+                class="form-select"
+                [formControl]="
+                  ventaForm.controls.cliente_id
+                ">
+
+                <option [ngValue]="0">
+
+                  Cliente general
+                  — sin registrar
+
+                </option>
+
+
+                @for (
+                  cliente
+                  of clientesActivos();
+                  track cliente.id_cliente
+                ) {
+
+                  <option
+                    [ngValue]="cliente.id_cliente">
+
+                    {{ nombreCliente(cliente) }}
+
+                    @if (
+                      cliente.numero_documento
+                    ) {
+
+                      -
+                      {{ cliente.tipo_documento }}
+                      {{ cliente.numero_documento }}
+
+                    }
+
+                  </option>
+
+                }
+
+              </select>
+
+
+              @if (
+                clienteSeleccionado();
+                as cliente
+              ) {
+
+                <div
+                  class="cliente-info mt-3">
+
+                  <div>
+
+                    <small>
+                      Tipo
+                    </small>
+
+                    <strong>
+                      {{ cliente.tipo_cliente }}
+                    </strong>
+
+                  </div>
+
+
+                  <div>
+
+                    <small>
+                      Documento
+                    </small>
+
+                    <strong>
+
+                      {{ cliente.tipo_documento }}
+
+                      {{
+                        cliente.numero_documento
+                          ?? ''
+                      }}
+
+                    </strong>
+
+                  </div>
+
+
+                  <div>
+
+                    <small>
+                      Correo
+                    </small>
+
+                    <strong>
+
+                      {{
+                        cliente.email
+                          ?? '—'
+                      }}
+
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- ======================================================
+               PRODUCTOS
+               ====================================================== -->
+
+          <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+              <h5 class="mb-3">
+                2. Productos
+              </h5>
+
+
+              <!-- ==================================================
+                   ESCÁNER DE CÓDIGO DE BARRAS
+                   ================================================== -->
+
+              <div class="mb-4">
+
+                <label
+                  for="codigo-barras-venta"
+                  class="form-label fw-semibold">
+
+                  Código de barras
+
+                </label>
+
+
+                <div class="row g-2">
+
+                  <div class="col-12 col-md-9">
+
+                    <input
+                      #codigoBarrasInput
+                      id="codigo-barras-venta"
+                      type="text"
+                      class="form-control form-control-lg"
+                      autocomplete="off"
+                      placeholder="Escanea o escribe el código y presiona Enter"
+                      [value]="codigoEscaneado()"
+                      [disabled]="escaneando()"
+                      (input)="codigoEscaneado.set(
+                        $any($event.target).value
+                      )"
+                      (keydown.enter)="
+                        $event.preventDefault();
+                        escanearCodigo(
+                          codigoEscaneado()
+                        )
+                      ">
+
+                  </div>
+
+
+                  <div class="col-12 col-md-3">
+
+                    <button
+                      type="button"
+                      class="btn btn-outline-success
+                             btn-lg w-100"
+                      [disabled]="
+                        escaneando() ||
+                        !codigoEscaneado().trim()
+                      "
+                      (click)="escanearCodigo(
+                        codigoEscaneado()
+                      )">
+
+                      @if (escaneando()) {
+
+                        Buscando...
+
+                      } @else {
+
+                        Buscar código
+
+                      }
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-text">
+
+                  Puedes utilizar un lector USB
+                  o escribir manualmente el código
+                  de barras y presionar Enter.
+
+                </div>
+
+              </div>
+
+
+              <div
+                class="d-flex align-items-center gap-3
+                       my-4">
+
+                <hr class="flex-grow-1 m-0">
+
+                <span
+                  class="text-muted small">
+
+                  o seleccionar manualmente
+
+                </span>
+
+                <hr class="flex-grow-1 m-0">
+
+              </div>
+
+
+              <!-- ==================================================
+                   SELECCIÓN MANUAL
+                   ================================================== -->
+
+              <form
+                [formGroup]="productoForm"
+                (ngSubmit)="agregarProducto()">
+
+                <div class="row g-3">
+
+                  <div class="col-12 col-md-7">
+
+                    <label class="form-label">
+                      Producto
+                    </label>
+
+
+                    <select
+                      class="form-select"
+                      formControlName="producto_id">
+
+                      <option [ngValue]="0">
+                        Seleccionar...
+                      </option>
+
+
+                      @for (
+                        producto
+                        of productosDisponibles();
+                        track producto.id_producto
+                      ) {
+
+                        <option
+                          [ngValue]="producto.id_producto">
+
+                          {{ producto.codigo }}
+                          -
+                          {{ producto.nombre }}
+
+                          |
+                          Stock:
+                          {{ producto.stock_disponible }}
+
+                        </option>
+
+                      }
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="col-12 col-md-3">
+
+                    <label class="form-label">
+                      Cantidad
+                    </label>
+
+
+                    <input
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      class="form-control"
+                      formControlName="cantidad">
+
+                  </div>
+
+
+                  <div
+                    class="col-12 col-md-2
+                           d-flex align-items-end">
+
+                    <button
+                      type="submit"
+                      class="btn btn-success w-100">
+
+                      Agregar
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </form>
+
+
+              <!-- PRODUCTO SELECCIONADO -->
+
+              @if (
+                productoSeleccionado();
+                as producto
+              ) {
+
+                <div
+                  class="producto-seleccionado mt-3">
+
+                  Precio:
+
+                  <strong>
+
+                    S/
+                    {{
+                      producto.precio
+                        | number:'1.2-2'
+                    }}
+
+                  </strong>
+
+                  &nbsp; | &nbsp;
+
+                  Unidad:
+
+                  <strong>
+                    {{ producto.unidad_medida }}
+                  </strong>
+
+                  &nbsp; | &nbsp;
+
+                  Disponible:
+
+                  <strong>
+                    {{ producto.stock_disponible }}
+                  </strong>
+
+                </div>
+
+              }
+
+
+              <hr class="my-4">
+
+
+              <!-- ==================================================
+                   PRODUCTOS AGREGADOS
+                   ================================================== -->
+
+              @if (
+                items().length === 0
+              ) {
+
+                <div
+                  class="alert alert-secondary mb-0">
+
+                  Todavía no agregaste productos.
+
+                </div>
+
+              } @else {
+
+                <div class="table-responsive">
+
+                  <table
+                    class="table align-middle">
+
+                    <thead>
+
+                      <tr>
+
+                        <th>
+                          Producto
+                        </th>
+
+                        <th>
+                          Código de barras
+                        </th>
+
+                        <th class="text-end">
+                          Precio
+                        </th>
+
+                        <th style="width: 140px;">
+                          Cantidad
+                        </th>
+
+                        <th class="text-end">
+                          Subtotal
+                        </th>
+
+                        <th></th>
+
+                      </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                      @for (
+                        item
+                        of items();
+                        track item.producto.id_producto
+                      ) {
+
+                        <tr>
+
+                          <td>
+
+                            <div class="fw-semibold">
+
+                              {{
+                                item.producto.nombre
+                              }}
+
+                            </div>
+
+
+                            <small class="text-muted">
+
+                              {{
+                                item.producto.codigo
+                              }}
+
+                              /
+
+                              {{
+                                item.producto
+                                  .unidad_medida
+                              }}
+
+                            </small>
+
+                          </td>
+
+
+                          <!-- CÓDIGO DE BARRAS -->
+
+                          <td>
+
+                            @if (
+                              item.producto
+                                .codigo_barras
+                            ) {
+
+                              <span
+                                class="font-monospace">
+
+                                {{
+                                  item.producto
+                                    .codigo_barras
+                                }}
+
+                              </span>
+
+                            } @else {
+
+                              <span class="text-muted">
+                                —
+                              </span>
+
+                            }
+
+                          </td>
+
+
+                          <!-- PRECIO -->
+
+                          <td class="text-end">
+
+                            S/
+                            {{
+                              item.producto.precio
+                                | number:'1.2-2'
+                            }}
+
+                          </td>
+
+
+                          <!-- CANTIDAD -->
+
+                          <td>
+
+                            <input
+                              type="number"
+                              min="0.01"
+                              [step]="
+                                item.producto
+                                  .unidad_medida ===
+                                'METRO'
+                                  ? 0.01
+                                  : 1
+                              "
+                              class="form-control
+                                     form-control-sm"
+                              [value]="item.cantidad"
+                              (change)="cambiarCantidad(
+                                item.producto.id_producto,
+                                $any($event.target).value
+                              )">
+
+                          </td>
+
+
+                          <!-- SUBTOTAL -->
+
+                          <td
+                            class="text-end fw-semibold">
+
+                            S/
+                            {{
+                              item.subtotal
+                                | number:'1.2-2'
+                            }}
+
+                          </td>
+
+
+                          <!-- QUITAR -->
+
+                          <td class="text-end">
+
+                            <button
+                              type="button"
+                              class="btn btn-sm
+                                     btn-outline-danger"
+                              (click)="quitarProducto(
+                                item.producto.id_producto
+                              )">
+
+                              Quitar
+
+                            </button>
+
+                          </td>
+
+                        </tr>
+
+                      }
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              }
+
+            </div>
+
+          </div>
+
+
+          <!-- ======================================================
+               PAGO Y COMPROBANTE
+               ====================================================== -->
+
+          <div class="card shadow-sm">
+
+            <div class="card-body">
+
+              <h5 class="mb-3">
+                3. Pago y comprobante
+              </h5>
+
+
+              <form
+                [formGroup]="ventaForm">
+
+                <div class="row g-3">
+
+
+                  <!-- MÉTODO DE PAGO -->
+
+                  <div class="col-12 col-md-4">
+
+                    <label class="form-label">
+                      Método de pago
+                    </label>
+
+
+                    <select
+                      class="form-select"
+                      formControlName="metodo_pago"
+                      (change)="cambiarMetodoPago()">
+
+                      @for (
+                        metodo
+                        of metodosPago;
+                        track metodo
+                      ) {
+
+                        <option [value]="metodo">
+                          {{ metodo }}
+                        </option>
+
+                      }
+
+                    </select>
+
+                  </div>
+
+
+                  <!-- REFERENCIA -->
+
+                  @if (
+                    requiereReferencia()
+                  ) {
+
+                    <div class="col-12 col-md-4">
+
+                      <label class="form-label">
+                        Referencia / operación
+                      </label>
+
+
+                      <input
+                        type="text"
+                        class="form-control"
+                        formControlName="referencia_transaccion">
+
+                    </div>
+
+                  }
+
+
+                  <!-- COMPROBANTE -->
+
+                  <div class="col-12 col-md-4">
+
+                    <label class="form-label">
+                      Comprobante
+                    </label>
+
+
+                    <select
+                      class="form-select"
+                      formControlName="tipo_comprobante"
+                      (change)="cambiarComprobante()">
+
+                      @for (
+                        tipo
+                        of tiposComprobante;
+                        track tipo
+                      ) {
+
+                        <option [value]="tipo">
+                          {{ tipo }}
+                        </option>
+
+                      }
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+                @if (
+                  ventaForm.controls
+                    .tipo_comprobante.value ===
+                  'FACTURA'
+                ) {
+
+                  <div
+                    class="alert alert-info mt-3 mb-0">
+
+                    La factura requiere un cliente
+                    <strong>EMPRESA</strong>
+                    con
+                    <strong>RUC</strong>
+                    y razón social.
+
+                  </div>
+
+                }
+
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ======================================================
+             RESUMEN
+             ====================================================== -->
+
+        <div class="col-12 col-xl-4">
+
+          <div class="card shadow-sm resumen-venta">
+
+            <div class="card-body">
+
+              <h5 class="mb-4">
+                Resumen de venta
+              </h5>
+
+
+              <div
+                class="d-flex
+                       justify-content-between
+                       mb-3">
+
+                <span>
+                  Productos
+                </span>
+
+                <strong>
+                  {{ items().length }}
+                </strong>
+
+              </div>
+
+
+              <div
+                class="d-flex
+                       justify-content-between
+                       mb-3">
+
+                <span>
+                  Subtotal
+                </span>
+
+                <strong>
+
+                  S/
+                  {{
+                    subtotal()
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="d-flex
+                       justify-content-between
+                       mb-3">
+
+                <span>
+                  IGV (18%)
+                </span>
+
+                <strong>
+
+                  S/
+                  {{
+                    igv()
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+
+              <hr>
+
+
+              <div
+                class="d-flex
+                       justify-content-between
+                       align-items-center">
+
+                <span class="h5 mb-0">
+                  Total
+                </span>
+
+                <strong class="h3 mb-0">
+
+                  S/
+                  {{
+                    total()
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+
+              <div
+                class="alert alert-light
+                       border mt-4">
+
+                <small>
+
+                  Los importes mostrados son
+                  referenciales.
+
+                  El backend volverá a validar
+                  precios, stock e IGV antes de
+                  registrar la venta.
+
+                </small>
+
+              </div>
+
+
+              <button
+                type="button"
+                class="btn btn-success
+                       btn-lg w-100"
+                [disabled]="
+                  procesando() ||
+                  items().length === 0
+                "
+                (click)="registrarVenta()">
+
+                @if (procesando()) {
+
+                  Procesando venta...
+
+                } @else {
+
+                  Registrar venta
+
+                }
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+  }
+
+</div>

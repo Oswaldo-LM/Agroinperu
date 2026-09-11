@@ -1,0 +1,187 @@
+<div class="admin-container">
+
+  <!-- SIDEBAR -->
+
+  <aside class="sidebar">
+
+    <div class="sidebar-header">
+
+      <h4 class="mb-0">
+        AGROINPERU
+      </h4>
+
+      <small>
+        Administración
+      </small>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+      <!-- GENERAL -->
+
+      <a
+        routerLink="/admin"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{
+          exact: true
+        }">
+
+        Dashboard
+
+      </a>
+
+
+      <a
+        routerLink="/admin/pedidos-web"
+        routerLinkActive="active">
+
+        Pedidos web
+
+      </a>
+
+
+      <a
+        routerLink="/admin/venta-tienda"
+        routerLinkActive="active">
+
+        Venta presencial
+
+      </a>
+
+
+      <a
+        routerLink="/admin/clientes"
+        routerLinkActive="active">
+
+        Clientes
+
+      </a>
+
+      <a
+  routerLink="/admin/proformas"
+  routerLinkActive="active"
+  class="nav-link">
+
+  Proformas
+
+</a>
+
+<a
+  routerLink="/admin/devoluciones"
+  routerLinkActive="active"
+  class="nav-link">
+
+  Devoluciones
+
+</a>
+
+<a
+  routerLink="/admin/caja"
+  routerLinkActive="active"
+  class="nav-link">
+
+  Caja
+
+</a>
+
+
+      <!-- SOLO ADMIN -->
+
+      @if (authService.esAdmin()) {
+
+        <div class="menu-title">
+          Administración
+        </div>
+
+
+        <a
+          routerLink="/admin/productos"
+          routerLinkActive="active">
+
+          Productos
+
+        </a>
+
+
+        <a
+          routerLink="/admin/categorias"
+          routerLinkActive="active">
+
+          Categorías
+
+        </a>
+
+
+        <a
+          routerLink="/admin/inventario"
+          routerLinkActive="active">
+
+          Inventario
+
+        </a>
+
+
+        <a
+          routerLink="/admin/usuarios"
+          routerLinkActive="active">
+
+          Usuarios
+
+        </a>
+
+
+        <a
+          routerLink="/admin/reportes"
+          routerLinkActive="active">
+
+          Reportes
+
+        </a>
+
+      }
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+      <div class="mb-3">
+
+        <small>
+          Sesión actual
+        </small>
+
+        <div class="fw-semibold">
+
+          {{ authService.sesion()?.rol }}
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="btn btn-outline-light w-100"
+        (click)="cerrarSesion()">
+
+        Cerrar sesión
+
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- CONTENIDO -->
+
+  <main class="admin-content">
+
+    <router-outlet />
+
+  </main>
+
+</div>

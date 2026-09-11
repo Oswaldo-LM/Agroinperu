@@ -1,0 +1,303 @@
+<div class="container py-5">
+
+  <div
+    class="row justify-content-center">
+
+    <div
+      class="col-12 col-lg-7 col-xl-6">
+
+
+      <div class="mb-4">
+
+        <a
+          routerLink="/catalogo"
+          class="text-decoration-none">
+
+          ← Volver al catálogo
+
+        </a>
+
+      </div>
+
+
+      <div class="card shadow-sm">
+
+        <div class="card-body p-4 p-lg-5">
+
+
+          @if (
+            pagoRegistrado()
+          ) {
+
+            <!-- PAGO REGISTRADO -->
+
+            <div class="text-center">
+
+              <div
+                class="estado-exito mx-auto mb-4">
+
+                ✓
+
+              </div>
+
+
+              <h2 class="fw-bold">
+
+                Pago registrado
+
+              </h2>
+
+
+              <p class="text-muted">
+
+                Hemos recibido los datos de tu
+                pago para el pedido
+
+                <strong>
+                  #{{ ventaId() }}
+                </strong>.
+
+              </p>
+
+
+              <div
+                class="alert alert-warning text-start mt-4">
+
+                <strong>
+                  Pago pendiente de validación
+                </strong>
+
+                <div class="mt-1">
+
+                  El personal de AGROINPERU
+                  revisará la operación antes de
+                  confirmar tu pedido.
+
+                </div>
+
+              </div>
+
+
+              @if (mensaje()) {
+
+                <div
+                  class="alert alert-success">
+
+                  {{ mensaje() }}
+
+                </div>
+
+              }
+
+
+              <div
+                class="d-grid gap-2 mt-4">
+
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  (click)="irCuenta()">
+
+                  Ir a mi cuenta
+
+                </button>
+
+
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="volverCatalogo()">
+
+                  Seguir comprando
+
+                </button>
+
+              </div>
+
+            </div>
+
+          } @else {
+
+            <!-- FORMULARIO -->
+
+            <div class="mb-4">
+
+              <h2 class="fw-bold mb-1">
+
+                Registrar pago
+
+              </h2>
+
+
+              <p class="text-muted mb-0">
+
+                Pedido
+                <strong>
+                  #{{ ventaId() }}
+                </strong>
+
+              </p>
+
+            </div>
+
+
+            @if (error()) {
+
+              <div
+                class="alert alert-danger">
+
+                {{ error() }}
+
+              </div>
+
+            }
+
+
+            <div
+              class="alert alert-info">
+
+              Después de realizar la operación
+              mediante Yape, Plin o transferencia,
+              registra aquí el número de operación.
+
+            </div>
+
+
+            <form
+              [formGroup]="form"
+              (ngSubmit)="registrarPago()">
+
+
+              <div class="mb-4">
+
+                <label
+                  for="metodo"
+                  class="form-label">
+
+                  Método de pago
+
+                </label>
+
+
+                <select
+                  id="metodo"
+                  class="form-select"
+                  formControlName="metodo_pago">
+
+                  @for (
+                    metodo
+                    of metodosPago;
+                    track metodo
+                  ) {
+
+                    <option
+                      [value]="metodo">
+
+                      {{ metodo }}
+
+                    </option>
+
+                  }
+
+                </select>
+
+              </div>
+
+
+              <div class="mb-4">
+
+                <label
+                  for="referencia"
+                  class="form-label">
+
+                  Número de operación /
+                  referencia
+
+                </label>
+
+
+                <input
+                  id="referencia"
+                  type="text"
+                  class="form-control"
+                  maxlength="100"
+                  placeholder="Ej. 123456789"
+                  formControlName="referencia_transaccion">
+
+
+                @if (
+                  form.controls
+                    .referencia_transaccion
+                    .touched &&
+
+                  form.controls
+                    .referencia_transaccion
+                    .hasError('required')
+                ) {
+
+                  <div
+                    class="text-danger small mt-1">
+
+                    La referencia es obligatoria.
+
+                  </div>
+
+                }
+
+              </div>
+
+
+              <div
+                class="alert alert-light border">
+
+                <small>
+
+                  No marques el pago como realizado
+                  hasta haber completado realmente
+                  la operación.
+
+                  El pedido permanecerá pendiente
+                  hasta que el personal valide el
+                  pago.
+
+                </small>
+
+              </div>
+
+
+              <button
+                type="submit"
+                class="btn btn-success
+                       btn-lg w-100"
+                [disabled]="
+                  procesando() ||
+                  !ventaId()
+                ">
+
+                @if (
+                  procesando()
+                ) {
+
+                  Registrando...
+
+                } @else {
+
+                  Registrar pago
+
+                }
+
+              </button>
+
+            </form>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

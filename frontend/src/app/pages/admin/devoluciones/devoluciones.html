@@ -1,0 +1,917 @@
+<div class="devoluciones-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Devoluciones
+      </h2>
+
+      <p class="text-muted mb-0">
+        Registro y consulta de productos devueltos.
+      </p>
+
+    </div>
+
+
+    @if (
+      authService.esAdmin()
+    ) {
+
+      <button
+        type="button"
+        class="btn btn-success"
+        (click)="nuevaDevolucion()">
+
+        Nueva devolución
+
+      </button>
+
+    }
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+      {{ mensaje() }}
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+      {{ error() }}
+    </div>
+
+  }
+
+
+  <!-- FORMULARIO -->
+
+  @if (mostrarFormulario()) {
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body p-4">
+
+        <h4 class="mb-4">
+          Registrar devolución
+        </h4>
+
+
+        <div class="row g-3 mb-3">
+
+          <div class="col-12 col-lg-8">
+
+            <label class="form-label">
+              Buscar venta entregada
+            </label>
+
+
+            <div class="input-group">
+
+              <input
+                type="search"
+                class="form-control"
+                placeholder="Código, ID, documento o cliente..."
+                [value]="busqueda()"
+                (input)="cambiarBusqueda(
+                  $any($event.target).value
+                )">
+
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="buscarVentas()">
+
+                Buscar
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <form [formGroup]="form">
+
+          <div class="row g-3">
+
+            <div class="col-12 col-lg-7">
+
+              <label class="form-label">
+                Venta entregada
+              </label>
+
+
+              <select
+                class="form-select"
+                formControlName="venta_id"
+                (change)="cargarProductosVenta()">
+
+                <option [ngValue]="0">
+                  Seleccionar...
+                </option>
+
+
+                @for (
+                  venta
+                  of ventas();
+                  track venta.id_venta
+                ) {
+
+                  <option
+                    [ngValue]="venta.id_venta">
+
+                    {{ venta.codigo_venta }}
+
+                    -
+                    {{ venta.cliente_nombre }}
+
+                    -
+                    {{ venta.canal_venta }}
+
+                    -
+                    S/ {{ venta.total }}
+
+                  </option>
+
+                }
+
+              </select>
+
+            </div>
+
+
+            <div class="col-12">
+
+              <label class="form-label">
+                Motivo
+              </label>
+
+
+              <textarea
+                class="form-control"
+                rows="3"
+                maxlength="500"
+                formControlName="motivo"
+                placeholder="Describe el motivo de la devolución...">
+              </textarea>
+
+            </div>
+
+          </div>
+
+        </form>
+
+
+        @if (cargandoProductos()) {
+
+          <div class="text-center py-5">
+
+            <div class="spinner-border"></div>
+
+            <div class="mt-3 text-muted">
+              Cargando productos...
+            </div>
+
+          </div>
+
+        } @else if (
+          productos().length > 0
+        ) {
+
+          <hr class="my-4">
+
+
+          <h5 class="mb-3">
+            Productos de la venta
+          </h5>
+
+
+          <div class="table-responsive">
+
+            <table class="table align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Producto
+                  </th>
+
+                  <th>
+                    Unidad
+                  </th>
+
+                  <th class="text-end">
+                    Precio
+                  </th>
+
+                  <th class="text-end">
+                    Vendido
+                  </th>
+
+                  <th class="text-end">
+                    Devuelto
+                  </th>
+
+                  <th class="text-end">
+                    Disponible
+                  </th>
+
+                  <th style="width: 160px;">
+                    Devolver
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  producto
+                  of productos();
+                  track producto.id_detalle_venta
+                ) {
+
+                  <tr>
+
+                    <td class="fw-semibold">
+
+                      {{ producto.producto_nombre }}
+
+                    </td>
+
+
+                    <td>
+
+                      {{ producto.unidad_medida }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        +producto.precio_unitario
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      {{
+                        +producto.cantidad_vendida
+                          | number:'1.0-2'
+                      }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      {{
+                        +producto.cantidad_devuelta
+                          | number:'1.0-2'
+                      }}
+
+                    </td>
+
+
+                    <td
+                      class="text-end fw-semibold">
+
+                      {{
+                        +producto
+                          .cantidad_disponible_devolucion
+                          | number:'1.0-2'
+                      }}
+
+                    </td>
+
+
+                    <td>
+
+                      <input
+                        type="number"
+                        class="form-control"
+                        min="0"
+                        [step]="
+                          producto.unidad_medida ===
+                          'METRO'
+                            ? 0.01
+                            : 1
+                        "
+                        [max]="
+                          +producto
+                            .cantidad_disponible_devolucion
+                        "
+                        [value]="
+                          cantidadSeleccionada(
+                            producto.id_detalle_venta
+                          )
+                        "
+                        [disabled]="
+                          +producto
+                            .cantidad_disponible_devolucion
+                            <= 0
+                        "
+                        (change)="cambiarCantidad(
+                          producto,
+                          $any($event.target).value
+                        )">
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+
+          <div
+            class="totales ms-auto mt-4">
+
+            <div>
+
+              <span>
+                Subtotal devolución
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  subtotal()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                IGV
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  igv()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div class="total-final">
+
+              <span>
+                Total
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  total()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+        }
+
+
+        <div
+          class="d-flex gap-2
+                 justify-content-end mt-4">
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            [disabled]="guardando()"
+            (click)="cancelarFormulario()">
+
+            Cancelar
+
+          </button>
+
+
+          <button
+            type="button"
+            class="btn btn-success"
+            [disabled]="
+              guardando() ||
+              productosSeleccionados().length === 0
+            "
+            (click)="registrar()">
+
+            @if (guardando()) {
+
+              Registrando...
+
+            } @else {
+
+              Registrar devolución
+
+            }
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+
+  <!-- HISTORIAL -->
+
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      <h5 class="mb-3">
+        Historial de devoluciones
+      </h5>
+
+
+      @if (cargando()) {
+
+        <div class="text-center py-5">
+
+          <div class="spinner-border"></div>
+
+        </div>
+
+      } @else if (
+        devoluciones().length === 0
+      ) {
+
+        <div
+          class="alert alert-secondary mb-0">
+
+          Todavía no existen devoluciones.
+
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table
+            class="table table-hover align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Devolución
+                </th>
+
+                <th>
+                  Venta
+                </th>
+
+                <th>
+                  Responsable
+                </th>
+
+                <th>
+                  Motivo
+                </th>
+
+                <th class="text-end">
+                  Total
+                </th>
+
+                <th>
+                  Fecha
+                </th>
+
+                <th class="text-end">
+                  Acción
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                devolucion
+                of devoluciones();
+                track devolucion.id_devolucion
+              ) {
+
+                <tr>
+
+                  <td
+                    class="font-monospace fw-semibold">
+
+                    {{ devolucion.codigo_devolucion }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ devolucion.codigo_venta }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ devolucion.usuario_nombre }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ devolucion.motivo }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      +devolucion.total
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{
+                      devolucion.fecha_creacion
+                        | date:'dd/MM/yyyy HH:mm'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm
+                             btn-outline-primary"
+                      (click)="verDetalle(
+                        devolucion
+                      )">
+
+                      Ver
+
+                    </button>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+
+  <!-- DETALLE -->
+
+  @if (cargandoDetalle()) {
+
+    <div class="card shadow-sm">
+
+      <div
+        class="card-body text-center py-5">
+
+        <div class="spinner-border"></div>
+
+      </div>
+
+    </div>
+
+  } @else if (
+    detalle();
+    as devolucion
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div class="card-body p-4">
+
+        <div
+          class="d-flex flex-wrap
+                 justify-content-between
+                 gap-3 mb-4">
+
+          <div>
+
+            <small class="text-muted">
+              DEVOLUCIÓN
+            </small>
+
+            <h3>
+              {{ devolucion.codigo_devolucion }}
+            </h3>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="cerrarDetalle()">
+
+            Cerrar
+
+          </button>
+
+        </div>
+
+
+        <div class="row g-3 mb-4">
+
+          <div class="col-12 col-md-3">
+
+            <small class="text-muted">
+              Venta
+            </small>
+
+            <div class="fw-semibold">
+              {{ devolucion.codigo_venta }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-3">
+
+            <small class="text-muted">
+              Canal
+            </small>
+
+            <div>
+              {{ devolucion.canal_venta }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-3">
+
+            <small class="text-muted">
+              Responsable
+            </small>
+
+            <div>
+              {{ devolucion.usuario_nombre }}
+            </div>
+
+          </div>
+
+
+          <div class="col-12 col-md-3">
+
+            <small class="text-muted">
+              Fecha
+            </small>
+
+            <div>
+
+              {{
+                devolucion.fecha_creacion
+                  | date:'dd/MM/yyyy HH:mm'
+              }}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="alert alert-light border">
+
+          <strong>Motivo:</strong>
+
+          {{ devolucion.motivo }}
+
+        </div>
+
+
+        <div class="table-responsive">
+
+          <table class="table align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Producto
+                </th>
+
+                <th>
+                  Unidad
+                </th>
+
+                <th class="text-end">
+                  Precio
+                </th>
+
+                <th class="text-end">
+                  Cantidad
+                </th>
+
+                <th class="text-end">
+                  Subtotal
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                item
+                of devolucion.detalles;
+                track item.id_detalle_devolucion
+              ) {
+
+                <tr>
+
+                  <td class="fw-semibold">
+
+                    {{ item.producto_nombre }}
+
+                  </td>
+
+                  <td>
+                    {{ item.unidad_medida }}
+                  </td>
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      +item.precio_unitario
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                  <td class="text-end">
+
+                    {{
+                      +item.cantidad
+                        | number:'1.0-2'
+                    }}
+
+                  </td>
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      +item.subtotal
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          class="totales ms-auto mt-4">
+
+          <div>
+
+            <span>Subtotal</span>
+
+            <strong>
+
+              S/
+              {{
+                +devolucion.subtotal
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>IGV</span>
+
+            <strong>
+
+              S/
+              {{
+                +devolucion.igv
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-final">
+
+            <span>Total devuelto</span>
+
+            <strong>
+
+              S/
+              {{
+                +devolucion.total
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="alert alert-info mt-4 mb-0">
+
+          Esta operación reincorporó las
+          cantidades indicadas al stock disponible.
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

@@ -1,0 +1,29 @@
+.usuarios-page {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}
+
+
+.buscador {
+  width: min(100%, 360px);
+}

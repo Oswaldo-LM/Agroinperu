@@ -1,0 +1,82 @@
+.caja-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.valor {
+  margin-top: 8px;
+
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+
+.metodo-box {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  padding: 16px;
+
+  border-radius: 8px;
+
+  background-color: #f8f9fa;
+}
+
+
+.metodo-box strong {
+  font-size: 1.15rem;
+}
+
+
+.control-efectivo {
+  width: min(
+    100%,
+    500px
+  );
+}
+
+
+.control-efectivo > div {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 10px 0;
+}
+
+
+.control-efectivo .resultado {
+  margin-top: 6px;
+
+  padding-top: 16px;
+
+  border-top:
+    1px solid #dee2e6;
+
+  font-size: 1.15rem;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}

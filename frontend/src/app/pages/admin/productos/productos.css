@@ -1,0 +1,34 @@
+.productos-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}
+
+
+.descripcion-producto {
+  display: block;
+  max-width: 320px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

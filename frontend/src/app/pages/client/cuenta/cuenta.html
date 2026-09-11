@@ -1,0 +1,133 @@
+<div class="container py-5">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h1 class="fw-bold mb-1">
+        Mi cuenta
+      </h1>
+
+      <p class="text-muted mb-0">
+        Gestiona tus compras en AGROINPERU.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      (click)="cerrarSesion()">
+
+      Cerrar sesión
+
+    </button>
+
+  </div>
+
+
+  <div class="row g-4">
+
+    <div class="col-12 col-md-6">
+
+      <div class="card shadow-sm h-100">
+
+        <div class="card-body p-4">
+
+          <h5>
+            Catálogo
+          </h5>
+
+          <p class="text-muted">
+
+            Consulta los productos disponibles
+            y realiza una nueva compra.
+
+          </p>
+
+          <a
+            routerLink="/catalogo"
+            class="btn btn-success">
+
+            Ver productos
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-12 col-md-6">
+
+      <div class="card shadow-sm h-100">
+
+        <div class="card-body p-4">
+
+          <h5>
+            Mi carrito
+          </h5>
+
+          <p class="text-muted">
+
+            Revisa los productos que aún no
+            has convertido en pedido.
+
+          </p>
+
+          <a
+            routerLink="/carrito"
+            class="btn btn-outline-success">
+
+            Ver carrito
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-12">
+
+      <div class="card shadow-sm">
+
+        <div class="card-body p-4">
+
+          <h5>
+            Mis pedidos
+          </h5>
+
+          <p class="text-muted">
+
+        Consulta tus compras, pagos y
+        el estado de preparación.
+
+      </p>
+
+
+      <a
+        routerLink="/cliente/pedidos"
+        class="btn btn-outline-primary">
+
+        Ver mis pedidos
+
+      </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

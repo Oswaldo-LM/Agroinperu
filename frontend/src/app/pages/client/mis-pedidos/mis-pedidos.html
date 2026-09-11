@@ -1,0 +1,733 @@
+<div class="container py-5">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h1 class="fw-bold mb-1">
+        Mis pedidos
+      </h1>
+
+      <p class="text-muted mb-0">
+        Consulta tus compras y su estado.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-outline-success"
+      (click)="volverCatalogo()">
+
+      Seguir comprando
+
+    </button>
+
+  </div>
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  <!-- FILTRO -->
+
+  <div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+      <div class="row">
+
+        <div class="col-12 col-md-5 col-lg-4">
+
+          <label class="form-label">
+            Estado
+          </label>
+
+
+          <select
+            class="form-select"
+            (change)="cambiarFiltro(
+              $any($event.target).value
+            )">
+
+            <option value="">
+              Todos
+            </option>
+
+
+            @for (
+              estado
+              of estados;
+              track estado
+            ) {
+
+              <option [value]="estado">
+
+                {{ nombreEstado(estado) }}
+
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- LISTADO -->
+
+  @if (cargando()) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border"></div>
+
+      <div class="text-muted mt-3">
+        Cargando pedidos...
+      </div>
+
+    </div>
+
+  } @else if (
+    pedidosFiltrados().length === 0
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div
+        class="card-body text-center py-5">
+
+        <h4>
+          No tienes pedidos para mostrar
+        </h4>
+
+
+        <p class="text-muted">
+          Tus compras aparecerán aquí.
+        </p>
+
+
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="volverCatalogo()">
+
+          Ver productos
+
+        </button>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <div class="row g-3 mb-4">
+
+      @for (
+        pedido
+        of pedidosFiltrados();
+        track pedido.id_venta
+      ) {
+
+        <div class="col-12">
+
+          <div class="card shadow-sm">
+
+            <div class="card-body">
+
+              <div
+                class="d-flex flex-wrap
+                       justify-content-between
+                       align-items-center
+                       gap-3">
+
+                <div>
+
+                  <div
+                    class="fw-bold font-monospace">
+
+                    {{ pedido.codigo_venta }}
+
+                  </div>
+
+
+                  <small class="text-muted">
+
+                    {{
+                      pedido.fecha_creacion
+                        | date:'dd/MM/yyyy HH:mm'
+                    }}
+
+                  </small>
+
+                </div>
+
+
+                <div>
+
+                  <span
+                    class="badge"
+                    [class]="
+                      'badge ' +
+                      claseEstado(
+                        pedido.estado
+                      )
+                    ">
+
+                    {{
+                      nombreEstado(
+                        pedido.estado
+                      )
+                    }}
+
+                  </span>
+
+                </div>
+
+
+                <div class="text-end">
+
+                  <small
+                    class="text-muted d-block">
+
+                    Total
+
+                  </small>
+
+                  <strong class="h5">
+
+                    S/
+                    {{
+                      pedido.total
+                        | number:'1.2-2'
+                    }}
+
+                  </strong>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  (click)="verDetalle(
+                    pedido
+                  )">
+
+                  Ver detalle
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+    </div>
+
+  }
+
+
+  <!-- DETALLE -->
+
+  @if (cargandoDetalle()) {
+
+    <div class="card shadow-sm">
+
+      <div
+        class="card-body text-center py-5">
+
+        <div class="spinner-border"></div>
+
+        <div class="text-muted mt-3">
+          Cargando pedido...
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else if (
+    pedidoSeleccionado();
+    as pedido
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div class="card-body p-4">
+
+        <div
+          class="d-flex flex-wrap
+                 justify-content-between
+                 gap-3 mb-4">
+
+          <div>
+
+            <h3 class="mb-1">
+
+              {{ pedido.codigo_venta }}
+
+            </h3>
+
+
+            <span
+              class="badge"
+              [class]="
+                'badge ' +
+                claseEstado(
+                  pedido.estado
+                )
+              ">
+
+              {{
+                nombreEstado(
+                  pedido.estado
+                )
+              }}
+
+            </span>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="cerrarDetalle()">
+
+            Cerrar
+
+          </button>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+        @if (
+          pedido.estado ===
+          'PENDIENTE_PAGO'
+        ) {
+
+          @if (pagoPendiente()) {
+
+            <div class="alert alert-warning">
+
+              <strong>
+                Pago pendiente de validación
+              </strong>
+
+              <div>
+                AGROINPERU todavía debe revisar
+                la operación registrada.
+              </div>
+
+            </div>
+
+          } @else {
+
+            <div class="alert alert-info">
+
+              Este pedido todavía requiere
+              registrar un pago.
+
+            </div>
+
+          }
+
+        }
+
+
+        @if (
+          pedido.estado ===
+          'EN_PREPARACION'
+        ) {
+
+          <div class="alert alert-info">
+
+            Tu pedido está siendo preparado.
+
+          </div>
+
+        }
+
+
+        @if (
+          pedido.estado ===
+          'LISTA_PARA_RECOGER'
+        ) {
+
+          <div class="alert alert-success">
+
+            <strong>
+              Tu pedido está listo.
+            </strong>
+
+            Puedes recogerlo en tienda.
+
+          </div>
+
+        }
+
+
+        @if (
+          pedido.estado ===
+          'ENTREGADA'
+        ) {
+
+          <div class="alert alert-success">
+
+            Pedido entregado.
+
+          </div>
+
+        }
+
+
+        <!-- PRODUCTOS -->
+
+        <h5 class="mt-4 mb-3">
+          Productos
+        </h5>
+
+
+        <div class="table-responsive">
+
+          <table class="table align-middle">
+
+            <thead>
+
+              <tr>
+
+                <th>
+                  Producto
+                </th>
+
+                <th>
+                  Unidad
+                </th>
+
+                <th class="text-end">
+                  Precio
+                </th>
+
+                <th class="text-end">
+                  Cantidad
+                </th>
+
+                <th class="text-end">
+                  Subtotal
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              @for (
+                detalle
+                of pedido.detalles;
+                track detalle.id_detalle_venta
+              ) {
+
+                <tr>
+
+                  <td class="fw-semibold">
+
+                    {{ detalle.producto_nombre }}
+
+                  </td>
+
+
+                  <td>
+
+                    {{ detalle.unidad_medida }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      detalle.precio_unitario
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    {{
+                      detalle.cantidad
+                        | number:'1.0-2'
+                    }}
+
+                  </td>
+
+
+                  <td class="text-end">
+
+                    S/
+                    {{
+                      detalle.subtotal
+                        | number:'1.2-2'
+                    }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- TOTALES -->
+
+        <div class="totales ms-auto">
+
+          <div>
+
+            <span>
+              Subtotal
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                pedido.subtotal
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              IGV
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                pedido.igv
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+
+          <div class="total-final">
+
+            <span>
+              Total
+            </span>
+
+            <strong>
+
+              S/
+              {{
+                pedido.total
+                  | number:'1.2-2'
+              }}
+
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- PAGO -->
+
+        <h5 class="mt-5 mb-3">
+          Pago
+        </h5>
+
+
+        @if (
+          pagos().length === 0
+        ) {
+
+          <div class="text-muted">
+
+            No se ha registrado ningún pago.
+
+          </div>
+
+        } @else {
+
+          @for (
+            pago
+            of pagos();
+            track pago.id_pago
+          ) {
+
+            <div
+              class="pago-card border
+                     rounded p-3 mb-2">
+
+              <div
+                class="d-flex flex-wrap
+                       justify-content-between
+                       gap-3">
+
+                <div>
+
+                  <small class="text-muted">
+                    Método
+                  </small>
+
+                  <div class="fw-semibold">
+
+                    {{ pago.metodo_pago }}
+
+                  </div>
+
+                </div>
+
+
+                <div>
+
+                  <small class="text-muted">
+                    Referencia
+                  </small>
+
+                  <div>
+
+                    {{
+                      pago.referencia_transaccion
+                        ?? '—'
+                    }}
+
+                  </div>
+
+                </div>
+
+
+                <div>
+
+                  <small class="text-muted">
+                    Monto
+                  </small>
+
+                  <div>
+
+                    S/
+                    {{
+                      pago.monto
+                        | number:'1.2-2'
+                    }}
+
+                  </div>
+
+                </div>
+
+
+                <div>
+
+                  <small class="text-muted">
+                    Estado
+                  </small>
+
+                  <div>
+
+                    <span
+                      class="badge"
+                      [class]="
+                        'badge ' +
+                        clasePago(
+                          pago.estado_pago
+                        )
+                      ">
+
+                      {{ pago.estado_pago }}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          }
+
+        }
+
+
+        @if (
+          puedeRegistrarPago()
+        ) {
+
+          <button
+            type="button"
+            class="btn btn-success mt-3"
+            (click)="registrarPago()">
+
+            @if (
+              ultimoPago()?.estado_pago ===
+              'RECHAZADO'
+            ) {
+
+              Registrar nuevo pago
+
+            } @else {
+
+              Registrar pago
+
+            }
+
+          </button>
+
+        }
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

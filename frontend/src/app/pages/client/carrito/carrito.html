@@ -1,0 +1,423 @@
+<div class="container py-5">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h1 class="fw-bold mb-1">
+        Mi carrito
+      </h1>
+
+      <p class="text-muted mb-0">
+        Revisa los productos antes de confirmar tu compra.
+      </p>
+
+    </div>
+
+
+    <button
+      type="button"
+      class="btn btn-outline-secondary"
+      (click)="volverCatalogo()">
+
+      Seguir comprando
+
+    </button>
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+
+      {{ mensaje() }}
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  @if (cargando()) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border"></div>
+
+      <div class="text-muted mt-3">
+        Cargando carrito...
+      </div>
+
+    </div>
+
+  } @else if (
+    !carrito() ||
+    carrito()!.detalles.length === 0
+  ) {
+
+    <div class="card shadow-sm">
+
+      <div
+        class="card-body text-center py-5">
+
+        <h4>
+          Tu carrito está vacío
+        </h4>
+
+
+        <p class="text-muted">
+
+          Agrega productos del catálogo
+          para comenzar una compra.
+
+        </p>
+
+
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="volverCatalogo()">
+
+          Ver productos
+
+        </button>
+
+      </div>
+
+    </div>
+
+  } @else if (
+    carrito();
+    as carritoActual
+  ) {
+
+    <div class="row g-4">
+
+      <!-- PRODUCTOS -->
+
+      <div class="col-12 col-lg-8">
+
+        <div class="card shadow-sm">
+
+          <div class="card-body">
+
+            <h5 class="mb-4">
+
+              Productos
+              ({{ cantidadProductos() }})
+
+            </h5>
+
+
+            @for (
+              item
+              of carritoActual.detalles;
+              track item.id_detalle_carrito
+            ) {
+
+              <div class="carrito-item">
+
+                <div class="producto-imagen">
+
+                  @if (
+                    item.imagen_url
+                  ) {
+
+                    <img
+                      [src]="item.imagen_url"
+                      [alt]="item.nombre">
+
+                  } @else {
+
+                    <div
+                      class="sin-imagen">
+
+                      AGROINPERU
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <div class="producto-info">
+
+                  <div class="fw-semibold">
+
+                    {{ item.nombre }}
+
+                  </div>
+
+
+                  <small class="text-muted">
+
+                    {{ item.codigo }}
+                    ·
+                    {{ item.unidad_medida }}
+
+                  </small>
+
+
+                  <div class="mt-2">
+
+                    S/
+                    {{
+                      item.precio
+                        | number:'1.2-2'
+                    }}
+
+                    por
+
+                    {{
+                      item.unidad_medida
+                    }}
+
+                  </div>
+
+
+                  <small
+                    class="text-success">
+
+                    Disponible:
+                    {{
+                      item.stock_disponible
+                    }}
+
+                  </small>
+
+                </div>
+
+
+                <div class="cantidad">
+
+                  <label
+                    class="form-label small">
+
+                    Cantidad
+
+                  </label>
+
+
+                  <input
+                    type="number"
+                    class="form-control"
+                    min="0.01"
+                    step="0.01"
+                    [value]="item.cantidad"
+                    [disabled]="procesando()"
+                    (change)="cambiarCantidad(
+                      item,
+                      $any($event.target).value
+                    )">
+
+                </div>
+
+
+                <div
+                  class="subtotal text-end">
+
+                  <small
+                    class="text-muted d-block">
+
+                    Subtotal
+
+                  </small>
+
+
+                  <strong>
+
+                    S/
+                    {{
+                      item.precio *
+                      item.cantidad
+                        | number:'1.2-2'
+                    }}
+
+                  </strong>
+
+
+                  <div class="mt-2">
+
+                    <button
+                      type="button"
+                      class="btn btn-sm
+                             btn-outline-danger"
+                      [disabled]="procesando()"
+                      (click)="eliminar(item)">
+
+                      Quitar
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- RESUMEN -->
+
+      <div class="col-12 col-lg-4">
+
+        <div
+          class="card shadow-sm resumen">
+
+          <div class="card-body">
+
+            <h5 class="mb-4">
+              Resumen
+            </h5>
+
+
+            <div
+              class="d-flex
+                     justify-content-between
+                     mb-3">
+
+              <span>
+                Subtotal
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  subtotal()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div
+              class="d-flex
+                     justify-content-between
+                     mb-3">
+
+              <span>
+                IGV (18%)
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  igv()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <hr>
+
+
+            <div
+              class="d-flex
+                     justify-content-between
+                     align-items-center">
+
+              <span class="h5 mb-0">
+                Total
+              </span>
+
+              <strong class="h3 mb-0">
+
+                S/
+                {{
+                  total()
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div
+              class="alert alert-light
+                     border mt-4">
+
+              <small>
+
+                El precio y stock serán
+                comprobados nuevamente antes
+                de generar el pedido.
+
+              </small>
+
+            </div>
+
+
+            <div
+              class="alert alert-info">
+
+              <small>
+
+                Los pedidos realizados por web
+                se recogen en tienda.
+
+              </small>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="btn btn-success
+                     btn-lg w-100"
+              [disabled]="procesando()"
+              (click)="confirmarCompra()">
+
+              @if (procesando()) {
+
+                Procesando...
+
+              } @else {
+
+                Confirmar compra
+
+              }
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

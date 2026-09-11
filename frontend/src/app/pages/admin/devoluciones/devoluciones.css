@@ -1,0 +1,48 @@
+.devoluciones-page {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+.card {
+  border: 0;
+}
+
+
+.table {
+  margin-bottom: 0;
+}
+
+
+.table th {
+  white-space: nowrap;
+}
+
+
+.table td {
+  vertical-align: middle;
+}
+
+
+.totales {
+  width: min(100%, 400px);
+}
+
+
+.totales > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+
+.total-final {
+  margin-top: 6px;
+
+  padding-top: 14px !important;
+
+  border-top:
+    1px solid #dee2e6;
+
+  font-size: 1.2rem;
+}

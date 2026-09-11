@@ -1,0 +1,196 @@
+<header>
+
+  <nav
+    class="navbar navbar-expand-lg
+           navbar-dark bg-dark">
+
+    <div class="container">
+
+      <a
+        routerLink="/"
+        class="navbar-brand fw-bold">
+
+        AGROINPERU
+
+      </a>
+
+
+      <button
+        type="button"
+        class="navbar-toggler"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarPublica">
+
+        <span
+          class="navbar-toggler-icon">
+        </span>
+
+      </button>
+
+
+      <div
+        id="navbarPublica"
+        class="collapse navbar-collapse">
+
+        <ul
+          class="navbar-nav me-auto mb-2
+                 mb-lg-0">
+
+          <li class="nav-item">
+
+            <a
+              routerLink="/"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{
+                exact: true
+              }"
+              class="nav-link">
+
+              Inicio
+
+            </a>
+
+          </li>
+
+
+          <li class="nav-item">
+
+            <a
+              routerLink="/catalogo"
+              routerLinkActive="active"
+              class="nav-link">
+
+              Productos
+
+            </a>
+
+          </li>
+
+        </ul>
+
+
+        <div
+          class="d-flex align-items-center
+                 gap-2">
+
+          @if (
+            authService.esCliente()
+          ) {
+
+            <a routerLink="/cliente/pedidos" class="btn btn-outline-light">
+
+              Mis pedidos
+
+              
+            </a>
+
+            
+
+            <a
+              routerLink="/cliente/cuenta"
+              class="btn btn-outline-light">
+
+              Mi cuenta
+
+            </a>
+
+
+            <!-- Carrito lo habilitaremos
+                 en el siguiente paso -->
+
+            <a
+              routerLink="/carrito"
+              class="btn btn-success">
+
+              Carrito
+
+            </a>
+
+
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="cerrarSesion()">
+
+              Salir
+
+            </button>
+
+          } @else {
+
+            <a
+              routerLink="/login"
+              class="btn btn-outline-light">
+
+              Iniciar sesión
+
+            </a>
+
+
+            <a
+              routerLink="/registro"
+              class="btn btn-success">
+
+              Registrarse
+
+            </a>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+</header>
+
+
+<main>
+
+  <router-outlet />
+
+</main>
+
+
+<footer class="footer-publico">
+
+  <div class="container py-4">
+
+    <div class="row g-3">
+
+      <div class="col-12 col-md-6">
+
+        <strong>
+          AGROINPERU S.A.C.
+        </strong>
+
+        <div class="text-muted">
+
+          Productos para los sectores
+          agrícola e industrial.
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="col-12 col-md-6
+               text-md-end">
+
+        <small class="text-muted">
+
+          Sistema de Gestión de Ventas
+
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</footer>

@@ -1,0 +1,1033 @@
+<div class="caja-page">
+
+  <div
+    class="d-flex flex-wrap
+           justify-content-between
+           align-items-center
+           gap-3 mb-4">
+
+    <div>
+
+      <h2 class="mb-1">
+        Caja
+      </h2>
+
+      <p class="text-muted mb-0">
+        Apertura, seguimiento y cierre del turno.
+      </p>
+
+    </div>
+
+
+    @if (cajaActual()) {
+
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        (click)="refrescarCaja()">
+
+        Actualizar resumen
+
+      </button>
+
+    }
+
+  </div>
+
+
+  @if (mensaje()) {
+
+    <div class="alert alert-success">
+
+      {{ mensaje() }}
+
+    </div>
+
+  }
+
+
+  @if (error()) {
+
+    <div class="alert alert-danger">
+
+      {{ error() }}
+
+    </div>
+
+  }
+
+
+  @if (cargando()) {
+
+    <div class="text-center py-5">
+
+      <div class="spinner-border"></div>
+
+      <div class="text-muted mt-3">
+        Cargando caja...
+      </div>
+
+    </div>
+
+  } @else {
+
+    @if (
+      cajaActual();
+      as caja
+    ) {
+
+      <!-- CAJA ABIERTA -->
+
+      <div class="alert alert-success">
+
+        <strong>
+          Caja abierta
+        </strong>
+
+        desde
+
+        {{
+          caja.fecha_apertura
+            | date:'dd/MM/yyyy HH:mm'
+        }}.
+
+      </div>
+
+
+      <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+          <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+              <small class="text-muted">
+                Fondo de apertura
+              </small>
+
+              <div class="valor">
+
+                S/
+                {{
+                  +caja.monto_apertura
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+          <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+              <small class="text-muted">
+                Ventas del turno
+              </small>
+
+              <div class="valor">
+
+                {{
+                  caja.resumen
+                    ?.cantidad_ventas
+                  ?? 0
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+          <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+              <small class="text-muted">
+                Total vendido
+              </small>
+
+              <div class="valor">
+
+                S/
+                {{
+                  caja.resumen
+                    ?.total_ventas
+                    ?? 0
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="col-12 col-md-6 col-xl-3">
+
+          <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+              <small class="text-muted">
+                Efectivo esperado
+              </small>
+
+              <div class="valor text-success">
+
+                S/
+                {{
+                  caja.resumen
+                    ?.efectivo_esperado
+                    ?? 0
+                    | number:'1.2-2'
+                }}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- MÉTODOS -->
+
+      <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+          <h5 class="mb-3">
+            Ventas por método de pago
+          </h5>
+
+
+          <div class="row g-3">
+
+            <div class="col-6 col-md">
+
+              <div class="metodo-box">
+
+                <small>
+                  Efectivo
+                </small>
+
+                <strong>
+
+                  S/
+                  {{
+                    caja.resumen
+                      ?.total_efectivo
+                      ?? 0
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-6 col-md">
+
+              <div class="metodo-box">
+
+                <small>
+                  Tarjeta
+                </small>
+
+                <strong>
+
+                  S/
+                  {{
+                    caja.resumen
+                      ?.total_tarjeta
+                      ?? 0
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-6 col-md">
+
+              <div class="metodo-box">
+
+                <small>
+                  Yape
+                </small>
+
+                <strong>
+
+                  S/
+                  {{
+                    caja.resumen
+                      ?.total_yape
+                      ?? 0
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-6 col-md">
+
+              <div class="metodo-box">
+
+                <small>
+                  Plin
+                </small>
+
+                <strong>
+
+                  S/
+                  {{
+                    caja.resumen
+                      ?.total_plin
+                      ?? 0
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="col-6 col-md">
+
+              <div class="metodo-box">
+
+                <small>
+                  Transferencia
+                </small>
+
+                <strong>
+
+                  S/
+                  {{
+                    caja.resumen
+                      ?.total_transferencia
+                      ?? 0
+                      | number:'1.2-2'
+                  }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- EXPLICACIÓN EFECTIVO -->
+
+      <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+          <h5 class="mb-3">
+            Control de efectivo
+          </h5>
+
+
+          <div class="control-efectivo">
+
+            <div>
+
+              <span>
+                Fondo inicial
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  +caja.monto_apertura
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div>
+
+              <span>
+                + Ventas en efectivo
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  caja.resumen
+                    ?.total_efectivo
+                    ?? 0
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+
+            <div class="resultado">
+
+              <span>
+                = Efectivo esperado
+              </span>
+
+              <strong>
+
+                S/
+                {{
+                  caja.resumen
+                    ?.efectivo_esperado
+                    ?? 0
+                    | number:'1.2-2'
+                }}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CIERRE -->
+
+      <div class="card shadow-sm mb-5">
+
+        <div class="card-body p-4">
+
+          <h4 class="mb-1">
+            Cerrar caja
+          </h4>
+
+          <p class="text-muted">
+
+            Cuenta físicamente el dinero
+            disponible antes de confirmar.
+
+          </p>
+
+
+          <form
+            [formGroup]="formCierre"
+            (ngSubmit)="cerrarCaja()">
+
+            <div class="row g-3">
+
+              <div class="col-12 col-md-4">
+
+                <label class="form-label">
+
+                  Efectivo declarado
+
+                </label>
+
+
+                <div class="input-group">
+
+                  <span class="input-group-text">
+                    S/
+                  </span>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="form-control"
+                    formControlName="efectivo_declarado">
+
+                </div>
+
+              </div>
+
+
+              <div class="col-12">
+
+                <label class="form-label">
+
+                  Observación de cierre
+
+                </label>
+
+
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  maxlength="500"
+                  formControlName="observacion"
+                  placeholder="Opcional...">
+                </textarea>
+
+              </div>
+
+            </div>
+
+
+            <div class="mt-4">
+
+              <button
+                type="submit"
+                class="btn btn-danger"
+                [disabled]="procesando()">
+
+                @if (procesando()) {
+
+                  Cerrando...
+
+                } @else {
+
+                  Cerrar caja
+
+                }
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    } @else {
+
+      <!-- APERTURA -->
+
+      <div class="row justify-content-center mb-5">
+
+        <div class="col-12 col-lg-7">
+
+          <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+              <h4 class="mb-1">
+                Abrir caja
+              </h4>
+
+              <p class="text-muted">
+
+                Debes abrir tu caja antes de
+                registrar ventas presenciales.
+
+              </p>
+
+
+              <form
+                [formGroup]="formApertura"
+                (ngSubmit)="abrirCaja()">
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Fondo inicial de efectivo
+
+                  </label>
+
+
+                  <div class="input-group">
+
+                    <span class="input-group-text">
+                      S/
+                    </span>
+
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      class="form-control"
+                      formControlName="monto_apertura">
+
+                  </div>
+
+
+                  <div class="form-text">
+
+                    Dinero disponible físicamente
+                    al comenzar el turno.
+
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="submit"
+                  class="btn btn-success"
+                  [disabled]="procesando()">
+
+                  @if (procesando()) {
+
+                    Abriendo...
+
+                  } @else {
+
+                    Abrir caja
+
+                  }
+
+                </button>
+
+              </form>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- MI HISTORIAL -->
+
+    <div class="card shadow-sm mb-4">
+
+      <div class="card-body">
+
+        <h5 class="mb-3">
+          Mi historial de caja
+        </h5>
+
+
+        @if (
+          historial().length === 0
+        ) {
+
+          <div
+            class="alert alert-secondary mb-0">
+
+            Todavía no tienes cierres registrados.
+
+          </div>
+
+        } @else {
+
+          <div class="table-responsive">
+
+            <table
+              class="table table-hover align-middle">
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Apertura
+                  </th>
+
+                  <th>
+                    Cierre
+                  </th>
+
+                  <th>
+                    Estado
+                  </th>
+
+                  <th class="text-end">
+                    Ventas
+                  </th>
+
+                  <th class="text-end">
+                    Total
+                  </th>
+
+                  <th class="text-end">
+                    Esperado
+                  </th>
+
+                  <th class="text-end">
+                    Declarado
+                  </th>
+
+                  <th class="text-end">
+                    Diferencia
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+                @for (
+                  caja
+                  of historial();
+                  track caja.id_caja_sesion
+                ) {
+
+                  <tr>
+
+                    <td>
+
+                      {{
+                        caja.fecha_apertura
+                          | date:'dd/MM/yyyy HH:mm'
+                      }}
+
+                    </td>
+
+
+                    <td>
+
+                      @if (caja.fecha_cierre) {
+
+                        {{
+                          caja.fecha_cierre
+                            | date:'dd/MM/yyyy HH:mm'
+                        }}
+
+                      } @else {
+
+                        —
+
+                      }
+
+                    </td>
+
+
+                    <td>
+
+                      @if (
+                        caja.estado ===
+                        'ABIERTA'
+                      ) {
+
+                        <span
+                          class="badge text-bg-success">
+
+                          ABIERTA
+
+                        </span>
+
+                      } @else {
+
+                        <span
+                          class="badge text-bg-secondary">
+
+                          CERRADA
+
+                        </span>
+
+                      }
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      {{ caja.cantidad_ventas ?? 0 }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        +(caja.total_ventas ?? 0)
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        +(caja.efectivo_esperado ?? 0)
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td class="text-end">
+
+                      S/
+                      {{
+                        +(caja.efectivo_declarado ?? 0)
+                          | number:'1.2-2'
+                      }}
+
+                    </td>
+
+
+                    <td
+                      class="text-end fw-semibold"
+                      [class]="
+                        claseDiferencia(
+                          caja.diferencia
+                        )
+                      ">
+
+                      {{
+                        textoDiferencia(
+                          caja.diferencia
+                        )
+                      }}
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- HISTORIAL GENERAL ADMIN -->
+
+    @if (
+      authService.esAdmin()
+    ) {
+
+      <div class="card shadow-sm">
+
+        <div class="card-body">
+
+          <h5 class="mb-3">
+            Historial general
+          </h5>
+
+
+          @if (
+            historialGeneral().length === 0
+          ) {
+
+            <div
+              class="alert alert-secondary mb-0">
+
+              No existen sesiones de caja.
+
+            </div>
+
+          } @else {
+
+            <div class="table-responsive">
+
+              <table
+                class="table table-hover align-middle">
+
+                <thead>
+
+                  <tr>
+
+                    <th>
+                      Usuario
+                    </th>
+
+                    <th>
+                      Apertura
+                    </th>
+
+                    <th>
+                      Cierre
+                    </th>
+
+                    <th>
+                      Estado
+                    </th>
+
+                    <th class="text-end">
+                      Ventas
+                    </th>
+
+                    <th class="text-end">
+                      Total
+                    </th>
+
+                    <th class="text-end">
+                      Diferencia
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                  @for (
+                    caja
+                    of historialGeneral();
+                    track caja.id_caja_sesion
+                  ) {
+
+                    <tr>
+
+                      <td>
+
+                        <div class="fw-semibold">
+
+                          {{
+                            caja.usuario_nombre
+                            ?? 'Usuario'
+                          }}
+
+                        </div>
+
+                        <small class="text-muted">
+
+                          {{ caja.rol ?? '' }}
+
+                        </small>
+
+                      </td>
+
+
+                      <td>
+
+                        {{
+                          caja.fecha_apertura
+                            | date:'dd/MM/yyyy HH:mm'
+                        }}
+
+                      </td>
+
+
+                      <td>
+
+                        @if (
+                          caja.fecha_cierre
+                        ) {
+
+                          {{
+                            caja.fecha_cierre
+                              | date:'dd/MM/yyyy HH:mm'
+                          }}
+
+                        } @else {
+
+                          —
+
+                        }
+
+                      </td>
+
+
+                      <td>
+
+                        {{ caja.estado }}
+
+                      </td>
+
+
+                      <td class="text-end">
+
+                        {{
+                          caja.cantidad_ventas
+                          ?? 0
+                        }}
+
+                      </td>
+
+
+                      <td class="text-end">
+
+                        S/
+                        {{
+                          +(caja.total_ventas ?? 0)
+                            | number:'1.2-2'
+                        }}
+
+                      </td>
+
+
+                      <td
+                        class="text-end fw-semibold"
+                        [class]="
+                          claseDiferencia(
+                            caja.diferencia
+                          )
+                        ">
+
+                        {{
+                          textoDiferencia(
+                            caja.diferencia
+                          )
+                        }}
+
+                      </td>
+
+                    </tr>
+
+                  }
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+  }
+
+</div>

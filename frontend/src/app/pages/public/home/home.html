@@ -1,0 +1,225 @@
+<section class="hero">
+
+  <div class="container py-5">
+
+    <div class="row align-items-center g-5">
+
+      <div class="col-12 col-lg-7">
+
+        <span
+          class="badge text-bg-success mb-3">
+
+          AGROINPERU S.A.C.
+
+        </span>
+
+
+        <h1
+          class="display-4 fw-bold mb-3">
+
+          Soluciones para agricultura
+          e industria
+
+        </h1>
+
+
+        <p
+          class="lead text-muted mb-4">
+
+          Encuentra mangueras, tuberías,
+          conexiones y accesorios para tus
+          proyectos agrícolas e industriales.
+
+        </p>
+
+
+        <div
+          class="d-flex flex-wrap gap-2">
+
+          <a
+            routerLink="/catalogo"
+            class="btn btn-success btn-lg">
+
+            Ver productos
+
+          </a>
+
+
+          <a
+            routerLink="/registro"
+            class="btn btn-outline-dark btn-lg">
+
+            Crear cuenta
+
+          </a>
+
+        </div>
+
+      </div>
+
+
+      <div class="col-12 col-lg-5">
+
+        <div class="card hero-card shadow-sm">
+
+          <div class="card-body p-4">
+
+            <h4>
+              Compra por Internet
+            </h4>
+
+
+            <p class="text-muted">
+
+              Regístrate, selecciona tus productos,
+              realiza el pago y recoge tu pedido
+              cuando esté listo.
+
+            </p>
+
+
+            <hr>
+
+
+            <div
+              class="d-flex justify-content-between">
+
+              <span>
+                Estado del sistema
+              </span>
+
+
+              @if (apiConectada()) {
+
+                <span
+                  class="badge text-bg-success">
+
+                  Disponible
+
+                </span>
+
+              } @else {
+
+                <span
+                  class="badge text-bg-danger">
+
+                  No disponible
+
+                </span>
+
+              }
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="container py-5">
+
+  <div class="text-center mb-5">
+
+    <h2 class="fw-bold">
+      ¿Cómo comprar?
+    </h2>
+
+  </div>
+
+
+  <div class="row g-4">
+
+    <div class="col-12 col-md-4">
+
+      <div class="card h-100 shadow-sm">
+
+        <div class="card-body p-4">
+
+          <div class="paso">
+            1
+          </div>
+
+          <h5>
+            Explora
+          </h5>
+
+          <p class="text-muted mb-0">
+
+            Consulta nuestro catálogo
+            público de productos.
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-12 col-md-4">
+
+      <div class="card h-100 shadow-sm">
+
+        <div class="card-body p-4">
+
+          <div class="paso">
+            2
+          </div>
+
+          <h5>
+            Compra
+          </h5>
+
+          <p class="text-muted mb-0">
+
+            Inicia sesión y agrega tus
+            productos al carrito.
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-12 col-md-4">
+
+      <div class="card h-100 shadow-sm">
+
+        <div class="card-body p-4">
+
+          <div class="paso">
+            3
+          </div>
+
+          <h5>
+            Recoge
+          </h5>
+
+          <p class="text-muted mb-0">
+
+            Espera la confirmación y recoge
+            tu compra en la tienda.
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
