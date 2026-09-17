@@ -420,4 +420,111 @@
 
   }
 
+
+  <!-- MODAL PERSONALIZADO PARA CONFIRMAR ELIMINACIÓN -->
+  @if (productoAEliminar(); as itemEliminar) {
+    <div
+      class="modal fade show d-block modal-confirmar-eliminar"
+      tabindex="-1"
+      role="dialog"
+      aria-modal="true"
+      (keydown.escape)="cancelarEliminacion()">
+
+      <!-- BACKDROP -->
+      <div
+        class="modal-backdrop-custom"
+        (click)="cancelarEliminacion()">
+      </div>
+
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
+
+          <!-- HEADER -->
+          <div class="modal-header border-bottom py-3 px-4 bg-light">
+            <div class="d-flex align-items-center gap-2">
+              <img
+                src="/AgroinPeru_logo2.png"
+                alt="AgroInPerú"
+                width="30"
+                height="30"
+                class="rounded"
+              />
+              <h5 class="modal-title fs-6 fw-bold mb-0 text-dark">
+                Quitar producto del carrito
+              </h5>
+            </div>
+
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Cerrar"
+              [disabled]="procesando()"
+              (click)="cancelarEliminacion()">
+            </button>
+          </div>
+
+          <!-- BODY -->
+          <div class="modal-body p-4">
+            <p class="text-secondary mb-3">
+              ¿Estás seguro de que deseas quitar este producto de tu carrito?
+            </p>
+
+            <div class="p-3 bg-light rounded-3 border d-flex align-items-center gap-3">
+              <div
+                class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center flex-shrink-0"
+                style="width: 44px; height: 44px;">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  viewBox="0 0 16 16">
+                  <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                </svg>
+              </div>
+
+              <div class="flex-grow-1 overflow-hidden">
+                <div class="fw-bold text-dark text-truncate">
+                  {{ itemEliminar.nombre }}
+                </div>
+                <small class="text-muted">
+                  Cantidad: {{ itemEliminar.cantidad }} {{ itemEliminar.unidad_medida }} · S/ {{ (itemEliminar.precio * itemEliminar.cantidad) | number:'1.2-2' }}
+                </small>
+              </div>
+            </div>
+          </div>
+
+          <!-- FOOTER -->
+          <div class="modal-footer border-top py-3 px-4 bg-light d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary px-3"
+              [disabled]="procesando()"
+              (click)="cancelarEliminacion()">
+              Cancelar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger px-4 d-flex align-items-center gap-2"
+              [disabled]="procesando()"
+              (click)="confirmarEliminacion()">
+              @if (procesando()) {
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true">
+                </span>
+                <span>Quitando...</span>
+              } @else {
+                <span>Sí, quitar</span>
+              }
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
+
 </div>

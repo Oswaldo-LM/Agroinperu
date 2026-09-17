@@ -87,6 +87,12 @@ export class CarritoComponent
     );
 
 
+  readonly productoAEliminar =
+    signal<CarritoItem | null>(
+      null
+    );
+
+
   readonly subtotal =
   computed(
     () => {
@@ -330,74 +336,69 @@ export class CarritoComponent
   }
 
 
-eliminar(
-  item: CarritoItem
-): void {
-
-  if (
-    this.procesando()
-  ) {
-
-    return;
+  eliminar(
+    item: CarritoItem
+  ): void {
+    this.abrirModalEliminar(item);
   }
 
 
-  if (
-    !window.confirm(
-      `¿Deseas quitar "${item.nombre}" del carrito?`
-    )
-  ) {
+  abrirModalEliminar(
+    item: CarritoItem
+  ): void {
+    if (this.procesando()) {
+      return;
+    }
 
-    return;
+    this.productoAEliminar.set(item);
   }
 
 
-  this.limpiarMensajes();
+  cancelarEliminacion(): void {
+    if (this.procesando()) {
+      return;
+    }
+
+    this.productoAEliminar.set(null);
+  }
 
 
-  this.procesando.set(
-    true
-  );
+  confirmarEliminacion(): void {
+    const item = this.productoAEliminar();
 
+    if (!item || this.procesando()) {
+      return;
+    }
 
-  this.carritoService
-    .eliminarProducto(
-      item.producto_id
-    )
-    .subscribe({
+    this.limpiarMensajes();
 
-      next: respuesta => {
+    this.procesando.set(true);
 
-        this.procesando.set(
-          false
-        );
+    this.carritoService
+      .eliminarProducto(item.producto_id)
+      .subscribe({
+        next: respuesta => {
+          this.procesando.set(false);
+          this.productoAEliminar.set(null);
 
+          this.mensaje.set(
+            respuesta.message ??
+            'Producto eliminado del carrito.'
+          );
 
-        this.mensaje.set(
-          respuesta.message ??
-          'Producto eliminado del carrito.'
-        );
+          this.cargarCarrito();
+        },
 
+        error: error => {
+          this.procesando.set(false);
+          this.productoAEliminar.set(null);
 
-        this.cargarCarrito();
-      },
-
-
-      error: error => {
-
-        this.procesando.set(
-          false
-        );
-
-
-        this.error.set(
-          this.obtenerMensajeError(
-            error
-          )
-        );
-      }
-    });
-}
+          this.error.set(
+            this.obtenerMensajeError(error)
+          );
+        }
+      });
+  }
 
 
   confirmarCompra(): void {
