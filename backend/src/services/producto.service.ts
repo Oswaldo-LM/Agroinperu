@@ -125,6 +125,25 @@ export class ProductoService {
       datos.imagen_url
     );
 
+    const codigoBarras =
+      this.validarCodigoBarras(
+        datos.codigo_barras
+      );
+
+    if (codigoBarras) {
+      const existenteBarras =
+        await this.productoRepository
+          .obtenerPorCodigoBarrasExistente(
+            codigoBarras
+          );
+
+      if (existenteBarras) {
+        throw new Error(
+          'CODIGO_BARRAS_DUPLICADO'
+        );
+      }
+    }
+
     const existente =
       await this.productoRepository
         .obtenerPorCodigo(codigo);
@@ -150,7 +169,8 @@ export class ProductoService {
       imagen_url:
         datos.imagen_url?.trim() || null,
       visible_web:
-        datos.visible_web ?? true
+        datos.visible_web ?? true,
+      codigo_barras: codigoBarras
     });
   }
 
@@ -200,13 +220,37 @@ export class ProductoService {
       'STOCK_MINIMO_INVALIDO'
     );
 
+    const estado =
+      datos.estado ??
+      productoActual.estado;
+
     this.validarEstado(
-      datos.estado
+      estado
     );
 
     this.validarImagenUrl(
       datos.imagen_url
     );
+
+    const codigoBarras =
+      this.validarCodigoBarras(
+        datos.codigo_barras
+      );
+
+    if (codigoBarras) {
+      const existenteBarras =
+        await this.productoRepository
+          .obtenerPorCodigoBarrasExistente(
+            codigoBarras,
+            id
+          );
+
+      if (existenteBarras) {
+        throw new Error(
+          'CODIGO_BARRAS_DUPLICADO'
+        );
+      }
+    }
 
     if (
       typeof datos.visible_web
@@ -260,8 +304,10 @@ export class ProductoService {
             visible_web:
               datos.visible_web,
 
-            estado:
-              datos.estado
+            estado,
+
+            codigo_barras:
+              codigoBarras
           }
         );
 
@@ -301,6 +347,35 @@ export class ProductoService {
 
     await this.productoRepository
       .desactivar(id);
+  }
+
+
+  async activar(
+    id: number
+  ): Promise<void> {
+
+    this.validarId(id);
+
+    const producto =
+      await this.productoRepository
+        .obtenerPorId(id);
+
+    if (!producto) {
+      throw new Error(
+        'PRODUCTO_NO_ENCONTRADO'
+      );
+    }
+
+    if (
+      producto.estado === 'ACTIVO'
+    ) {
+      throw new Error(
+        'PRODUCTO_YA_ACTIVO'
+      );
+    }
+
+    await this.productoRepository
+      .activar(id);
   }
 
 
@@ -497,6 +572,26 @@ export class ProductoService {
         'ID_INVALIDO'
       );
     }
+  }
+
+
+  private validarCodigoBarras(
+    codigoBarras?: string | null
+  ): string | null {
+
+    const valor =
+      codigoBarras?.trim() || null;
+
+    if (
+      valor &&
+      valor.length > 100
+    ) {
+      throw new Error(
+        'CODIGO_BARRAS_MUY_LARGO'
+      );
+    }
+
+    return valor;
   }
 
   async listarPublicos() {

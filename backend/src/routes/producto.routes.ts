@@ -10,6 +10,7 @@ import {
 
 import {
   actualizarProducto,
+  activarProducto,
   crearProducto,
   eliminarProducto,
   listarProductos,
@@ -67,6 +68,18 @@ router.put(
 router.delete(
   '/:id',
   eliminarProducto
+);
+
+
+router.patch(
+  '/:id/activar',
+  activarProducto
+);
+
+
+router.put(
+  '/:id/activar',
+  activarProducto
 );
 
 

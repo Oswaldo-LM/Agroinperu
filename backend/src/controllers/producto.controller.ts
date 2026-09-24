@@ -167,6 +167,32 @@ export async function eliminarProducto(
 }
 
 
+export async function activarProducto(
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> {
+
+  try {
+
+    const id =
+      Number(req.params.id);
+
+    await productoService
+      .activar(id);
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Producto activado correctamente'
+    });
+
+  } catch (error) {
+
+    manejarError(error, res);
+  }
+}
+
+
 function manejarError(
   error: unknown,
   res: Response
@@ -188,6 +214,7 @@ function manejarError(
     'ID_INVALIDO',
     'CODIGO_OBLIGATORIO',
     'CODIGO_MUY_LARGO',
+    'CODIGO_BARRAS_MUY_LARGO',
     'NOMBRE_OBLIGATORIO',
     'NOMBRE_MUY_CORTO',
     'NOMBRE_MUY_LARGO',
@@ -237,10 +264,16 @@ function manejarError(
     'CODIGO_PRODUCTO_DUPLICADO' ||
 
     error.message ===
+    'CODIGO_BARRAS_DUPLICADO' ||
+
+    error.message ===
     'CATEGORIA_INACTIVA' ||
 
     error.message ===
-    'PRODUCTO_YA_INACTIVO'
+    'PRODUCTO_YA_INACTIVO' ||
+
+    error.message ===
+    'PRODUCTO_YA_ACTIVO'
   ) {
 
     res.status(409).json({

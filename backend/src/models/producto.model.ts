@@ -51,6 +51,6 @@ export interface ActualizarProductoDto {
   stock_minimo: number;
   imagen_url?: string | null;
   visible_web: boolean;
-  estado: EstadoProducto;
+  estado?: EstadoProducto;
   codigo_barras?: string | null;
 }

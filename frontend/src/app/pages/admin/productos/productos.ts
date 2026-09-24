@@ -25,6 +25,7 @@ import {
 } from '../../../models/categoria.model';
 
 import {
+  EstadoProducto,
   Producto,
   UnidadMedida
 } from '../../../models/producto.model';
@@ -228,6 +229,13 @@ export class Productos
 
       visible_web: [
         true
+      ],
+
+      estado: [
+        'ACTIVO' as EstadoProducto,
+        [
+          Validators.required
+        ]
       ]
     });
 
@@ -402,7 +410,10 @@ export class Productos
         '',
 
       visible_web:
-        true
+        true,
+
+      estado:
+        'ACTIVO'
     });
 
 
@@ -479,7 +490,10 @@ export class Productos
       visible_web:
         Boolean(
           producto.visible_web
-        )
+        ),
+
+      estado:
+        producto.estado
     });
 
 
@@ -710,7 +724,11 @@ export class Productos
           || null,
 
         visible_web:
-          valores.visible_web
+          valores.visible_web,
+
+        estado:
+          valores.estado
+          ?? productoEditando.estado
       };
 
 
@@ -912,6 +930,56 @@ export class Productos
 
   /*
   |--------------------------------------------------------------------------
+  | Activar
+  |--------------------------------------------------------------------------
+  */
+
+  activarProducto(
+    producto: Producto
+  ): void {
+
+    const confirmar =
+      window.confirm(
+        `¿Deseas activar el producto "${producto.nombre}"?`
+      );
+
+    if (
+      !confirmar
+    ) {
+      return;
+    }
+
+    this.limpiarMensajes();
+
+    this.productoService
+      .activar(
+        producto.id_producto
+      )
+      .subscribe({
+
+        next: () => {
+
+          this.mensaje.set(
+            'Producto activado correctamente.'
+          );
+
+          this.cargarProductos();
+        },
+
+        error: error => {
+
+          this.error.set(
+            this.obtenerMensajeError(
+              error
+            )
+          );
+        }
+      });
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
   | Solo refrescar productos
   |--------------------------------------------------------------------------
   */
@@ -993,6 +1061,22 @@ export class Productos
       error instanceof
       HttpErrorResponse
     ) {
+
+      const mensajesPersonalizados: Record<string, string> = {
+        'CODIGO_PRODUCTO_DUPLICADO': 'Ya existe un producto con el código ingresado.',
+        'CODIGO_BARRAS_DUPLICADO': 'Ya existe un producto con el código de barras ingresado.',
+        'CODIGO_BARRAS_MUY_LARGO': 'El código de barras no puede exceder 100 caracteres.',
+        'CATEGORIA_INACTIVA': 'La categoría seleccionada está inactiva.',
+        'PRODUCTO_YA_INACTIVO': 'El producto ya se encuentra inactivo.',
+        'PRODUCTO_YA_ACTIVO': 'El producto ya se encuentra activo.',
+        'ESTADO_INVALIDO': 'El estado del producto no es válido.',
+        'PRODUCTO_NO_ENCONTRADO': 'El producto solicitado no fue encontrado.'
+      };
+
+      const codigoError = error.error?.message;
+      if (codigoError && mensajesPersonalizados[codigoError]) {
+        return mensajesPersonalizados[codigoError];
+      }
 
       if (
         error.status === 401

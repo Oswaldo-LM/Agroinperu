@@ -276,6 +276,66 @@ export class ProductoRepository {
   }
 
 
+  async obtenerPorCodigoBarrasExistente(
+    codigoBarras: string,
+    excluirId?: number
+  ): Promise<Producto | null> {
+
+    let sql = `
+      SELECT
+        id_producto,
+        categoria_id,
+        codigo,
+        codigo_barras,
+        nombre,
+        descripcion,
+        unidad_medida,
+        precio,
+        stock_disponible,
+        stock_reservado,
+        stock_minimo,
+        imagen_url,
+        visible_web,
+        estado,
+        fecha_creacion,
+        fecha_actualizacion
+
+      FROM TB_PRODUCTO
+
+      WHERE codigo_barras = ?
+    `;
+
+    const parametros: Array<string | number> = [
+      codigoBarras
+    ];
+
+    if (excluirId !== undefined) {
+      sql += `
+        AND id_producto <> ?
+      `;
+      parametros.push(excluirId);
+    }
+
+    sql += `
+      LIMIT 1
+    `;
+
+    const [rows] =
+      await pool.query<ProductoRow[]>(
+        sql,
+        parametros
+      );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    return this.mapearProducto(
+      rows[0]
+    );
+  }
+
+
   async crear(
     datos: CrearProductoDto
   ): Promise<Producto> {
@@ -410,7 +470,7 @@ export class ProductoRepository {
 
         datos.visible_web,
 
-        datos.estado,
+        datos.estado ?? 'ACTIVO',
 
         datos.codigo_barras
           ?.trim()
@@ -447,6 +507,31 @@ export class ProductoRepository {
         ]
       );
 
+
+    return (
+      resultado.affectedRows > 0
+    );
+  }
+
+
+  async activar(
+    id: number
+  ): Promise<boolean> {
+
+    const [resultado] =
+      await pool.execute<ResultSetHeader>(
+        `
+        UPDATE TB_PRODUCTO
+
+        SET
+          estado = 'ACTIVO'
+
+        WHERE id_producto = ?
+        `,
+        [
+          id
+        ]
+      );
 
     return (
       resultado.affectedRows > 0

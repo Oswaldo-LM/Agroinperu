@@ -110,6 +110,8 @@ export interface ActualizarProductoDto {
     string | null;
 
   visible_web: boolean;
+
+  estado?: EstadoProducto;
 }
 
 

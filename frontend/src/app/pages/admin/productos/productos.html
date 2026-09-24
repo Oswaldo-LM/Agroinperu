@@ -427,6 +427,41 @@
             </div>
 
 
+            <!-- ESTADO (SOLO EDICION) -->
+
+            @if (productoEditando()) {
+
+              <div class="col-12 col-md-4">
+
+                <label
+                  for="estado-producto"
+                  class="form-label">
+
+                  Estado
+
+                </label>
+
+
+                <select
+                  id="estado-producto"
+                  class="form-select"
+                  formControlName="estado">
+
+                  <option value="ACTIVO">
+                    ACTIVO
+                  </option>
+
+                  <option value="INACTIVO">
+                    INACTIVO
+                  </option>
+
+                </select>
+
+              </div>
+
+            }
+
+
             <!-- IMAGEN -->
 
             <div class="col-12">
@@ -878,6 +913,19 @@
                           )">
 
                           Inactivar
+
+                        </button>
+
+                      } @else {
+
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-success"
+                          (click)="activarProducto(
+                            producto
+                          )">
+
+                          Activar
 
                         </button>
 
