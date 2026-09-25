@@ -8,8 +8,9 @@
 
     <div>
 
-      <h1 class="fw-bold mb-1">
-        Mi carrito
+      <h1 class="fw-bold mb-1 d-flex align-items-center gap-2">
+        <i class="bi bi-cart3 text-success"></i>
+        <span>Mi carrito</span>
       </h1>
 
       <p class="text-muted mb-0">
@@ -21,10 +22,11 @@
 
     <button
       type="button"
-      class="btn btn-outline-secondary"
+      class="btn btn-outline-secondary d-inline-flex align-items-center gap-1"
       (click)="volverCatalogo()">
 
-      Seguir comprando
+      <i class="bi bi-arrow-left"></i>
+      <span>Seguir comprando</span>
 
     </button>
 
@@ -256,12 +258,12 @@
 
                     <button
                       type="button"
-                      class="btn btn-sm
-                             btn-outline-danger"
+                      class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
                       [disabled]="procesando()"
                       (click)="eliminar(item)">
 
-                      Quitar
+                      <i class="bi bi-trash3"></i>
+                      <span>Quitar</span>
 
                     </button>
 
@@ -393,18 +395,19 @@
 
             <button
               type="button"
-              class="btn btn-success
-                     btn-lg w-100"
+              class="btn btn-success btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
               [disabled]="procesando()"
               (click)="confirmarCompra()">
 
               @if (procesando()) {
 
-                Procesando...
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                <span>Procesando...</span>
 
               } @else {
 
-                Confirmar compra
+                <i class="bi bi-credit-card-2-front fs-5"></i>
+                <span>Confirmar compra</span>
 
               }
 

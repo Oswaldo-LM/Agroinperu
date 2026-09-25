@@ -8,13 +8,14 @@
 
     <div>
 
-      <h1 class="fw-bold mb-1">
-        Productos
+      <h1 class="fw-bold mb-1 d-flex align-items-center gap-2">
+        <i class="bi bi-grid-fill text-success"></i>
+        <span>Catálogo de Productos</span>
       </h1>
 
       <p class="text-muted mb-0">
 
-        Consulta nuestro catálogo disponible.
+        Consulta nuestro catálogo disponible con precios y stock en tiempo real.
 
       </p>
 
@@ -23,10 +24,11 @@
 
     <button
       type="button"
-      class="btn btn-outline-secondary"
+      class="btn btn-outline-secondary d-inline-flex align-items-center gap-1"
       (click)="cargarCatalogo()">
 
-      Actualizar
+      <i class="bi bi-arrow-clockwise"></i>
+      <span>Actualizar</span>
 
     </button>
 
@@ -35,17 +37,20 @@
 
   @if (error()) {
 
-    <div class="alert alert-danger">
-
-      {{ error() }}
-
+    <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 border-0 shadow-sm py-2 px-3 mb-3">
+      <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+      <span>{{ error() }}</span>
     </div>
 
-    <div class="alert alert-success">
+  }
 
-    {{ mensaje() }}
 
-  </div>
+  @if (mensaje()) {
+
+    <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 border-0 shadow-sm py-2 px-3 mb-3">
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span>{{ mensaje() }}</span>
+    </div>
 
   }
 
@@ -60,57 +65,69 @@
 
         <div class="col-12 col-md-7">
 
-          <label class="form-label">
-            Buscar
+          <label class="form-label fw-semibold small text-secondary">
+            Buscar producto
           </label>
 
 
-          <input
-            type="search"
-            class="form-control"
-            placeholder="Nombre, código o descripción..."
-            [value]="busqueda()"
-            (input)="cambiarBusqueda(
-              $any($event.target).value
-            )">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-muted">
+              <i class="bi bi-search"></i>
+            </span>
+
+            <input
+              type="search"
+              class="form-control border-start-0 ps-0"
+              placeholder="Nombre, código o descripción..."
+              [value]="busqueda()"
+              (input)="cambiarBusqueda(
+                $any($event.target).value
+              )">
+          </div>
 
         </div>
 
 
         <div class="col-12 col-md-5">
 
-          <label class="form-label">
+          <label class="form-label fw-semibold small text-secondary">
             Categoría
           </label>
 
 
-          <select
-            class="form-select"
-            (change)="cambiarCategoria(
-              $any($event.target).value
-            )">
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0 text-muted">
+              <i class="bi bi-funnel"></i>
+            </span>
 
-            <option value="">
-              Todas las categorías
-            </option>
+            <select
+              class="form-select border-start-0 ps-0"
+              (change)="cambiarCategoria(
+                $any($event.target).value
+              )">
 
-
-            @for (
-              categoria
-              of categorias();
-              track categoria.id_categoria
-            ) {
-
-              <option
-                [value]="categoria.id_categoria">
-
-                {{ categoria.nombre }}
-
+              <option value="">
+                Todas las categorías
               </option>
 
-            }
 
-          </select>
+              @for (
+                categoria
+                of categorias();
+                track categoria.id_categoria
+              ) {
+
+                <option
+                  [value]="categoria.id_categoria">
+
+                  {{ categoria.nombre }}
+
+                </option>
+
+              }
+
+            </select>
+          </div>
 
         </div>
 
@@ -125,10 +142,10 @@
 
     <div class="text-center py-5">
 
-      <div class="spinner-border"></div>
+      <div class="spinner-border text-success" role="status"></div>
 
       <p class="text-muted mt-3">
-        Cargando productos...
+        Cargando catálogo de productos...
       </p>
 
     </div>
@@ -137,10 +154,14 @@
     productosFiltrados().length === 0
   ) {
 
-    <div class="alert alert-secondary">
-
-      No se encontraron productos.
-
+    <div class="card shadow-sm text-center py-5">
+      <div class="card-body">
+        <i class="bi bi-search text-muted fs-1 mb-2 d-block"></i>
+        <h5 class="fw-semibold">No se encontraron productos</h5>
+        <p class="text-muted mb-0 small">
+          Intenta con otros términos de búsqueda o selecciona otra categoría.
+        </p>
+      </div>
     </div>
 
   } @else {
@@ -161,59 +182,72 @@
                    shadow-sm h-100">
 
 
-            <!-- IMAGEN -->
+            <!-- IMAGEN CON BADGE FLOTANTE -->
 
-            @if (producto.imagen_url) {
+            <div class="producto-imagen-wrapper position-relative">
 
-              <img
-                [src]="producto.imagen_url"
-                [alt]="producto.nombre"
-                class="producto-imagen">
+              @if (producto.imagen_url) {
 
-            } @else {
+                <img
+                  [src]="producto.imagen_url"
+                  [alt]="producto.nombre"
+                  class="producto-imagen">
 
-              <div
-                class="producto-sin-imagen">
+              } @else {
 
-                AGROINPERU
+                <div
+                  class="producto-sin-imagen">
 
+                  <i class="bi bi-box-seam fs-1 text-secondary opacity-50 mb-1"></i>
+                  <span class="small text-muted fw-semibold">AGROINPERU</span>
+
+                </div>
+
+              }
+
+              <!-- BADGE DE STOCK FLOTANTE -->
+              <div class="stock-badge-floating">
+                @if (producto.stock_disponible > 0) {
+                  <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1">
+                    <i class="bi bi-check-circle-fill me-1"></i>Disponible
+                  </span>
+                } @else {
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1">
+                    Sin stock
+                  </span>
+                }
               </div>
 
-            }
+            </div>
 
 
             <div
               class="card-body d-flex
                      flex-column">
 
-              <div
-                class="text-success
-                       small fw-semibold mb-1">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <span
+                  class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small">
 
-                {{
-                  nombreCategoria(
-                    producto.categoria_id
-                  )
-                }}
+                  {{
+                    nombreCategoria(
+                      producto.categoria_id
+                    )
+                  }}
 
+                </span>
+
+                <span class="text-muted small font-monospace">
+                  <i class="bi bi-tag me-1"></i>{{ producto.codigo }}
+                </span>
               </div>
 
 
-              <h5 class="card-title">
+              <h5 class="card-title fw-bold text-dark mb-2">
 
                 {{ producto.nombre }}
 
               </h5>
-
-
-              <div
-                class="text-muted
-                       small mb-2">
-
-                Código:
-                {{ producto.codigo }}
-
-              </div>
 
 
               <p
@@ -222,13 +256,13 @@
 
                 {{
                   producto.descripcion
-                    ?? 'Sin descripción.'
+                    ?? 'Sin descripción disponible.'
                 }}
 
               </p>
 
 
-              <div class="mt-auto">
+              <div class="mt-auto pt-3 border-top">
 
                 <div
                   class="d-flex
@@ -238,7 +272,7 @@
                   <div>
 
                     <small
-                      class="text-muted d-block">
+                      class="text-muted d-block" style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">
 
                       Precio
 
@@ -262,16 +296,16 @@
                   <div class="text-end">
 
                     <small
-                      class="text-muted d-block">
+                      class="text-muted d-block" style="font-size: 0.72rem; text-transform: uppercase; font-weight: 600;">
 
                       Unidad
 
                     </small>
 
 
-                    <strong>
+                    <span class="badge bg-light text-dark border">
                       {{ producto.unidad_medida }}
-                    </strong>
+                    </span>
 
                   </div>
 
@@ -282,54 +316,50 @@
                   producto.stock_disponible > 0
                 ) {
 
-                  <div
-                    class="text-success small mb-2">
+                  <button
+                    type="button"
+                    class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2"
+                    [disabled]="
+                      agregandoProducto() ===
+                      producto.id_producto
+                    "
+                    (click)="agregarAlCarrito(
+                      producto
+                    )">
 
-                    Disponible
+                    @if (
+                      agregandoProducto() ===
+                      producto.id_producto
+                    ) {
 
-                  </div>
+                      <span class="spinner-border spinner-border-sm" role="status"></span>
+                      <span>Agregando...</span>
 
+                    } @else if (
+                      authService.esCliente()
+                    ) {
 
-                  <<button
-  type="button"
-  class="btn btn-success w-100"
-  [disabled]="
-    agregandoProducto() ===
-    producto.id_producto
-  "
-  (click)="agregarAlCarrito(
-    producto
-  )">
+                      <i class="bi bi-cart-plus fs-5"></i>
+                      <span>Agregar al carrito</span>
 
-  @if (
-    agregandoProducto() ===
-    producto.id_producto
-  ) {
+                    } @else {
 
-    Agregando...
+                      <i class="bi bi-box-arrow-in-right"></i>
+                      <span>Inicia sesión para comprar</span>
 
-  } @else if (
-    authService.esCliente()
-  ) {
+                    }
 
-    Agregar al carrito
-
-  } @else {
-
-    Inicia sesión para comprar
-
-  }
-
-</button>
+                  </button>
 
                 } @else {
 
                   <button
                     type="button"
-                    class="btn btn-secondary w-100"
+                    class="btn btn-secondary w-100 d-flex align-items-center justify-content-center gap-2"
                     disabled>
 
-                    Sin stock
+                    <i class="bi bi-dash-circle"></i>
+                    <span>Sin stock</span>
 
                   </button>
 

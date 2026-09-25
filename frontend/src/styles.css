@@ -1,5 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+:root {
+  --agro-primary: #059669;
+  --agro-primary-hover: #047857;
+  --agro-primary-subtle: #d1fae5;
+  --agro-primary-text: #065f46;
+  --agro-bg: #f8fafc;
+  --agro-card-bg: #ffffff;
+  --agro-border: #e2e8f0;
+}
 
 html,
 body {
@@ -8,6 +19,110 @@ body {
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f8f9fa;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--agro-bg);
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* --------------------------------------------------------------------------
+   Modern Card Styling
+   -------------------------------------------------------------------------- */
+.card {
+  border: 1px solid var(--agro-border);
+  border-radius: 12px;
+  background-color: var(--agro-card-bg);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+.card.shadow-sm {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Brand Button Enhancements
+   -------------------------------------------------------------------------- */
+.btn {
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-success {
+  background-color: var(--agro-primary);
+  border-color: var(--agro-primary);
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active {
+  background-color: var(--agro-primary-hover);
+  border-color: var(--agro-primary-hover);
+}
+
+.btn-outline-success {
+  color: var(--agro-primary);
+  border-color: var(--agro-primary);
+}
+
+.btn-outline-success:hover,
+.btn-outline-success:focus,
+.btn-outline-success:active {
+  background-color: var(--agro-primary);
+  border-color: var(--agro-primary);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Modern Inputs Focus Ring
+   -------------------------------------------------------------------------- */
+.form-control:focus,
+.form-select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.18);
+}
+
+/* --------------------------------------------------------------------------
+   Status Badges (Pill style)
+   -------------------------------------------------------------------------- */
+.badge-status-activo {
+  background-color: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0 !important;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35em 0.75em;
+  border-radius: 50rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-status-inactivo {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35em 0.75em;
+  border-radius: 50rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.badge-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.badge-status-activo .badge-status-dot {
+  background-color: #10b981;
+}
+
+.badge-status-inactivo .badge-status-dot {
+  background-color: #94a3b8;
+}

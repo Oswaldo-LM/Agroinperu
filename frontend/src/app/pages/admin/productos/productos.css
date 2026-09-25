@@ -3,32 +3,62 @@
   margin: 0 auto;
 }
 
-
-.card {
-  border: 0;
-}
-
-
 .table {
   margin-bottom: 0;
 }
 
-
 .table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background-color: #f8fafc;
+  padding: 12px 16px;
   white-space: nowrap;
+  border-bottom: 1px solid #e2e8f0;
 }
-
 
 .table td {
+  padding: 14px 16px;
   vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.88rem;
 }
 
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.producto-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: #f1f5f9;
+}
+
+.producto-thumb-placeholder {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
 
 .descripcion-producto {
   display: block;
-  max-width: 320px;
-
+  max-width: 280px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.78rem;
 }

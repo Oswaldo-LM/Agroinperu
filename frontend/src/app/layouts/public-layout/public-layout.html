@@ -1,8 +1,8 @@
-<header>
+<header class="sticky-top">
 
   <nav
     class="navbar navbar-expand-lg
-           navbar-dark bg-dark">
+           navbar-dark bg-slate-900 border-bottom-subtle">
 
     <div class="container">
 
@@ -14,9 +14,9 @@
           alt="Logo AGROINPERU"
           width="36"
           height="36"
-          class="rounded"
+          class="rounded shadow-sm"
         />
-        <span>AGROINPERU</span>
+        <span class="brand-text">AGROINPERU</span>
       </a>
 
 
@@ -49,9 +49,10 @@
               [routerLinkActiveOptions]="{
                 exact: true
               }"
-              class="nav-link">
+              class="nav-link d-inline-flex align-items-center gap-1">
 
-              Inicio
+              <i class="bi bi-house-door"></i>
+              <span>Inicio</span>
 
             </a>
 
@@ -63,9 +64,10 @@
             <a
               routerLink="/catalogo"
               routerLinkActive="active"
-              class="nav-link">
+              class="nav-link d-inline-flex align-items-center gap-1">
 
-              Productos
+              <i class="bi bi-grid"></i>
+              <span>Catálogo</span>
 
             </a>
 
@@ -82,42 +84,43 @@
             authService.esCliente()
           ) {
 
-            <a routerLink="/cliente/pedidos" class="btn btn-outline-light">
+            <a
+              routerLink="/cliente/pedidos"
+              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
 
-              Mis pedidos
+              <i class="bi bi-box-seam"></i>
+              <span>Mis pedidos</span>
 
-              
             </a>
 
-            
 
             <a
               routerLink="/cliente/cuenta"
-              class="btn btn-outline-light">
+              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
 
-              Mi cuenta
+              <i class="bi bi-person-circle"></i>
+              <span>Mi cuenta</span>
 
             </a>
 
 
-            <!-- Carrito lo habilitaremos
-                 en el siguiente paso -->
-
             <a
               routerLink="/carrito"
-              class="btn btn-success">
+              class="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3">
 
-              Carrito
+              <i class="bi bi-cart3"></i>
+              <span>Carrito</span>
 
             </a>
 
 
             <button
               type="button"
-              class="btn btn-outline-danger"
+              class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1"
               (click)="cerrarSesion()">
 
-              Salir
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Salir</span>
 
             </button>
 
@@ -125,18 +128,20 @@
 
             <a
               routerLink="/login"
-              class="btn btn-outline-light">
+              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
 
-              Iniciar sesión
+              <i class="bi bi-box-arrow-in-right"></i>
+              <span>Iniciar sesión</span>
 
             </a>
 
 
             <a
               routerLink="/registro"
-              class="btn btn-success">
+              class="btn btn-success btn-sm d-inline-flex align-items-center gap-1">
 
-              Registrarse
+              <i class="bi bi-person-plus"></i>
+              <span>Registrarse</span>
 
             </a>
 
@@ -164,19 +169,26 @@
 
   <div class="container py-4">
 
-    <div class="row g-3">
+    <div class="row g-3 align-items-center">
 
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 d-flex align-items-center gap-3">
 
-        <strong>
-          AGROINPERU S.A.C.
-        </strong>
+        <img
+          src="/AgroinPeru_logo2.png"
+          alt="Logo AGROINPERU"
+          width="32"
+          height="32"
+          class="rounded opacity-75"
+        />
 
-        <div class="text-muted">
+        <div>
+          <strong class="text-white">
+            AGROINPERU S.A.C.
+          </strong>
 
-          Productos para los sectores
-          agrícola e industrial.
-
+          <div class="footer-subtitle">
+            Soluciones en riego tecnificado, tuberías y accesorios agrícolas e industriales.
+          </div>
         </div>
 
       </div>
@@ -186,10 +198,8 @@
         class="col-12 col-md-6
                text-md-end">
 
-        <small class="text-muted">
-
-          Sistema de Gestión de Ventas
-
+        <small class="footer-copyright">
+          © 2026 AGROINPERU S.A.C. Todos los derechos reservados.
         </small>
 
       </div>

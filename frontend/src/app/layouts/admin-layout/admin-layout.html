@@ -4,23 +4,23 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-header d-flex align-items-center justify-content-center gap-2">
+    <div class="sidebar-header d-flex align-items-center gap-3">
 
       <img
         src="/AgroinPeru_logo2.png"
         alt="Logo AGROINPERU"
         width="38"
         height="38"
-        class="rounded"
+        class="rounded shadow-sm"
       />
 
-      <div class="d-flex flex-column justify-content-center" style="margin-top: 20px;">
+      <div class="d-flex flex-column justify-content-center">
         <h4 class="mb-0 fs-5 fw-bold text-white lh-1">
           AGROINPERU
         </h4>
 
-        <small class="text-muted mt-1" style="font-size: 0.75rem;">
-          Administración
+        <small class="text-emerald mt-1" style="font-size: 0.72rem; letter-spacing: 0.05em; font-weight: 600;">
+          PANEL DE CONTROL
         </small>
       </div>
 
@@ -36,65 +36,79 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{
           exact: true
-        }">
+        }"
+        class="sidebar-link">
 
-        Dashboard
+        <i class="bi bi-grid-1x2 sidebar-icon"></i>
+        <span>Dashboard</span>
 
       </a>
 
 
       <a
         routerLink="/admin/pedidos-web"
-        routerLinkActive="active">
+        routerLinkActive="active"
+        class="sidebar-link">
 
-        Pedidos web
+        <i class="bi bi-globe2 sidebar-icon"></i>
+        <span>Pedidos web</span>
 
       </a>
 
 
       <a
         routerLink="/admin/venta-tienda"
-        routerLinkActive="active">
+        routerLinkActive="active"
+        class="sidebar-link">
 
-        Venta presencial
+        <i class="bi bi-shop-window sidebar-icon"></i>
+        <span>Venta presencial</span>
 
       </a>
 
 
       <a
         routerLink="/admin/clientes"
-        routerLinkActive="active">
+        routerLinkActive="active"
+        class="sidebar-link">
 
-        Clientes
+        <i class="bi bi-people sidebar-icon"></i>
+        <span>Clientes</span>
 
       </a>
 
+
       <a
-  routerLink="/admin/proformas"
-  routerLinkActive="active"
-  class="nav-link">
+        routerLink="/admin/proformas"
+        routerLinkActive="active"
+        class="sidebar-link">
 
-  Proformas
+        <i class="bi bi-file-earmark-ruled sidebar-icon"></i>
+        <span>Proformas</span>
 
-</a>
+      </a>
 
-<a
-  routerLink="/admin/devoluciones"
-  routerLinkActive="active"
-  class="nav-link">
 
-  Devoluciones
+      <a
+        routerLink="/admin/devoluciones"
+        routerLinkActive="active"
+        class="sidebar-link">
 
-</a>
+        <i class="bi bi-arrow-return-left sidebar-icon"></i>
+        <span>Devoluciones</span>
 
-<a
-  routerLink="/admin/caja"
-  routerLinkActive="active"
-  class="nav-link">
+      </a>
 
-  Caja
 
-</a>
+      <a
+        routerLink="/admin/caja"
+        routerLinkActive="active"
+        class="sidebar-link">
+
+        <i class="bi bi-cash-stack sidebar-icon"></i>
+        <span>Caja</span>
+
+      </a>
 
 
       <!-- SOLO ADMIN -->
@@ -108,45 +122,55 @@
 
         <a
           routerLink="/admin/productos"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          class="sidebar-link">
 
-          Productos
+          <i class="bi bi-box-seam sidebar-icon"></i>
+          <span>Productos</span>
 
         </a>
 
 
         <a
           routerLink="/admin/categorias"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          class="sidebar-link">
 
-          Categorías
+          <i class="bi bi-tags sidebar-icon"></i>
+          <span>Categorías</span>
 
         </a>
 
 
         <a
           routerLink="/admin/inventario"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          class="sidebar-link">
 
-          Inventario
+          <i class="bi bi-clipboard2-data sidebar-icon"></i>
+          <span>Inventario</span>
 
         </a>
 
 
         <a
           routerLink="/admin/usuarios"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          class="sidebar-link">
 
-          Usuarios
+          <i class="bi bi-shield-lock sidebar-icon"></i>
+          <span>Usuarios</span>
 
         </a>
 
 
         <a
           routerLink="/admin/reportes"
-          routerLinkActive="active">
+          routerLinkActive="active"
+          class="sidebar-link">
 
-          Reportes
+          <i class="bi bi-bar-chart-line sidebar-icon"></i>
+          <span>Reportes</span>
 
         </a>
 
@@ -157,27 +181,26 @@
 
     <div class="sidebar-footer">
 
-      <div class="mb-3">
-
-        <small>
-          Sesión actual
-        </small>
-
-        <div class="fw-semibold">
-
-          {{ authService.sesion()?.rol }}
-
+      <div class="user-card mb-3">
+        <div class="user-avatar">
+          <i class="bi bi-person-fill"></i>
         </div>
-
+        <div class="user-info">
+          <span class="user-role-label">Sesión activa</span>
+          <span class="user-role-badge">
+            <span class="status-indicator"></span>
+            {{ authService.sesion()?.rol }}
+          </span>
+        </div>
       </div>
-
 
       <button
         type="button"
-        class="btn btn-outline-light w-100"
+        class="btn btn-logout w-100"
         (click)="cerrarSesion()">
 
-        Cerrar sesión
+        <i class="bi bi-box-arrow-right me-2"></i>
+        <span>Cerrar sesión</span>
 
       </button>
 

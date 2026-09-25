@@ -21,10 +21,11 @@
 
     <button
       type="button"
-      class="btn btn-success"
+      class="btn btn-success d-inline-flex align-items-center gap-2"
       (click)="nuevoProducto()">
 
-      Nuevo producto
+      <i class="bi bi-plus-lg"></i>
+      <span>Nuevo producto</span>
 
     </button>
 
@@ -33,9 +34,10 @@
 
   @if (mensaje()) {
 
-    <div class="alert alert-success">
+    <div class="alert alert-success d-flex align-items-center gap-2 rounded-3 border-0 shadow-sm py-2 px-3">
 
-      {{ mensaje() }}
+      <i class="bi bi-check-circle-fill text-success fs-5"></i>
+      <span>{{ mensaje() }}</span>
 
     </div>
 
@@ -44,9 +46,10 @@
 
   @if (error()) {
 
-    <div class="alert alert-danger">
+    <div class="alert alert-danger d-flex align-items-center gap-2 rounded-3 border-0 shadow-sm py-2 px-3">
 
-      {{ error() }}
+      <i class="bi bi-exclamation-triangle-fill text-danger fs-5"></i>
+      <span>{{ error() }}</span>
 
     </div>
 
@@ -516,22 +519,25 @@
 
             <button
               type="submit"
-              class="btn btn-success"
+              class="btn btn-success d-inline-flex align-items-center gap-2"
               [disabled]="guardando()">
 
               @if (guardando()) {
 
-                Guardando...
+                <span class="spinner-border spinner-border-sm" role="status"></span>
+                <span>Guardando...</span>
 
               } @else if (
                 productoEditando()
               ) {
 
-                Guardar cambios
+                <i class="bi bi-check2"></i>
+                <span>Guardar cambios</span>
 
               } @else {
 
-                Crear producto
+                <i class="bi bi-plus-lg"></i>
+                <span>Crear producto</span>
 
               }
 
@@ -540,11 +546,12 @@
 
             <button
               type="button"
-              class="btn btn-outline-secondary"
+              class="btn btn-outline-secondary d-inline-flex align-items-center gap-2"
               [disabled]="guardando()"
               (click)="cancelarFormulario()">
 
-              Cancelar
+              <i class="bi bi-x-lg"></i>
+              <span>Cancelar</span>
 
             </button>
 
@@ -571,17 +578,19 @@
         class="d-flex justify-content-between
                align-items-center mb-3">
 
-        <h5 class="card-title mb-0">
-          Productos registrados
+        <h5 class="card-title mb-0 d-flex align-items-center gap-2">
+          <i class="bi bi-boxes text-success"></i>
+          <span>Productos registrados</span>
         </h5>
 
 
         <button
           type="button"
-          class="btn btn-sm btn-outline-secondary"
+          class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
           (click)="cargarProductos()">
 
-          Actualizar
+          <i class="bi bi-arrow-clockwise"></i>
+          <span>Actualizar</span>
 
         </button>
 
@@ -696,7 +705,7 @@
                   <td>
 
                     <span
-                      class="font-monospace">
+                      class="badge bg-light text-secondary font-monospace border px-2 py-1">
 
                       {{ producto.codigo }}
 
@@ -714,11 +723,10 @@
                     ) {
 
                       <span
-                        class="font-monospace">
+                        class="font-monospace text-secondary small d-inline-flex align-items-center gap-1">
 
-                        {{
-                          producto.codigo_barras
-                        }}
+                        <i class="bi bi-upc-scan text-muted"></i>
+                        {{ producto.codigo_barras }}
 
                       </span>
 
@@ -737,27 +745,50 @@
 
                   <td>
 
-                    <div class="fw-semibold">
+                    <div class="d-flex align-items-center gap-2">
 
-                      {{ producto.nombre }}
+                      @if (producto.imagen_url) {
+
+                        <img
+                          [src]="producto.imagen_url"
+                          [alt]="producto.nombre"
+                          class="producto-thumb rounded border"
+                        />
+
+                      } @else {
+
+                        <div class="producto-thumb-placeholder rounded">
+
+                          <i class="bi bi-box-seam text-secondary"></i>
+
+                        </div>
+
+                      }
+
+                      <div class="d-flex flex-column min-w-0">
+
+                        <span class="fw-semibold text-dark text-truncate">
+
+                          {{ producto.nombre }}
+
+                        </span>
+
+                        @if (
+                          producto.descripcion
+                        ) {
+
+                          <small
+                            class="text-muted descripcion-producto">
+
+                            {{ producto.descripcion }}
+
+                          </small>
+
+                        }
+
+                      </div>
 
                     </div>
-
-
-                    @if (
-                      producto.descripcion
-                    ) {
-
-                      <small
-                        class="text-muted descripcion-producto">
-
-                        {{
-                          producto.descripcion
-                        }}
-
-                      </small>
-
-                    }
 
                   </td>
 
@@ -766,11 +797,15 @@
 
                   <td>
 
-                    {{
-                      obtenerNombreCategoria(
-                        producto.categoria_id
-                      )
-                    }}
+                    <span class="text-secondary">
+
+                      {{
+                        obtenerNombreCategoria(
+                          producto.categoria_id
+                        )
+                      }}
+
+                    </span>
 
                   </td>
 
@@ -779,16 +814,18 @@
 
                   <td>
 
-                    {{
-                      producto.unidad_medida
-                    }}
+                    <span class="badge bg-light text-dark border">
+
+                      {{ producto.unidad_medida }}
+
+                    </span>
 
                   </td>
 
 
                   <!-- PRECIO -->
 
-                  <td class="text-end">
+                  <td class="text-end fw-semibold text-dark">
 
                     S/
                     {{
@@ -803,20 +840,22 @@
 
                   <td class="text-end">
 
-                    {{
-                      producto.stock_disponible
-                    }}
+                    <span
+                      [class.text-danger]="producto.stock_disponible <= producto.stock_minimo"
+                      [class.fw-bold]="producto.stock_disponible <= producto.stock_minimo">
+
+                      {{ producto.stock_disponible }}
+
+                    </span>
 
                   </td>
 
 
                   <!-- STOCK RESERVADO -->
 
-                  <td class="text-end">
+                  <td class="text-end text-muted">
 
-                    {{
-                      producto.stock_reservado
-                    }}
+                    {{ producto.stock_reservado }}
 
                   </td>
 
@@ -830,18 +869,18 @@
                     ) {
 
                       <span
-                        class="badge text-bg-success">
+                        class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1">
 
-                        Visible
+                        <i class="bi bi-eye-fill me-1"></i>Visible
 
                       </span>
 
                     } @else {
 
                       <span
-                        class="badge text-bg-secondary">
+                        class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1">
 
-                        Oculto
+                        <i class="bi bi-eye-slash-fill me-1"></i>Oculto
 
                       </span>
 
@@ -860,18 +899,20 @@
                     ) {
 
                       <span
-                        class="badge text-bg-success">
+                        class="badge-status-activo">
 
-                        ACTIVO
+                        <span class="badge-status-dot"></span>
+                        Activo
 
                       </span>
 
                     } @else {
 
                       <span
-                        class="badge text-bg-secondary">
+                        class="badge-status-inactivo">
 
-                        INACTIVO
+                        <span class="badge-status-dot"></span>
+                        Inactivo
 
                       </span>
 
@@ -890,12 +931,13 @@
 
                       <button
                         type="button"
-                        class="btn btn-sm btn-outline-primary"
+                        class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
                         (click)="editarProducto(
                           producto
                         )">
 
-                        Editar
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Editar</span>
 
                       </button>
 
@@ -907,12 +949,13 @@
 
                         <button
                           type="button"
-                          class="btn btn-sm btn-outline-danger"
+                          class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-1"
                           (click)="eliminarProducto(
                             producto
                           )">
 
-                          Inactivar
+                          <i class="bi bi-slash-circle"></i>
+                          <span>Inactivar</span>
 
                         </button>
 
@@ -920,12 +963,13 @@
 
                         <button
                           type="button"
-                          class="btn btn-sm btn-outline-success"
+                          class="btn btn-sm btn-outline-success d-inline-flex align-items-center gap-1"
                           (click)="activarProducto(
                             producto
                           )">
 
-                          Activar
+                          <i class="bi bi-check-circle"></i>
+                          <span>Activar</span>
 
                         </button>
 
