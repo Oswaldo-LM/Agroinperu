@@ -1,0 +1,125 @@
+services:
+
+  # ==========================================================
+  # MYSQL
+  # ==========================================================
+
+  mysql:
+
+    image: mysql:8.0
+
+    container_name: agroinperu_mysql
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.docker
+
+    environment:
+
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    ports:
+      - "${MYSQL_PORT}:3306"
+
+    volumes:
+
+      - agroinperu_mysql_data:/var/lib/mysql
+
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+
+    healthcheck:
+
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}"
+        ]
+
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+
+  # ==========================================================
+  # BACKEND
+  # ==========================================================
+
+  backend:
+
+    build:
+
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: agroinperu_backend
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.docker
+
+    environment:
+
+      PORT: 3000
+
+      DB_HOST: mysql
+      DB_PORT: 3306
+
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+
+      FRONTEND_URL: ${FRONTEND_URL}
+
+    ports:
+      - "${BACKEND_PORT}:3000"
+
+    depends_on:
+
+      mysql:
+
+        condition: service_healthy
+
+
+  # ==========================================================
+  # FRONTEND
+  # ==========================================================
+
+  frontend:
+
+    build:
+
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: agroinperu_frontend
+
+    restart: unless-stopped
+
+    ports:
+      - "${FRONTEND_PORT}:80"
+
+    depends_on:
+      - backend
+
+
+# ============================================================
+# VOLUMES
+# ============================================================
+
+volumes:
+
+  agroinperu_mysql_data:
