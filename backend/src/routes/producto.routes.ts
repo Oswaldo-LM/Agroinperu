@@ -20,65 +20,112 @@ import {
 } from '../controllers/producto.controller';
 
 
-const router = Router();
+const router =
+  Router();
 
-router.use(
-  verificarToken,
-  soloAdmin
-);
+
+/*
+|--------------------------------------------------------------------------
+| CONSULTA DE PRODUCTOS
+|--------------------------------------------------------------------------
+| ADMIN y CAJERO
+|--------------------------------------------------------------------------
+*/
 
 
 router.get(
   '/',
+
+  verificarToken,
+
+  soloUsuarios,
+
   listarProductos
 );
 
 
 router.get(
   '/codigo/:codigo',
+
+  verificarToken,
+
+  soloUsuarios,
+
   obtenerProductoPorCodigo
 );
 
+
 router.get(
   '/codigo-barras/:codigo',
+
   verificarToken,
+
   soloUsuarios,
+
   obtenerProductoPorCodigoBarras
 );
 
 
 router.get(
   '/:id',
+
+  verificarToken,
+
+  soloUsuarios,
+
   obtenerProducto
 );
 
 
+/*
+|--------------------------------------------------------------------------
+| ADMINISTRACIÓN DE PRODUCTOS
+|--------------------------------------------------------------------------
+| Solo ADMIN
+|--------------------------------------------------------------------------
+*/
+
+
 router.post(
   '/',
+
+  verificarToken,
+
+  soloAdmin,
+
   crearProducto
 );
 
 
 router.put(
   '/:id',
+
+  verificarToken,
+
+  soloAdmin,
+
   actualizarProducto
 );
 
 
 router.delete(
   '/:id',
+
+  verificarToken,
+
+  soloAdmin,
+
   eliminarProducto
 );
 
 
 router.patch(
   '/:id/activar',
-  activarProducto
-);
 
+  verificarToken,
 
-router.put(
-  '/:id/activar',
+  soloAdmin,
+
   activarProducto
 );
 
