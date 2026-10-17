@@ -4,6 +4,7 @@ import {
 
 import {
   actualizarUsuario,
+  activarUsuario,
   cambiarPasswordUsuario,
   crearUsuario,
   eliminarUsuario,
@@ -66,6 +67,16 @@ router.put(
 router.delete(
   '/:id',
   eliminarUsuario
+);
+
+router.patch(
+  '/:id/activar',
+  activarUsuario
+);
+
+router.put(
+  '/:id/activar',
+  activarUsuario
 );
 
 

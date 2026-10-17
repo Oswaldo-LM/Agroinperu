@@ -454,6 +454,49 @@ export class Categorias
   }
 
 
+  async activarCategoria(
+    categoria: Categoria
+  ): Promise<void> {
+
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Activar Categoría',
+        mensaje: `¿Deseas activar la categoría "${categoria.nombre}"?`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, activar',
+        textoCancelar: 'Cancelar'
+      });
+
+    if (!confirmar) {
+      return;
+    }
+
+    this.limpiarMensajes();
+
+    this.categoriaService
+      .activar(
+        categoria.id_categoria
+      )
+      .subscribe({
+        next: () => {
+          this.mensaje.set(
+            'Categoría activada correctamente.'
+          );
+
+          this.cargarCategorias();
+        },
+
+        error: error => {
+          this.error.set(
+            this.obtenerMensajeError(
+              error
+            )
+          );
+        }
+      });
+  }
+
+
   /*
   |--------------------------------------------------------------------------
   | Helpers

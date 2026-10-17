@@ -10,6 +10,7 @@ import {
 
 import {
   actualizarCliente,
+  activarCliente,
   crearCliente,
   eliminarCliente,
   listarClientes,
@@ -72,6 +73,20 @@ router.delete(
   verificarToken,
   soloAdmin,
   eliminarCliente
+);
+
+router.patch(
+  '/:id/activar',
+  verificarToken,
+  soloAdmin,
+  activarCliente
+);
+
+router.put(
+  '/:id/activar',
+  verificarToken,
+  soloAdmin,
+  activarCliente
 );
 
 

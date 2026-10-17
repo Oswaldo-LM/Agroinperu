@@ -147,6 +147,19 @@ export class CategoriaRepository {
     return resultado.affectedRows > 0;
   }
 
+  async activar(id: number): Promise<boolean> {
+    const [resultado] = await pool.execute<ResultSetHeader>(
+      `
+      UPDATE TB_CATEGORIA
+      SET estado = 'ACTIVO'
+      WHERE id_categoria = ?
+      `,
+      [id]
+    );
+
+    return resultado.affectedRows > 0;
+  }
+
   async listarPublicas() {
 
   const [rows] =

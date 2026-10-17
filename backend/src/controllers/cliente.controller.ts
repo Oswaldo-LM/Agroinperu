@@ -167,6 +167,32 @@ export async function eliminarCliente(
 }
 
 
+export async function activarCliente(
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> {
+
+  try {
+
+    const id =
+      Number(req.params.id);
+
+    await clienteService
+      .activar(id);
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Cliente activado correctamente'
+    });
+
+  } catch (error) {
+
+    manejarError(error, res);
+  }
+}
+
+
 function manejarError(
   error: unknown,
   res: Response
@@ -256,7 +282,10 @@ function manejarError(
     'DOCUMENTO_DUPLICADO' ||
 
     error.message ===
-    'CLIENTE_YA_INACTIVO'
+    'CLIENTE_YA_INACTIVO' ||
+
+    error.message ===
+    'CLIENTE_YA_ACTIVO'
   ) {
 
     res.status(409).json({

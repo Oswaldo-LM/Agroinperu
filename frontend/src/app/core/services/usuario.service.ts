@@ -106,4 +106,16 @@ export class UsuarioService {
         `${this.apiUrl}/${id}`
       );
   }
+
+
+  activar(
+    id: number
+  ): Observable<OperacionUsuarioResponse> {
+
+    return this.http
+      .patch<OperacionUsuarioResponse>(
+        `${this.apiUrl}/${id}/activar`,
+        {}
+      );
+  }
 }

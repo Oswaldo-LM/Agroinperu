@@ -883,6 +883,74 @@ export class Usuarios
   }
 
 
+  async activarUsuario(
+    usuario: Usuario
+  ): Promise<void> {
+
+    this.limpiarMensajes();
+
+
+    if (
+      this.esUsuarioActual(
+        usuario
+      )
+    ) {
+
+      this.error.set(
+        'No puedes activar o modificar tu propia cuenta desde aquí.'
+      );
+
+      return;
+    }
+
+
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Activar Usuario',
+        mensaje: `¿Deseas activar al usuario "${usuario.nombre}"? Recuperará el acceso al sistema.`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, activar',
+        textoCancelar: 'Cancelar'
+      });
+
+    if (
+      !confirmar
+    ) {
+
+      return;
+    }
+
+
+    this.usuarioService
+      .activar(
+        usuario.id_usuario
+      )
+      .subscribe({
+
+        next: respuesta => {
+
+          this.mensaje.set(
+            respuesta.message ??
+            'Usuario activado correctamente.'
+          );
+
+
+          this.cargarUsuarios();
+        },
+
+
+        error: error => {
+
+          this.error.set(
+            this.obtenerMensajeError(
+              error
+            )
+          );
+        }
+      });
+  }
+
+
   cambiarBusqueda(
     valor: string
   ): void {

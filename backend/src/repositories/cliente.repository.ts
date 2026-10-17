@@ -313,6 +313,24 @@ export class ClienteRepository {
   }
 
 
+  async activar(
+    id: number
+  ): Promise<boolean> {
+
+    const [resultado] =
+      await pool.execute<ResultSetHeader>(
+        `
+        UPDATE TB_CLIENTE
+        SET estado = 'ACTIVO'
+        WHERE id_cliente = ?
+        `,
+        [id]
+      );
+
+    return resultado.affectedRows > 0;
+  }
+
+
   private mapearCliente(
     row: ClienteRow
   ): Cliente {

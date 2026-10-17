@@ -631,6 +631,24 @@
 
                         </button>
 
+                      } @else if (
+                        authService.esAdmin() &&
+                        cliente.estado !==
+                          'ACTIVO'
+                      ) {
+
+                        <button
+                          type="button"
+                          class="btn btn-sm
+                                 btn-outline-success"
+                          (click)="activarCliente(
+                            cliente
+                          )">
+
+                          Activar
+
+                        </button>
+
                       }
 
                     </div>

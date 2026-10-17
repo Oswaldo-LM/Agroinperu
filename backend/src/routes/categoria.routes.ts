@@ -3,6 +3,7 @@ import {soloAdmin, verificarToken} from '../middlewares/auth.middleware';
 
 import {
   actualizarCategoria,
+  activarCategoria,
   crearCategoria,
   eliminarCategoria,
   listarCategorias,
@@ -25,5 +26,9 @@ router.post('/', crearCategoria);
 router.put('/:id', actualizarCategoria);
 
 router.delete('/:id', eliminarCategoria);
+
+router.patch('/:id/activar', activarCategoria);
+
+router.put('/:id/activar', activarCategoria);
 
 export default router;

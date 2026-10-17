@@ -267,6 +267,36 @@ export class ClienteService {
   }
 
 
+  async activar(
+    id: number
+  ): Promise<void> {
+
+    this.validarId(id);
+
+    const cliente =
+      await this.clienteRepository
+        .obtenerPorId(id);
+
+    if (!cliente) {
+      throw new Error(
+        'CLIENTE_NO_ENCONTRADO'
+      );
+    }
+
+    if (
+      cliente.estado ===
+      'ACTIVO'
+    ) {
+      throw new Error(
+        'CLIENTE_YA_ACTIVO'
+      );
+    }
+
+    await this.clienteRepository
+      .activar(id);
+  }
+
+
   /*
   |--------------------------------------------------------------------------
   | Validaciones

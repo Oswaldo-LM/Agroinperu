@@ -162,6 +162,29 @@ export class CategoriaService {
   }
 
 
+  async activar(id: number): Promise<void> {
+    this.validarId(id);
+
+    const categoria =
+      await this.categoriaRepository.obtenerPorId(id);
+
+    if (!categoria) {
+      throw new Error('CATEGORIA_NO_ENCONTRADA');
+    }
+
+    if (categoria.estado === 'ACTIVO') {
+      throw new Error('CATEGORIA_YA_ACTIVA');
+    }
+
+    const resultado =
+      await this.categoriaRepository.activar(id);
+
+    if (!resultado) {
+      throw new Error('ERROR_ACTIVAR_CATEGORIA');
+    }
+  }
+
+
   private validarId(id: number): void {
     if (
       Number.isNaN(id) ||

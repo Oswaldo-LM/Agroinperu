@@ -265,6 +265,43 @@ export async function eliminarUsuario(
 }
 
 
+export async function activarUsuario(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+
+  try {
+
+    const usuarioId =
+      Number(
+        req.params.id
+      );
+
+
+    await usuarioService
+      .activar(
+        usuarioId
+      );
+
+
+    res.status(200).json({
+      success: true,
+
+      message:
+        'Usuario activado correctamente'
+    });
+
+
+  } catch (error) {
+
+    manejarError(
+      error,
+      res
+    );
+  }
+}
+
+
 function manejarError(
   error: unknown,
   res: Response
@@ -351,7 +388,9 @@ function manejarError(
 
     'ULTIMO_ADMIN_ACTIVO',
 
-    'USUARIO_YA_INACTIVO'
+    'USUARIO_YA_INACTIVO',
+
+    'USUARIO_YA_ACTIVO'
   ];
 
 

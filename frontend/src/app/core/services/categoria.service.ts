@@ -97,4 +97,22 @@ export class CategoriaService {
         `${this.apiUrl}/${id}`
       );
   }
+
+
+  activar(
+    id: number
+  ): Observable<{
+    success: boolean;
+    message?: string;
+  }> {
+
+    return this.http
+      .patch<{
+        success: boolean;
+        message?: string;
+      }>(
+        `${this.apiUrl}/${id}/activar`,
+        {}
+      );
+  }
 }

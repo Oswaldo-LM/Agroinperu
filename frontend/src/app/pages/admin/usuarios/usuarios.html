@@ -748,6 +748,27 @@
 
                         </button>
 
+                      } @else if (
+                        usuario.estado !==
+                          'ACTIVO' &&
+
+                        !esUsuarioActual(
+                          usuario
+                        )
+                      ) {
+
+                        <button
+                          type="button"
+                          class="btn btn-sm
+                                 btn-outline-success"
+                          (click)="activarUsuario(
+                            usuario
+                          )">
+
+                          Activar
+
+                        </button>
+
                       }
 
                     </div>

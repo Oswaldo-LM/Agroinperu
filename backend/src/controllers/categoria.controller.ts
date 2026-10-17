@@ -124,6 +124,28 @@ export async function eliminarCategoria(
 }
 
 
+export async function activarCategoria(
+  req: Request,
+  res: Response
+): Promise<void> {
+
+  try {
+    const id = Number(req.params.id);
+
+    await categoriaService.activar(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Categoría activada correctamente'
+    });
+
+  } catch (error) {
+
+    manejarError(error, res);
+  }
+}
+
+
 function manejarError(
   error: unknown,
   res: Response
@@ -208,6 +230,14 @@ function manejarError(
       res.status(409).json({
         success: false,
         message: 'La categoría ya se encuentra inactiva'
+      });
+      return;
+
+
+    case 'CATEGORIA_YA_ACTIVA':
+      res.status(409).json({
+        success: false,
+        message: 'La categoría ya se encuentra activa'
       });
       return;
 

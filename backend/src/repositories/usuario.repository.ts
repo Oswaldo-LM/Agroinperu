@@ -266,6 +266,23 @@ export class UsuarioRepository {
   }
 
 
+  async activar(
+    id: number
+  ): Promise<void> {
+
+    await pool.execute(
+      `
+      UPDATE TB_USUARIO
+
+      SET estado = 'ACTIVO'
+
+      WHERE id_usuario = ?
+      `,
+      [id]
+    );
+  }
+
+
   async contarAdminsActivos():
     Promise<number> {
 

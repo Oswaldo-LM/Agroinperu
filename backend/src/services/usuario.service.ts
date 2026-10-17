@@ -507,6 +507,42 @@ export class UsuarioService {
   }
 
 
+  async activar(
+    usuarioId: number
+  ): Promise<void> {
+
+    this.validarId(
+      usuarioId
+    );
+
+    const usuario =
+      await this.usuarioRepository
+        .obtenerPorId(
+          usuarioId
+        );
+
+    if (!usuario) {
+      throw new Error(
+        'USUARIO_NO_ENCONTRADO'
+      );
+    }
+
+    if (
+      usuario.estado ===
+      'ACTIVO'
+    ) {
+      throw new Error(
+        'USUARIO_YA_ACTIVO'
+      );
+    }
+
+    await this.usuarioRepository
+      .activar(
+        usuarioId
+      );
+  }
+
+
   /*
   |--------------------------------------------------------------------------
   | Validaciones

@@ -863,6 +863,75 @@ export class Clientes
   }
 
 
+  async activarCliente(
+    cliente: Cliente
+  ): Promise<void> {
+
+    if (
+      !this.authService
+        .esAdmin()
+    ) {
+
+      return;
+    }
+
+
+    const nombre =
+      this.nombreCliente(
+        cliente
+      );
+
+
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Activar Cliente',
+        mensaje: `¿Deseas activar al cliente "${nombre}"?`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, activar',
+        textoCancelar: 'Cancelar'
+      });
+
+    if (
+      !confirmar
+    ) {
+
+      return;
+    }
+
+
+    this.limpiarMensajes();
+
+
+    this.clienteService
+      .activar(
+        cliente.id_cliente
+      )
+      .subscribe({
+
+        next: respuesta => {
+
+          this.mensaje.set(
+            respuesta.message ??
+            'Cliente activado correctamente.'
+          );
+
+
+          this.cargarClientes();
+        },
+
+
+        error: error => {
+
+          this.error.set(
+            this.obtenerMensajeError(
+              error
+            )
+          );
+        }
+      });
+  }
+
+
   nombreCliente(
     cliente: Cliente
   ): string {
