@@ -25,6 +25,10 @@ import {
 } from '../../../core/services/cliente.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   Cliente,
   GuardarClienteDto,
   TipoCliente,
@@ -55,6 +59,9 @@ export class Clientes
 
   private readonly clienteService =
     inject(ClienteService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -787,9 +794,9 @@ export class Clientes
   }
 
 
-  inactivarCliente(
+  async inactivarCliente(
     cliente: Cliente
-  ): void {
+  ): Promise<void> {
 
     if (
       !this.authService
@@ -806,10 +813,17 @@ export class Clientes
       );
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Inactivar Cliente',
+        mensaje: `¿Deseas inactivar al cliente "${nombre}"?`,
+        tipo: 'danger',
+        textoConfirmar: 'Sí, inactivar',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `¿Deseas inactivar al cliente "${nombre}"?`
-      )
+      !confirmar
     ) {
 
       return;

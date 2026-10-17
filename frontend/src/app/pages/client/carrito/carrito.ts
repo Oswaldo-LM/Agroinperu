@@ -27,6 +27,10 @@ import {
 } from '../../../core/services/venta-web.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   Carrito,
   CarritoItem
 } from '../../../models/carrito.model';
@@ -55,6 +59,9 @@ export class CarritoComponent
 
   private readonly ventaWebService =
     inject(VentaWebService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly router =
@@ -401,7 +408,7 @@ export class CarritoComponent
   }
 
 
-  confirmarCompra(): void {
+  async confirmarCompra(): Promise<void> {
 
     if (
       this.procesando()
@@ -428,10 +435,17 @@ export class CarritoComponent
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Confirmar Pedido',
+        mensaje: `¿Deseas confirmar la compra por un total de S/ ${this.total().toFixed(2)}?`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, confirmar compra',
+        textoCancelar: 'Seguir revisando'
+      });
+
     if (
-      !window.confirm(
-        `¿Confirmar la compra por S/ ${this.total().toFixed(2)}?`
-      )
+      !confirmar
     ) {
 
       return;

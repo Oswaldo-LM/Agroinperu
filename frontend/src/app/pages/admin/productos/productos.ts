@@ -38,6 +38,10 @@ import {
   ProductoService
 } from '../../../core/services/producto.service';
 
+import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
 
 @Component({
   selector:
@@ -56,6 +60,9 @@ import {
 })
 export class Productos
   implements OnInit {
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
   private readonly productoService =
     inject(
@@ -878,14 +885,18 @@ export class Productos
   |--------------------------------------------------------------------------
   */
 
-  eliminarProducto(
+  async eliminarProducto(
     producto: Producto
-  ): void {
+  ): Promise<void> {
 
     const confirmar =
-      window.confirm(
-        `¿Deseas inactivar el producto "${producto.nombre}"?`
-      );
+      await this.modalConfirmService.confirmar({
+        titulo: 'Inactivar Producto',
+        mensaje: `¿Deseas inactivar el producto "${producto.nombre}"?`,
+        tipo: 'danger',
+        textoConfirmar: 'Sí, inactivar',
+        textoCancelar: 'Cancelar'
+      });
 
 
     if (
@@ -934,14 +945,18 @@ export class Productos
   |--------------------------------------------------------------------------
   */
 
-  activarProducto(
+  async activarProducto(
     producto: Producto
-  ): void {
+  ): Promise<void> {
 
     const confirmar =
-      window.confirm(
-        `¿Deseas activar el producto "${producto.nombre}"?`
-      );
+      await this.modalConfirmService.confirmar({
+        titulo: 'Activar Producto',
+        mensaje: `¿Deseas activar el producto "${producto.nombre}"?`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, activar',
+        textoCancelar: 'Cancelar'
+      });
 
     if (
       !confirmar

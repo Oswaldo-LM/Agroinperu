@@ -30,6 +30,10 @@ import {
 } from '../../../core/services/devolucion.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   DevolucionDetalle,
   DevolucionResumen,
   ProductoDevolvible,
@@ -62,6 +66,9 @@ export class Devoluciones
 
   private readonly devolucionService =
     inject(DevolucionService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -651,7 +658,7 @@ export class Devoluciones
   }
 
 
-  registrar(): void {
+  async registrar(): Promise<void> {
 
     if (
       !this.authService
@@ -711,10 +718,17 @@ export class Devoluciones
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Registrar Devolución',
+        mensaje: `¿Confirmas el registro de la devolución por un total de S/ ${this.total().toFixed(2)}?`,
+        tipo: 'warning',
+        textoConfirmar: 'Sí, registrar',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `¿Registrar la devolución por S/ ${this.total().toFixed(2)}?`
-      )
+      !confirmar
     ) {
 
       return;

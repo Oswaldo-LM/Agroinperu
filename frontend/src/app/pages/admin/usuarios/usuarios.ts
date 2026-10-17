@@ -25,6 +25,10 @@ import {
 } from '../../../core/services/usuario.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   ActualizarUsuarioDto,
   CrearUsuarioDto,
   EstadoUsuario,
@@ -56,6 +60,9 @@ export class Usuarios
 
   private readonly usuarioService =
     inject(UsuarioService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -808,9 +815,9 @@ export class Usuarios
   |--------------------------------------------------------------------------
   */
 
-  inactivarUsuario(
+  async inactivarUsuario(
     usuario: Usuario
-  ): void {
+  ): Promise<void> {
 
     this.limpiarMensajes();
 
@@ -829,10 +836,17 @@ export class Usuarios
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Inactivar Usuario',
+        mensaje: `¿Deseas inactivar al usuario "${usuario.nombre}"? Perderá el acceso al sistema.`,
+        tipo: 'danger',
+        textoConfirmar: 'Sí, inactivar',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `¿Deseas inactivar al usuario "${usuario.nombre}"?`
-      )
+      !confirmar
     ) {
 
       return;

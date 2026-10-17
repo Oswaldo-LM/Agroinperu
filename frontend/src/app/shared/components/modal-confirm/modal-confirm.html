@@ -1,0 +1,121 @@
+@if (servicio.estado(); as st) {
+  <div
+    class="modal-confirm-wrapper"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="st.config.titulo"
+    (keydown.escape)="cancelar()">
+
+    <!-- BACKDROP BLUR -->
+    <div
+      class="modal-backdrop-custom"
+      (click)="cancelar()">
+    </div>
+
+    <!-- MODAL CARD -->
+    <div class="modal-card">
+
+      <!-- HEADER -->
+      <div class="modal-header-custom">
+        <div class="d-flex align-items-center gap-2">
+          <img
+            src="/AgroinPeru_logo2.png"
+            alt="AgroInPerú"
+            width="28"
+            height="28"
+            class="rounded"
+          />
+          <h5 class="fs-6 fw-bold mb-0 text-dark">
+            {{ st.config.titulo }}
+          </h5>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar"
+          (click)="cancelar()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body-custom">
+        <div class="d-flex align-items-start gap-3">
+          <!-- BADGE ICON -->
+          <div class="icon-badge" [ngClass]="st.config.tipo ?? 'warning'">
+            @if (st.config.icono) {
+              <i [class]="st.config.icono"></i>
+            } @else if (st.config.tipo === 'danger') {
+              <i class="bi bi-exclamation-triangle-fill"></i>
+            } @else if (st.config.tipo === 'success') {
+              <i class="bi bi-check-circle-fill"></i>
+            } @else if (st.config.tipo === 'info') {
+              <i class="bi bi-info-circle-fill"></i>
+            } @else {
+              <i class="bi bi-exclamation-circle-fill"></i>
+            }
+          </div>
+
+          <!-- TEXTS -->
+          <div class="flex-grow-1">
+            <p class="mb-1 text-dark fw-medium" style="font-size: 0.95rem; line-height: 1.45;">
+              {{ st.config.mensaje }}
+            </p>
+
+            @if (st.config.submensaje) {
+              <small class="text-muted d-block mt-1">
+                {{ st.config.submensaje }}
+              </small>
+            }
+
+            <!-- PROMPT INPUT SI CORRESPONDE -->
+            @if (st.config.esPrompt) {
+              <div class="mt-3">
+                <textarea
+                  #promptInput
+                  rows="3"
+                  class="form-control"
+                  [ngClass]="{ 'is-invalid': st.errorPrompt }"
+                  [placeholder]="st.config.promptPlaceholder ?? 'Escribe aquí...'"
+                  [value]="st.valorPrompt"
+                  (input)="actualizarPrompt(promptInput.value)"
+                  (keydown.enter)="$event.preventDefault(); confirmar()">
+                </textarea>
+
+                @if (st.errorPrompt) {
+                  <div class="invalid-feedback d-block mt-1">
+                    {{ st.errorPrompt }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer-custom">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-3"
+          (click)="cancelar()">
+          {{ st.config.textoCancelar ?? 'Cancelar' }}
+        </button>
+
+        <button
+          type="button"
+          class="btn px-3 d-flex align-items-center gap-2"
+          [ngClass]="{
+            'btn-danger': st.config.tipo === 'danger',
+            'btn-warning text-dark': st.config.tipo === 'warning',
+            'btn-success': st.config.tipo === 'success',
+            'btn-primary': st.config.tipo === 'info'
+          }"
+          (click)="confirmar()">
+          {{ st.config.textoConfirmar ?? 'Confirmar' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

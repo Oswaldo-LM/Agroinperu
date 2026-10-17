@@ -34,6 +34,10 @@ import {
 } from '../../../core/services/caja.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   CajaSesion
 } from '../../../models/caja.model';
 
@@ -63,6 +67,9 @@ export class Caja
 
   private readonly cajaService =
     inject(CajaService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -266,7 +273,7 @@ export class Caja
   }
 
 
-  abrirCaja(): void {
+  async abrirCaja(): Promise<void> {
 
     if (
       this.procesando() ||
@@ -303,10 +310,17 @@ export class Caja
     this.limpiarMensajes();
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Apertura de Caja',
+        mensaje: `¿Deseas abrir la caja con un monto inicial de S/ ${monto.toFixed(2)}?`,
+        tipo: 'success',
+        textoConfirmar: 'Sí, abrir caja',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `¿Abrir caja con S/ ${monto.toFixed(2)}?`
-      )
+      !confirmar
     ) {
 
       return;
@@ -365,7 +379,7 @@ export class Caja
   }
 
 
-  cerrarCaja(): void {
+  async cerrarCaja(): Promise<void> {
 
     if (
       this.procesando() ||
@@ -439,13 +453,18 @@ export class Caja
           : `faltante de S/ ${Math.abs(diferencia).toFixed(2)}`;
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Cierre de Caja',
+        mensaje: '¿Confirmas el arqueo y cierre de la caja actual?',
+        submensaje: `Efectivo esperado: S/ ${esperado.toFixed(2)} · Declarado: S/ ${efectivo.toFixed(2)} · (${textoDiferencia})`,
+        tipo: 'warning',
+        textoConfirmar: 'Sí, cerrar caja',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `Efectivo esperado: S/ ${esperado.toFixed(2)}\n` +
-        `Efectivo declarado: S/ ${efectivo.toFixed(2)}\n` +
-        `Resultado: ${textoDiferencia}\n\n` +
-        '¿Confirmas el cierre de caja?'
-      )
+      !confirmar
     ) {
 
       return;

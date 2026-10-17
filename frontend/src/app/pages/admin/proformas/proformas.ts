@@ -38,6 +38,10 @@ import {
 } from '../../../core/services/proforma.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   Cliente
 } from '../../../models/cliente.model';
 
@@ -98,6 +102,9 @@ export class Proformas
 
   private readonly proformaService =
     inject(ProformaService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -1073,9 +1080,9 @@ export class Proformas
   }
 
 
-  anular(
+  async anular(
     proforma: ProformaDetalle
-  ): void {
+  ): Promise<void> {
 
     if (
       !this.authService
@@ -1087,9 +1094,15 @@ export class Proformas
 
 
     const motivo =
-      window.prompt(
-        `Motivo de anulación de ${proforma.codigo_proforma}:`
-      );
+      await this.modalConfirmService.prompt({
+        titulo: 'Anular Proforma',
+        mensaje: `Ingresa el motivo de anulación para la proforma ${proforma.codigo_proforma}:`,
+        promptPlaceholder: 'Ej: Cotización vencida o desistimiento del cliente',
+        tipo: 'danger',
+        textoConfirmar: 'Confirmar Anulación',
+        textoCancelar: 'Cancelar',
+        promptRequerido: true
+      });
 
 
     if (
@@ -1109,16 +1122,6 @@ export class Proformas
       this.error.set(
         'El motivo de anulación es obligatorio.'
       );
-
-      return;
-    }
-
-
-    if (
-      !window.confirm(
-        `¿Confirmas la anulación de ${proforma.codigo_proforma}?`
-      )
-    ) {
 
       return;
     }

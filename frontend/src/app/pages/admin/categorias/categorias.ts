@@ -23,6 +23,10 @@ import {
   CategoriaService
 } from '../../../core/services/categoria.service';
 
+import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
 
 @Component({
   selector:
@@ -43,6 +47,9 @@ export class Categorias
 
   private readonly categoriaService =
     inject(CategoriaService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   private readonly fb =
@@ -395,14 +402,18 @@ export class Categorias
   |--------------------------------------------------------------------------
   */
 
-  eliminarCategoria(
+  async eliminarCategoria(
     categoria: Categoria
-  ): void {
+  ): Promise<void> {
 
     const confirmar =
-      window.confirm(
-        `¿Deseas inactivar la categoría "${categoria.nombre}"?`
-      );
+      await this.modalConfirmService.confirmar({
+        titulo: 'Inactivar Categoría',
+        mensaje: `¿Deseas inactivar la categoría "${categoria.nombre}"?`,
+        tipo: 'danger',
+        textoConfirmar: 'Sí, inactivar',
+        textoCancelar: 'Cancelar'
+      });
 
 
     if (!confirmar) {

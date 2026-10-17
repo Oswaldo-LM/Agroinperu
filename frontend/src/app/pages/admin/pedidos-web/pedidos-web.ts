@@ -24,6 +24,10 @@ import {
 } from '../../../core/services/pago.service';
 
 import {
+  ModalConfirmService
+} from '../../../core/services/modal-confirm.service';
+
+import {
   EstadoVenta,
   VentaWebDetalle,
   VentaWebResumen
@@ -58,6 +62,9 @@ export class PedidosWeb
 
   private readonly pagoService =
     inject(PagoService);
+
+  private readonly modalConfirmService =
+    inject(ModalConfirmService);
 
 
   readonly ventas =
@@ -402,9 +409,9 @@ export class PedidosWeb
   |--------------------------------------------------------------------------
   */
 
-  aprobarPago(
+  async aprobarPago(
     pago: Pago
-  ): void {
+  ): Promise<void> {
 
     if (
       this.procesando()
@@ -414,10 +421,17 @@ export class PedidosWeb
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Aprobar Pago',
+        mensaje: '¿Confirmas que el comprobante de pago fue validado correctamente?',
+        tipo: 'success',
+        textoConfirmar: 'Sí, aprobar pago',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        '¿Confirmas que el pago fue validado correctamente?'
-      )
+      !confirmar
     ) {
 
       return;
@@ -478,9 +492,9 @@ export class PedidosWeb
   |--------------------------------------------------------------------------
   */
 
-  rechazarPago(
+  async rechazarPago(
     pago: Pago
-  ): void {
+  ): Promise<void> {
 
     if (
       this.procesando()
@@ -490,10 +504,17 @@ export class PedidosWeb
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Rechazar Pago',
+        mensaje: '¿Confirmas que deseas rechazar este pago? El cliente será notificado.',
+        tipo: 'danger',
+        textoConfirmar: 'Sí, rechazar',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        '¿Confirmas que deseas rechazar este pago?'
-      )
+      !confirmar
     ) {
 
       return;
@@ -554,7 +575,7 @@ export class PedidosWeb
   |--------------------------------------------------------------------------
   */
 
-  avanzarEstado(): void {
+  async avanzarEstado(): Promise<void> {
 
     const venta =
       this.ventaSeleccionada();
@@ -574,10 +595,17 @@ export class PedidosWeb
     }
 
 
+    const confirmar =
+      await this.modalConfirmService.confirmar({
+        titulo: 'Actualizar Estado del Pedido',
+        mensaje: `¿Deseas cambiar el pedido a estado "${this.nombreEstado(estado)}"?`,
+        tipo: 'info',
+        textoConfirmar: 'Sí, cambiar estado',
+        textoCancelar: 'Cancelar'
+      });
+
     if (
-      !window.confirm(
-        `¿Cambiar el pedido a ${this.nombreEstado(estado)}?`
-      )
+      !confirmar
     ) {
 
       return;
