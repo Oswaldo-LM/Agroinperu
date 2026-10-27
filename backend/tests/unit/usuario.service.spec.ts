@@ -1,8 +1,8 @@
-import { UsuarioService } from '../src/services/usuario.service';
-import { UsuarioRepository } from '../src/repositories/usuario.repository';
-import { Usuario } from '../src/models/usuario.model';
+import { UsuarioService } from '../../src/services/usuario.service';
+import { UsuarioRepository } from '../../src/repositories/usuario.repository';
+import { Usuario } from '../../src/models/usuario.model';
 
-jest.mock('../src/repositories/usuario.repository');
+jest.mock('../../src/repositories/usuario.repository');
 
 describe('UsuarioService - Pruebas Unitarias (xUnit / Jest)', () => {
   let service: UsuarioService;

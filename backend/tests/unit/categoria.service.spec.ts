@@ -1,9 +1,9 @@
-import { CategoriaService } from '../src/services/categoria.service';
-import { CategoriaRepository } from '../src/repositories/categoria.repository';
-import { Categoria } from '../src/models/categoria.model';
+import { CategoriaService } from '../../src/services/categoria.service';
+import { CategoriaRepository } from '../../src/repositories/categoria.repository';
+import { Categoria } from '../../src/models/categoria.model';
 
 // Mockeamos el repositorio para pruebas unitarias puras y aisladas
-jest.mock('../src/repositories/categoria.repository');
+jest.mock('../../src/repositories/categoria.repository');
 
 describe('CategoriaService - Pruebas Unitarias (xUnit / Jest)', () => {
   let service: CategoriaService;

@@ -1,11 +1,11 @@
-import { ProductoService } from '../src/services/producto.service';
-import { ProductoRepository } from '../src/repositories/producto.repository';
-import { CategoriaRepository } from '../src/repositories/categoria.repository';
-import { Producto, CrearProductoDto, ActualizarProductoDto } from '../src/models/producto.model';
-import { Categoria } from '../src/models/categoria.model';
+import { ProductoService } from '../../src/services/producto.service';
+import { ProductoRepository } from '../../src/repositories/producto.repository';
+import { CategoriaRepository } from '../../src/repositories/categoria.repository';
+import { Producto, CrearProductoDto, ActualizarProductoDto } from '../../src/models/producto.model';
+import { Categoria } from '../../src/models/categoria.model';
 
-jest.mock('../src/repositories/producto.repository');
-jest.mock('../src/repositories/categoria.repository');
+jest.mock('../../src/repositories/producto.repository');
+jest.mock('../../src/repositories/categoria.repository');
 
 describe('ProductoService - Pruebas Unitarias (xUnit / Jest)', () => {
   let service: ProductoService;

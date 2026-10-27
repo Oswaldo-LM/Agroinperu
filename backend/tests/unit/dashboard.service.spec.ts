@@ -1,7 +1,7 @@
-import { DashboardService } from '../src/services/dashboard.service';
-import { DashboardRepository } from '../src/repositories/dashboard.repository';
+import { DashboardService } from '../../src/services/dashboard.service';
+import { DashboardRepository } from '../../src/repositories/dashboard.repository';
 
-jest.mock('../src/repositories/dashboard.repository');
+jest.mock('../../src/repositories/dashboard.repository');
 
 describe('DashboardService - Pruebas Unitarias de Agregación de Métricas (xUnit / Jest)', () => {
   let service: DashboardService;

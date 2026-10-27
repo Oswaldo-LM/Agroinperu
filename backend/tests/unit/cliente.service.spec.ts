@@ -1,8 +1,8 @@
-import { ClienteService } from '../src/services/cliente.service';
-import { ClienteRepository } from '../src/repositories/cliente.repository';
-import { Cliente } from '../src/models/cliente.model';
+import { ClienteService } from '../../src/services/cliente.service';
+import { ClienteRepository } from '../../src/repositories/cliente.repository';
+import { Cliente } from '../../src/models/cliente.model';
 
-jest.mock('../src/repositories/cliente.repository');
+jest.mock('../../src/repositories/cliente.repository');
 
 describe('ClienteService - Pruebas Unitarias (xUnit / Jest)', () => {
   let service: ClienteService;

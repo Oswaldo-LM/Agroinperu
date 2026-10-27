@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { AuthService } from '../src/services/auth.service';
-import { AuthRepository } from '../src/repositories/auth.repository';
+import { AuthService } from '../../src/services/auth.service';
+import { AuthRepository } from '../../src/repositories/auth.repository';
 
-jest.mock('../src/repositories/auth.repository');
+jest.mock('../../src/repositories/auth.repository');
 jest.mock('bcrypt');
 jest.mock('jsonwebtoken');
 
