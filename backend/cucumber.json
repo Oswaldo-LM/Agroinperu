@@ -1,0 +1,8 @@
+{
+  "default": {
+    "paths": ["tests/bdd/features/**/*.feature"],
+    "requireModule": ["tsx"],
+    "require": ["tests/bdd/steps/**/*.ts"],
+    "format": ["pretty"]
+  }
+}

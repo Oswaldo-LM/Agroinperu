@@ -10,7 +10,9 @@
     "start": "node dist/server.js",
     "seed:pruebas": "tsx src/scripts/seed-pruebas.ts",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:bdd": "cucumber-js --config cucumber.json",
+    "test:bdd:html": "cucumber-js --config cucumber.json --format html:coverage/cucumber-report.html"
   },
   "keywords": [],
   "type": "commonjs",
@@ -23,6 +25,7 @@
     "mysql2": "^3.24.4"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^13.3.0",
     "@swc/core": "^1.16.20",
     "@swc/jest": "^0.2.39",
     "@types/bcrypt": "^6.0.0",
