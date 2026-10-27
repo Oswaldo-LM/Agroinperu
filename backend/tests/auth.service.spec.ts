@@ -27,7 +27,7 @@ describe('AuthService - Pruebas Unitarias de Autenticación y Seguridad (xUnit /
     nombre: 'Admin Agroin',
     email: 'admin@agroinperu.pe',
     password_hash: '$2b$10$hashed_admin_password',
-    rol: 'ADMINISTRADOR',
+    rol: 'ADMIN',
     estado: 'ACTIVO'
   };
 
@@ -161,9 +161,9 @@ describe('AuthService - Pruebas Unitarias de Autenticación y Seguridad (xUnit /
       expect(respuesta.token).toBe('jwt_token_admin_mock');
       expect(respuesta.usuario.id).toBe(3);
       expect(respuesta.usuario.tipo_cuenta).toBe('USUARIO');
-      expect(respuesta.usuario.rol).toBe('ADMINISTRADOR');
+      expect(respuesta.usuario.rol).toBe('ADMIN');
       expect(jwt.sign).toHaveBeenCalledWith(
-        { id: 3, tipo_cuenta: 'USUARIO', rol: 'ADMINISTRADOR' },
+        { id: 3, tipo_cuenta: 'USUARIO', rol: 'ADMIN' },
         'super_secret_test_key_12345',
         { expiresIn: '2h' }
       );

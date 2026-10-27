@@ -10,17 +10,17 @@ describe('ClienteService - Pruebas Unitarias (xUnit / Jest)', () => {
 
   const clienteActivoMock: Cliente = {
     id_cliente: 10,
-    tipo_cliente: 'PERSONA_NATURAL',
+    tipo_cliente: 'PERSONA',
     tipo_documento: 'DNI',
     numero_documento: '72345678',
     nombres: 'Carlos',
     apellidos: 'Mendoza',
-    nombre_completo: 'Carlos Mendoza',
+    razon_social: null,
     email: 'carlos@ejemplo.com',
     telefono: '987654321',
     direccion: 'Av. Primavera 123',
     estado: 'ACTIVO',
-    fecha_creacion: new Date('2026-01-01'),
+    fecha_registro: new Date('2026-01-01'),
     fecha_actualizacion: new Date('2026-01-01')
   };
 

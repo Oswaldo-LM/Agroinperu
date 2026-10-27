@@ -14,7 +14,8 @@ describe('UsuarioService - Pruebas Unitarias (xUnit / Jest)', () => {
     email: 'admin@agroinperu.com',
     rol: 'ADMIN',
     estado: 'ACTIVO',
-    fecha_creacion: new Date('2026-01-01')
+    fecha_creacion: new Date('2026-01-01'),
+    fecha_actualizacion: null
   };
 
   const cajeroActivo: Usuario = {
@@ -23,7 +24,8 @@ describe('UsuarioService - Pruebas Unitarias (xUnit / Jest)', () => {
     email: 'cajero@agroinperu.com',
     rol: 'CAJERO',
     estado: 'ACTIVO',
-    fecha_creacion: new Date('2026-01-01')
+    fecha_creacion: new Date('2026-01-01'),
+    fecha_actualizacion: null
   };
 
   const cajeroInactivo: Usuario = {
