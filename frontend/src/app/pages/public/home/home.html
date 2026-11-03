@@ -31,155 +31,167 @@
 
 
 <!-- ========================================================================
-     SECCIÓN PRINCIPAL (HERO)
+     SECCIÓN PRINCIPAL (HERO CON ANIMACIÓN DE MINIMIZACIÓN AL SCROLLEAR)
      ======================================================================== -->
 
-<section class="hero-section">
+<div class="hero-wrapper">
 
-  <div class="hero-backdrop"></div>
+  <section
+    id="heroPrincipal"
+    class="hero-section"
+    [class.hero-minimized]="scrolled()">
 
-  <div class="container hero-container position-relative">
+    <div class="hero-backdrop"></div>
 
-    <div class="row align-items-center g-5 py-5">
+    <div class="container hero-container position-relative">
 
-      <!-- Columna izquierda: Información comercial -->
-      <div class="col-12 col-lg-7 text-white animate-fade-in-up">
+      <div class="row align-items-center g-4 g-lg-5 hero-row-content">
 
-        <div class="hero-badge-wrapper mb-3">
-          <span class="hero-badge d-inline-flex align-items-center gap-2">
-            <i class="bi bi-patch-check-fill text-emerald"></i>
-            <span>Comercializadora Agroindustrial Líder</span>
-          </span>
-        </div>
+        <!-- Columna izquierda: Información comercial -->
+        <div
+          class="col-12 hero-col-content text-white animate-fade-in-up"
+          [class.col-lg-7]="scrolled()"
+          [class.col-lg-9]="!scrolled()">
 
-        <h1 class="hero-main-title text-white mb-3">
-          Soluciones para <span class="text-highlight">agricultura</span> e industria
-        </h1>
-
-        <p class="hero-lead mb-4">
-          Encuentra mangueras, tuberías, conexiones y accesorios de calidad para
-          tus proyectos agrícolas e industriales.
-        </p>
-
-        <!-- Botones de llamada a la acción -->
-        <div class="d-flex flex-wrap gap-3 mb-4">
-
-          <a
-            routerLink="/catalogo"
-            class="btn btn-hero-cta d-inline-flex align-items-center gap-2">
-
-            <i class="bi bi-grid-3x3-gap-fill"></i>
-            <span>Explorar productos</span>
-            <i class="bi bi-arrow-right ms-1"></i>
-
-          </a>
-
-          <a
-            routerLink="/registro"
-            class="btn btn-hero-outline d-inline-flex align-items-center gap-2">
-
-            <i class="bi bi-person-plus"></i>
-            <span>Crear cuenta</span>
-
-          </a>
-
-        </div>
-
-        <!-- Indicadores rápidos -->
-        <div class="hero-quick-stats d-flex flex-wrap align-items-center gap-4 pt-3 border-top border-white border-opacity-10">
-
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-shield-check text-emerald fs-5"></i>
-            <span class="small text-light-opacity">Garantía y calidad</span>
+          <div class="hero-badge-wrapper mb-3">
+            <span class="hero-badge d-inline-flex align-items-center gap-2">
+              <i class="bi bi-patch-check-fill text-emerald"></i>
+              <span>AGROINPERU S.A.C.</span>
+            </span>
           </div>
 
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-receipt text-emerald fs-5"></i>
-            <span class="small text-light-opacity">Facturación RUC y Boleta</span>
+          <h1 class="hero-main-title text-white mb-3">
+            Soluciones para <span class="text-highlight">agricultura</span> e industria
+          </h1>
+
+          <p class="hero-lead mb-4">
+            Encuentra mangueras, tuberías, conexiones y accesorios de calidad para
+            tus proyectos agrícolas e industriales.
+          </p>
+
+          <!-- Botones de llamada a la acción -->
+          <div class="d-flex flex-wrap gap-3 mb-4 hero-buttons-wrapper">
+
+            <a
+              routerLink="/catalogo"
+              class="btn btn-hero-cta d-inline-flex align-items-center gap-2">
+
+              <i class="bi bi-grid-3x3-gap-fill"></i>
+              <span>Explorar productos</span>
+              <i class="bi bi-arrow-right ms-1"></i>
+
+            </a>
+
+            <a
+              routerLink="/registro"
+              class="btn btn-hero-outline d-inline-flex align-items-center gap-2">
+
+              <i class="bi bi-person-plus"></i>
+              <span>Crear cuenta</span>
+
+            </a>
+
           </div>
 
-          <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-geo-alt text-emerald fs-5"></i>
-            <span class="small text-light-opacity">Entrega y recojo en tienda</span>
-          </div>
+          <!-- Indicadores rápidos de confianza -->
+          <div class="hero-quick-stats d-flex flex-wrap align-items-center gap-3 gap-md-4 pt-3 border-top border-white border-opacity-10">
 
-        </div>
-
-      </div>
-
-
-      <!-- Columna derecha: Tarjeta lateral con compra y estado -->
-      <div class="col-12 col-lg-5 animate-fade-in-up animate-delay-2">
-
-        <div class="card hero-commerce-card shadow-lg border-0">
-
-          <div class="card-body p-4 p-xl-4.5">
-
-            <div class="d-flex align-items-center justify-content-between mb-3">
-
-              <div class="d-flex align-items-center gap-2.5">
-                <div class="hero-card-icon-box">
-                  <i class="bi bi-cart-check-fill"></i>
-                </div>
-                <div>
-                  <h5 class="fw-bold mb-0 text-dark">Compra por Internet</h5>
-                  <small class="text-muted">Proceso 100% digital</small>
-                </div>
-              </div>
-
-              <!-- Badge de estado de la plataforma -->
-              <div>
-                @if (apiConectada()) {
-                  <span class="badge-status-activo" title="Servicio en línea">
-                    <span class="badge-status-dot"></span>
-                    Disponible
-                  </span>
-                } @else {
-                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1">
-                    No disponible
-                  </span>
-                }
-              </div>
-
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-shield-check text-emerald fs-5"></i>
+              <span class="text-light-opacity">Garantía y calidad</span>
             </div>
 
-            <p class="hero-card-summary text-secondary small mb-3">
-              Regístrate, selecciona tus productos, realiza el pago y recoge tu pedido cuando esté listo.
-            </p>
-
-            <div class="hero-card-steps-preview mb-3">
-
-              <div class="hero-step-item">
-                <span class="step-mini-num">1</span>
-                <div>
-                  <span class="d-block fw-semibold text-dark small">Explora el catálogo</span>
-                  <span class="text-muted mini-text">Precios y stock en tiempo real</span>
-                </div>
-              </div>
-
-              <div class="hero-step-item">
-                <span class="step-mini-num">2</span>
-                <div>
-                  <span class="d-block fw-semibold text-dark small">Paga seguro</span>
-                  <span class="text-muted mini-text">Transferencias y billeteras digitales</span>
-                </div>
-              </div>
-
-              <div class="hero-step-item">
-                <span class="step-mini-num">3</span>
-                <div>
-                  <span class="d-block fw-semibold text-dark small">Recojo coordinado</span>
-                  <span class="text-muted mini-text">Confirmación inmediata de pedido</span>
-                </div>
-              </div>
-
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-receipt text-emerald fs-5"></i>
+              <span class="text-light-opacity">Facturación RUC y Boleta</span>
             </div>
 
-            <div class="d-grid pt-2">
-              <a routerLink="/catalogo" class="btn btn-success d-flex align-items-center justify-content-center gap-2 py-2.5">
-                <span>Ir al catálogo comercial</span>
-                <i class="bi bi-chevron-right small"></i>
-              </a>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt text-emerald fs-5"></i>
+              <span class="text-light-opacity">Entrega y recojo en tienda</span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Columna derecha: Tarjeta lateral que entra suavemente al scrollear -->
+        <div
+          class="col-12 col-lg-5 hero-card-col"
+          [class.hero-card-visible]="scrolled()">
+
+          <div class="card hero-commerce-card shadow-lg border-0">
+
+            <div class="card-body p-4 p-xl-4.5">
+
+              <div class="d-flex align-items-center justify-content-between mb-3">
+
+                <div class="d-flex align-items-center gap-2.5">
+                  <div class="hero-card-icon-box">
+                    <i class="bi bi-cart-check-fill"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-dark">Compra por Internet</h5>
+                    <small class="text-muted">Proceso 100% digital</small>
+                  </div>
+                </div>
+
+                <!-- Badge de estado de la plataforma -->
+                <div>
+                  @if (apiConectada()) {
+                    <span class="badge-status-activo" title="Servicio en línea">
+                      <span class="badge-status-dot"></span>
+                      Disponible
+                    </span>
+                  } @else {
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1">
+                      No disponible
+                    </span>
+                  }
+                </div>
+
+              </div>
+
+              <p class="hero-card-summary text-secondary small mb-3">
+                Regístrate, selecciona tus productos, realiza el pago y recoge tu pedido cuando esté listo.
+              </p>
+
+              <div class="hero-card-steps-preview mb-3">
+
+                <div class="hero-step-item">
+                  <span class="step-mini-num">1</span>
+                  <div>
+                    <span class="d-block fw-semibold text-dark small">Explora el catálogo</span>
+                    <span class="text-muted mini-text">Precios y stock en tiempo real</span>
+                  </div>
+                </div>
+
+                <div class="hero-step-item">
+                  <span class="step-mini-num">2</span>
+                  <div>
+                    <span class="d-block fw-semibold text-dark small">Paga seguro</span>
+                    <span class="text-muted mini-text">Transferencias y billeteras digitales</span>
+                  </div>
+                </div>
+
+                <div class="hero-step-item">
+                  <span class="step-mini-num">3</span>
+                  <div>
+                    <span class="d-block fw-semibold text-dark small">Recojo coordinado</span>
+                    <span class="text-muted mini-text">Confirmación inmediata de pedido</span>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="d-grid pt-2">
+                <a routerLink="/catalogo" class="btn btn-success d-flex align-items-center justify-content-center gap-2 py-2.5">
+                  <span>Ir al catálogo comercial</span>
+                  <i class="bi bi-chevron-right small"></i>
+                </a>
+              </div>
+
             </div>
 
           </div>
@@ -190,9 +202,21 @@
 
     </div>
 
-  </div>
+    <!-- Indicador de scroll (flechita animada que invita a bajar) -->
+    <div
+      class="hero-scroll-indicator"
+      [class.indicator-hidden]="scrolled()"
+      (click)="bajarSeccion()"
+      title="Desliza para explorar">
+      <div class="scroll-arrow-box">
+        <i class="bi bi-chevron-down"></i>
+      </div>
+      <span class="scroll-hint-text">Desliza para explorar</span>
+    </div>
 
-</section>
+  </section>
+
+</div>
 
 
 <!-- ========================================================================

@@ -1,5 +1,6 @@
 import {
   Component,
+  HostListener,
   inject,
   OnInit,
   signal
@@ -90,6 +91,29 @@ export class Home
 
   readonly errorOperacion =
     signal<string | null>(null);
+
+  /* Señal que controla si el usuario ha hecho scroll hacia abajo */
+  readonly scrolled =
+    signal(false);
+
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (typeof window !== 'undefined') {
+      const offset = window.scrollY || document.documentElement.scrollTop || 0;
+      this.scrolled.set(offset > 50);
+    }
+  }
+
+
+  bajarSeccion(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({
+        top: 360,
+        behavior: 'smooth'
+      });
+    }
+  }
 
 
   ngOnInit(): void {
