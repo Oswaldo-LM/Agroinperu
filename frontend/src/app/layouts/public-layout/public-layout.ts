@@ -36,16 +36,24 @@ export class PublicLayout {
   readonly authService =
     inject(AuthService);
 
-
   private readonly router =
     inject(Router);
+
+
+  buscar(termino: string): void {
+    const q = termino?.trim();
+    if (q) {
+      this.router.navigate(['/catalogo'], { queryParams: { q } });
+    } else {
+      this.router.navigate(['/catalogo']);
+    }
+  }
 
 
   cerrarSesion(): void {
 
     this.authService
       .cerrarSesion();
-
 
     this.router
       .navigateByUrl('/');

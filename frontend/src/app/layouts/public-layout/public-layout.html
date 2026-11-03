@@ -1,55 +1,69 @@
-<header class="sticky-top">
+<!-- ========================================================================
+     BARRA DE NAVEGACIÓN (NAVBAR)
+     ======================================================================== -->
+
+<header class="navbar-wrapper sticky-top">
 
   <nav
-    class="navbar navbar-expand-lg
-           navbar-dark bg-slate-900 border-bottom-subtle">
+    class="navbar navbar-expand-lg navbar-dark"
+    aria-label="Barra de navegación principal">
 
     <div class="container">
 
+      <!-- Logotipo AGROINPERU -->
       <a
         routerLink="/"
-        class="navbar-brand fw-bold d-flex align-items-center gap-2">
-        <img
-          src="/AgroinPeru_logo2.png"
-          alt="Logo AGROINPERU"
-          width="36"
-          height="36"
-          class="rounded shadow-sm"
-        />
-        <span class="brand-text">AGROINPERU</span>
+        class="navbar-brand d-flex align-items-center gap-2"
+        title="Inicio - AGROINPERU S.A.C.">
+
+        <div class="brand-logo-wrapper">
+          <img
+            src="/AgroinPeru_logo2.png"
+            alt="Logo AGROINPERU"
+            width="38"
+            height="38"
+            class="brand-logo" />
+        </div>
+
+        <div class="d-flex flex-column lh-1">
+          <span class="brand-text">AGROINPERU</span>
+          <span class="brand-tagline">S.A.C.</span>
+        </div>
+
       </a>
 
 
+      <!-- Botón Toggler para dispositivos móviles -->
       <button
         type="button"
-        class="navbar-toggler"
+        class="navbar-toggler border-0"
         data-bs-toggle="collapse"
-        data-bs-target="#navbarPublica">
+        data-bs-target="#navbarPublica"
+        aria-controls="navbarPublica"
+        aria-expanded="false"
+        aria-label="Alternar menú de navegación">
 
-        <span
-          class="navbar-toggler-icon">
-        </span>
+        <span class="navbar-toggler-icon"></span>
 
       </button>
 
 
+      <!-- Menú colapsable -->
       <div
         id="navbarPublica"
         class="collapse navbar-collapse">
 
+        <!-- Enlaces de navegación -->
         <ul
-          class="navbar-nav me-auto mb-2
-                 mb-lg-0">
+          class="navbar-nav me-lg-3 mb-2 mb-lg-0 gap-1">
 
           <li class="nav-item">
 
             <a
               routerLink="/"
               routerLinkActive="active"
-              [routerLinkActiveOptions]="{
-                exact: true
-              }"
-              class="nav-link d-inline-flex align-items-center gap-1">
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="nav-link d-inline-flex align-items-center gap-2">
 
               <i class="bi bi-house-door"></i>
               <span>Inicio</span>
@@ -64,9 +78,9 @@
             <a
               routerLink="/catalogo"
               routerLinkActive="active"
-              class="nav-link d-inline-flex align-items-center gap-1">
+              class="nav-link d-inline-flex align-items-center gap-2">
 
-              <i class="bi bi-grid"></i>
+              <i class="bi bi-grid-3x3-gap"></i>
               <span>Catálogo</span>
 
             </a>
@@ -76,9 +90,37 @@
         </ul>
 
 
+        <!-- Buscador de productos -->
+        <div class="navbar-search-wrapper my-2 my-lg-0 me-lg-auto">
+
+          <div class="input-group input-group-sm nav-search-group">
+
+            <input
+              #searchInput
+              type="search"
+              class="form-control nav-search-input"
+              placeholder="Buscar mangueras, tuberías, accesorios..."
+              aria-label="Buscar productos en el catálogo"
+              (keydown.enter)="buscar(searchInput.value)" />
+
+            <button
+              type="button"
+              class="btn nav-search-btn"
+              title="Buscar en catálogo"
+              (click)="buscar(searchInput.value)">
+
+              <i class="bi bi-search"></i>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Acciones del usuario (Carrito, Auth) -->
         <div
-          class="d-flex align-items-center
-                 gap-2">
+          class="d-flex align-items-center gap-2 nav-actions mt-2 mt-lg-0">
 
           @if (
             authService.esCliente()
@@ -86,7 +128,8 @@
 
             <a
               routerLink="/cliente/pedidos"
-              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
+              class="btn btn-nav-outline d-inline-flex align-items-center gap-1.5"
+              title="Revisar mis pedidos">
 
               <i class="bi bi-box-seam"></i>
               <span>Mis pedidos</span>
@@ -96,7 +139,8 @@
 
             <a
               routerLink="/cliente/cuenta"
-              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
+              class="btn btn-nav-outline d-inline-flex align-items-center gap-1.5"
+              title="Mi perfil y cuenta">
 
               <i class="bi bi-person-circle"></i>
               <span>Mi cuenta</span>
@@ -106,7 +150,8 @@
 
             <a
               routerLink="/carrito"
-              class="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3">
+              class="btn btn-nav-primary d-inline-flex align-items-center gap-2"
+              title="Ver carrito de compras">
 
               <i class="bi bi-cart3"></i>
               <span>Carrito</span>
@@ -116,7 +161,8 @@
 
             <button
               type="button"
-              class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1"
+              class="btn btn-nav-danger d-inline-flex align-items-center gap-1.5"
+              title="Cerrar sesión"
               (click)="cerrarSesion()">
 
               <i class="bi bi-box-arrow-right"></i>
@@ -127,8 +173,19 @@
           } @else {
 
             <a
+              routerLink="/carrito"
+              class="btn btn-nav-outline d-inline-flex align-items-center gap-1.5"
+              title="Carrito de compras">
+
+              <i class="bi bi-cart3"></i>
+              <span>Carrito</span>
+
+            </a>
+
+
+            <a
               routerLink="/login"
-              class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
+              class="btn btn-nav-outline d-inline-flex align-items-center gap-1.5">
 
               <i class="bi bi-box-arrow-in-right"></i>
               <span>Iniciar sesión</span>
@@ -138,7 +195,7 @@
 
             <a
               routerLink="/registro"
-              class="btn btn-success btn-sm d-inline-flex align-items-center gap-1">
+              class="btn btn-nav-primary d-inline-flex align-items-center gap-1.5">
 
               <i class="bi bi-person-plus"></i>
               <span>Registrarse</span>
@@ -158,6 +215,10 @@
 </header>
 
 
+<!-- ========================================================================
+     CONTENIDO DINÁMICO
+     ======================================================================== -->
+
 <main>
 
   <router-outlet />
@@ -165,42 +226,136 @@
 </main>
 
 
-<footer class="footer-publico">
+<!-- ========================================================================
+     PIE DE PÁGINA (FOOTER) PROFESIONAL
+     ======================================================================== -->
 
-  <div class="container py-4">
+<footer class="footer-main">
 
-    <div class="row g-3 align-items-center">
+  <div class="container">
 
-      <div class="col-12 col-md-6 d-flex align-items-center gap-3">
+    <!-- Sección superior del footer -->
+    <div class="footer-top">
 
-        <img
-          src="/AgroinPeru_logo2.png"
-          alt="Logo AGROINPERU"
-          width="32"
-          height="32"
-          class="rounded opacity-75"
-        />
+      <div class="row g-4 justify-content-between">
 
-        <div>
-          <strong class="text-white">
-            AGROINPERU S.A.C.
-          </strong>
+        <!-- Marca e información corporativa -->
+        <div class="col-12 col-md-5 col-lg-4">
 
-          <div class="footer-subtitle">
-            Soluciones en riego tecnificado, tuberías y accesorios agrícolas e industriales.
+          <div class="d-flex align-items-center gap-3 mb-3">
+
+            <img
+              src="/AgroinPeru_logo2.png"
+              alt="Logo AGROINPERU"
+              width="44"
+              height="44"
+              class="rounded-3 footer-logo" />
+
+            <div>
+              <h5 class="text-white fw-bold mb-0">AGROINPERU</h5>
+              <small class="footer-sac">S.A.C.</small>
+            </div>
+
           </div>
+
+          <p class="footer-desc">
+            Soluciones integrales en riego tecnificado, mangueras,
+            tuberías, conexiones y accesorios de alta calidad para proyectos
+            agrícolas e industriales en todo el Perú.
+          </p>
+
+          <div class="footer-badges d-flex flex-wrap gap-2 mt-3">
+            <span class="badge footer-badge">
+              <i class="bi bi-shield-check text-success me-1"></i>Venta segura
+            </span>
+            <span class="badge footer-badge">
+              <i class="bi bi-truck text-success me-1"></i>Despacho rápido
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- Enlaces rápidos -->
+        <div class="col-6 col-md-3 col-lg-2">
+
+          <h6 class="footer-heading">Navegación</h6>
+
+          <ul class="footer-links">
+            <li><a routerLink="/">Inicio</a></li>
+            <li><a routerLink="/catalogo">Catálogo de productos</a></li>
+            <li><a routerLink="/registro">Crear cuenta</a></li>
+            <li><a routerLink="/login">Iniciar sesión</a></li>
+          </ul>
+
+        </div>
+
+
+        <!-- Mi Cuenta -->
+        <div class="col-6 col-md-3 col-lg-2">
+
+          <h6 class="footer-heading">Mi cuenta</h6>
+
+          <ul class="footer-links">
+            <li><a routerLink="/cliente/cuenta">Mi perfil</a></li>
+            <li><a routerLink="/cliente/pedidos">Mis pedidos</a></li>
+            <li><a routerLink="/carrito">Carrito de compras</a></li>
+          </ul>
+
+        </div>
+
+
+        <!-- Contacto e información -->
+        <div class="col-12 col-md-6 col-lg-3">
+
+          <h6 class="footer-heading">Atención y contacto</h6>
+
+          <ul class="footer-links footer-contact">
+
+            <li class="d-flex align-items-start gap-2">
+              <i class="bi bi-geo-alt-fill text-success mt-1"></i>
+              <span>Lima, Perú</span>
+            </li>
+
+            <li class="d-flex align-items-start gap-2">
+              <i class="bi bi-envelope-fill text-success mt-1"></i>
+              <span>ventas&#64;agroinperu.com</span>
+            </li>
+
+            <li class="d-flex align-items-start gap-2">
+              <i class="bi bi-clock-fill text-success mt-1"></i>
+              <span>Lunes a Sábado: 8:00 AM - 6:00 PM</span>
+            </li>
+
+          </ul>
+
         </div>
 
       </div>
 
+    </div>
 
-      <div
-        class="col-12 col-md-6
-               text-md-end">
 
-        <small class="footer-copyright">
-          © 2026 AGROINPERU S.A.C. Todos los derechos reservados.
-        </small>
+    <!-- Sección inferior con derechos de autor -->
+    <div class="footer-bottom">
+
+      <div class="row align-items-center g-2">
+
+        <div class="col-12 col-md-6">
+
+          <small class="footer-copyright">
+            © 2026 AGROINPERU S.A.C. Todos los derechos reservados. RUC disponible para facturación electrónica.
+          </small>
+
+        </div>
+
+        <div class="col-12 col-md-6 text-md-end">
+
+          <small class="footer-built">
+            Plataforma virtual de comercialización agrícola e industrial
+          </small>
+
+        </div>
 
       </div>
 

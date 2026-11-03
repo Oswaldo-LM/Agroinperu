@@ -1,19 +1,42 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   AGROINPERU S.A.C. — Sistema de diseño global
+   ========================================================================== */
+
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 
+
+/* --------------------------------------------------------------------------
+   Variables de marca
+   -------------------------------------------------------------------------- */
+
 :root {
-  --agro-primary: #059669;
-  --agro-primary-hover: #047857;
-  --agro-primary-subtle: #d1fae5;
+  --agro-dark: #101A2E;
+  --agro-primary: #079B70;
+  --agro-primary-hover: #068a63;
+  --agro-primary-light: #0bb886;
+  --agro-primary-subtle: #e6f7f2;
   --agro-primary-text: #065f46;
-  --agro-bg: #f8fafc;
-  --agro-card-bg: #ffffff;
+  --agro-bg: #F4F7F9;
+  --agro-card-bg: #FFFFFF;
   --agro-border: #e2e8f0;
+  --agro-text: #202938;
+  --agro-text-muted: #64748b;
+  --agro-gray-light: #F4F7F9;
+  --agro-radius: 12px;
+  --agro-radius-lg: 14px;
+  --agro-shadow-sm: 0 1px 3px 0 rgba(0,0,0,0.04), 0 1px 2px -1px rgba(0,0,0,0.04);
+  --agro-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --agro-shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 10px -2px rgba(0,0,0,0.04);
+  --agro-transition: all 0.2s ease-in-out;
 }
 
-html,
-body {
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+html, body {
   margin: 0;
   min-height: 100%;
 }
@@ -21,32 +44,62 @@ body {
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--agro-bg);
-  color: #1e293b;
+  color: var(--agro-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
+
 /* --------------------------------------------------------------------------
-   Modern Card Styling
+   Tipografía refinada
    -------------------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--agro-dark);
+  font-weight: 700;
+}
+
+.text-brand {
+  color: var(--agro-primary) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   Cards modernas
+   -------------------------------------------------------------------------- */
+
 .card {
   border: 1px solid var(--agro-border);
-  border-radius: 12px;
+  border-radius: var(--agro-radius);
   background-color: var(--agro-card-bg);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--agro-shadow-sm);
+  transition: var(--agro-transition);
 }
 
 .card.shadow-sm {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--agro-shadow) !important;
 }
 
+.card:hover {
+  box-shadow: var(--agro-shadow) !important;
+}
+
+
 /* --------------------------------------------------------------------------
-   Brand Button Enhancements
+   Botones de marca
    -------------------------------------------------------------------------- */
+
 .btn {
   font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.15s ease-in-out;
+  border-radius: 10px;
+  transition: var(--agro-transition);
+  letter-spacing: 0.01em;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--agro-primary);
+  outline-offset: 2px;
 }
 
 .btn-success {
@@ -59,6 +112,8 @@ body {
 .btn-success:active {
   background-color: var(--agro-primary-hover);
   border-color: var(--agro-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(7, 155, 112, 0.3);
 }
 
 .btn-outline-success {
@@ -74,21 +129,31 @@ body {
   color: #ffffff;
 }
 
-/* --------------------------------------------------------------------------
-   Modern Inputs Focus Ring
-   -------------------------------------------------------------------------- */
-.form-control:focus,
-.form-select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.18);
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: var(--agro-radius);
 }
 
+
 /* --------------------------------------------------------------------------
-   Status Badges (Pill style)
+   Inputs con focus ring de marca
    -------------------------------------------------------------------------- */
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--agro-primary);
+  box-shadow: 0 0 0 0.2rem rgba(7, 155, 112, 0.15);
+}
+
+
+/* --------------------------------------------------------------------------
+   Status badges (pill)
+   -------------------------------------------------------------------------- */
+
 .badge-status-activo {
-  background-color: #ecfdf5 !important;
-  color: #065f46 !important;
+  background-color: var(--agro-primary-subtle) !important;
+  color: var(--agro-primary-text) !important;
   border: 1px solid #a7f3d0 !important;
   font-weight: 600;
   font-size: 0.75rem;
@@ -120,9 +185,81 @@ body {
 }
 
 .badge-status-activo .badge-status-dot {
-  background-color: #10b981;
+  background-color: var(--agro-primary);
 }
 
 .badge-status-inactivo .badge-status-dot {
   background-color: #94a3b8;
-}
+}
+
+
+/* --------------------------------------------------------------------------
+   Section helpers
+   -------------------------------------------------------------------------- */
+
+.section-label {
+  color: var(--agro-primary);
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--agro-dark);
+}
+
+.section-subtitle {
+  color: var(--agro-text-muted);
+  font-size: 1.05rem;
+  max-width: 600px;
+}
+
+
+/* --------------------------------------------------------------------------
+   Animaciones sutiles
+   -------------------------------------------------------------------------- */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+
+
+/* --------------------------------------------------------------------------
+   Scrollbar sutil
+   -------------------------------------------------------------------------- */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--agro-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
