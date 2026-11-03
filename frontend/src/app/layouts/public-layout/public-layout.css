@@ -1,5 +1,6 @@
 /* ==========================================================================
    PUBLIC LAYOUT — Navbar + Footer Profesional (AGROINPERU)
+   Adaptable a cualquier resolución y nivel de zoom
    ========================================================================== */
 
 :host {
@@ -21,18 +22,19 @@ main {
   position: sticky;
   top: 0;
   z-index: 1030;
+  width: 100%;
 }
 
 .navbar {
   background-color: var(--agro-dark, #101A2E) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-  padding: 0.65rem 0;
+  padding: 0.6rem 0;
 }
 
 .brand-logo-wrapper {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.1);
@@ -50,7 +52,7 @@ main {
 
 .brand-text {
   font-weight: 800;
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
   letter-spacing: 0.5px;
   color: #ffffff !important;
 }
@@ -69,10 +71,11 @@ main {
 .nav-link {
   color: #e2e8f0 !important;
   font-weight: 500;
-  font-size: 0.92rem;
-  padding: 0.5rem 0.9rem !important;
+  font-size: clamp(0.85rem, 0.3vw + 0.78rem, 0.92rem);
+  padding: 0.45rem clamp(0.5rem, 0.6vw, 0.85rem) !important;
   border-radius: 8px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -100,11 +103,12 @@ main {
 }
 
 
-/* Buscador integrado en Navbar */
+/* Buscador integrado en Navbar (Elástico y Adaptable con Zoom) */
 
 .navbar-search-wrapper {
-  min-width: 260px;
-  max-width: 380px;
+  flex: 1 1 auto;
+  min-width: 150px;
+  max-width: 340px;
   width: 100%;
 }
 
@@ -126,13 +130,13 @@ main {
   background: transparent !important;
   border: none !important;
   color: #ffffff !important;
-  font-size: 0.88rem;
-  padding: 0.45rem 0.85rem;
+  font-size: clamp(0.8rem, 0.2vw + 0.76rem, 0.86rem);
+  padding: 0.45rem 0.75rem;
 }
 
 .nav-search-input::placeholder {
   color: rgba(255, 255, 255, 0.65) !important;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
 }
 
 .nav-search-input:focus {
@@ -143,7 +147,7 @@ main {
   background: transparent;
   border: none;
   color: #cbd5e1;
-  padding: 0.45rem 0.85rem;
+  padding: 0.45rem 0.75rem;
   transition: color 0.15s ease;
 }
 
@@ -153,17 +157,22 @@ main {
 }
 
 
-/* Acciones Navbar */
+/* Acciones Navbar (Flexibles y sin desbordes) */
+
+.nav-actions {
+  flex-shrink: 0;
+}
 
 .btn-nav-outline {
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.28);
   background: rgba(255, 255, 255, 0.08);
-  font-size: 0.85rem;
-  padding: 0.48rem 0.95rem;
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.55rem, 0.6vw, 0.85rem);
   border-radius: 9px;
   font-weight: 600;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-nav-outline:hover {
@@ -177,11 +186,12 @@ main {
   background: var(--agro-primary, #079B70);
   border: 1px solid var(--agro-primary, #079B70);
   color: #ffffff !important;
-  font-size: 0.85rem;
-  padding: 0.48rem 1.05rem;
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.65rem, 0.7vw, 0.95rem);
   border-radius: 9px;
   font-weight: 700;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-nav-primary:hover {
@@ -196,11 +206,12 @@ main {
   color: #fca5a5 !important;
   border: 1px solid rgba(252, 165, 165, 0.35);
   background: rgba(239, 68, 68, 0.1);
-  font-size: 0.85rem;
-  padding: 0.48rem 0.95rem;
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.55rem, 0.6vw, 0.85rem);
   border-radius: 9px;
   font-weight: 600;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-nav-danger:hover {
@@ -222,7 +233,7 @@ main {
 }
 
 .footer-top {
-  padding: 3.8rem 0 2.5rem;
+  padding: clamp(2.5rem, 4vw, 3.8rem) 0 2.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -240,7 +251,7 @@ main {
 
 .footer-desc {
   color: #cbd5e1;
-  font-size: 0.9rem;
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
   line-height: 1.65;
   max-width: 360px;
 }
@@ -257,11 +268,11 @@ main {
 
 .footer-heading {
   color: #ffffff !important;
-  font-size: 0.86rem;
+  font-size: clamp(0.8rem, 0.2vw + 0.76rem, 0.86rem);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
 }
 
 .footer-links {
@@ -271,13 +282,13 @@ main {
 }
 
 .footer-links li {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.6rem;
 }
 
 .footer-links a {
   color: #cbd5e1;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
   transition: all 0.15s ease;
 }
 
@@ -292,31 +303,31 @@ main {
 }
 
 .footer-contact span {
-  font-size: 0.9rem;
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
   color: #f1f5f9;
 }
 
 .footer-bottom {
-  padding: 1.5rem 0;
+  padding: 1.3rem 0;
 }
 
 .footer-copyright {
   color: #94a3b8;
-  font-size: 0.82rem;
+  font-size: clamp(0.74rem, 0.2vw + 0.7rem, 0.82rem);
   line-height: 1.5;
 }
 
 .footer-built {
   color: #94a3b8;
-  font-size: 0.8rem;
+  font-size: clamp(0.72rem, 0.2vw + 0.68rem, 0.8rem);
 }
 
 
 /* --------------------------------------------------------------------------
-   Responsive
+   Responsive & Zoom Handling
    -------------------------------------------------------------------------- */
 
-@media (max-width: 991.98px) {
+@media (max-width: 1199.98px) {
 
   .navbar-search-wrapper {
     max-width: 100%;
@@ -328,16 +339,10 @@ main {
     margin-top: 0.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     flex-wrap: wrap;
+    gap: 8px !important;
   }
 
   .nav-link.active::after {
     display: none;
-  }
-}
-
-@media (max-width: 767.98px) {
-
-  .footer-top {
-    padding: 2.8rem 0 2rem;
   }
 }
