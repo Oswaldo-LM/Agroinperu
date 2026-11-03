@@ -1,6 +1,6 @@
 /* ==========================================================================
    AGROINPERU S.A.C. — Página Principal (Home)
-   Diseño E-commerce Profesional con Animación de Minimización al Scrollear
+   Diseño E-commerce Profesional — Transición Suave y Estable
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -44,7 +44,7 @@
 
 
 /* --------------------------------------------------------------------------
-   Contenedor y Sección Hero (Animación de Minimización al Scroll)
+   Contenedor y Sección Hero (Transición Suave al Scroll)
    -------------------------------------------------------------------------- */
 
 .hero-wrapper {
@@ -61,26 +61,26 @@
   background-position: center;
   background-repeat: no-repeat;
   
-  /* Estado inicial: Full pantalla inmersiva */
-  min-height: calc(100vh - 68px);
-  padding: 85px 0 110px;
+  /* Estado inicial: Amplio e inmersivo */
+  min-height: calc(100vh - 72px);
+  padding: 65px 0 85px;
   margin: 0;
   border-radius: 0;
   display: flex;
   align-items: center;
   overflow: hidden;
-  transition: all 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: padding 0.5s ease, margin 0.5s ease, border-radius 0.5s ease, box-shadow 0.5s ease, min-height 0.5s ease;
   box-shadow: none;
 }
 
 /* Estado Minimizado al hacer scroll hacia abajo */
 .hero-section.hero-minimized {
-  min-height: 520px;
-  padding: 45px 0 55px;
-  margin: 20px auto 10px;
-  max-width: 95%;
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(16, 26, 46, 0.45);
+  min-height: 480px;
+  padding: 35px 0 40px;
+  margin: 15px auto 10px;
+  max-width: 96%;
+  border-radius: 22px;
+  box-shadow: 0 20px 45px -10px rgba(16, 26, 46, 0.4);
 }
 
 .hero-backdrop {
@@ -93,14 +93,14 @@
     rgba(7, 155, 112, 0.45) 100%
   );
   backdrop-filter: blur(2px);
-  transition: all 0.75s ease;
+  transition: background 0.5s ease;
 }
 
 .hero-section.hero-minimized .hero-backdrop {
   background: linear-gradient(
     135deg,
     rgba(16, 26, 46, 0.96) 0%,
-    rgba(16, 26, 46, 0.90) 50%,
+    rgba(16, 26, 46, 0.88) 50%,
     rgba(7, 155, 112, 0.40) 100%
   );
 }
@@ -111,7 +111,8 @@
 }
 
 .hero-col-content {
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Ancho y estructura siempre estables */
+  padding-right: 15px;
 }
 
 .hero-badge {
@@ -120,7 +121,7 @@
   color: #ffffff !important;
   font-size: 0.88rem;
   font-weight: 600;
-  padding: 0.5rem 1.1rem;
+  padding: 0.45rem 1rem;
   border-radius: 50rem;
   letter-spacing: 0.04em;
   backdrop-filter: blur(8px);
@@ -138,15 +139,11 @@
   line-height: 1.15;
   letter-spacing: -0.02em;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
-  transition: font-size 0.5s ease;
 }
 
 @media (min-width: 992px) {
   .hero-main-title {
-    font-size: 3.5rem;
-  }
-  .hero-section.hero-minimized .hero-main-title {
-    font-size: 2.8rem;
+    font-size: 3.4rem;
   }
 }
 
@@ -158,16 +155,16 @@
 }
 
 .hero-lead {
-  font-size: 1.18rem;
+  font-size: 1.15rem;
   line-height: 1.6;
   color: #f8fafc !important;
-  max-width: 640px;
+  max-width: 600px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .text-light-opacity {
   color: #f1f5f9 !important;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
@@ -180,8 +177,8 @@
   border: 1px solid var(--agro-primary, #079B70);
   color: #ffffff !important;
   font-weight: 700;
-  font-size: 1.05rem;
-  padding: 0.85rem 1.8rem;
+  font-size: 1rem;
+  padding: 0.8rem 1.65rem;
   border-radius: 50rem;
   box-shadow: 0 4px 18px rgba(7, 155, 112, 0.45);
   transition: all 0.2s ease;
@@ -200,8 +197,8 @@
   border: 1px solid rgba(255, 255, 255, 0.35);
   color: #ffffff !important;
   font-weight: 600;
-  font-size: 1.05rem;
-  padding: 0.85rem 1.8rem;
+  font-size: 1rem;
+  padding: 0.8rem 1.65rem;
   border-radius: 50rem;
   backdrop-filter: blur(6px);
   transition: all 0.2s ease;
@@ -216,28 +213,11 @@
 }
 
 
-/* Tarjeta Lateral de Compra Online (Aparece suavemente al scrollear) */
+/* Tarjeta Lateral de Compra Online (Siempre visible y accesible sin cortes) */
 
 .hero-card-col {
-  transition: all 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (min-width: 992px) {
-  /* En estado inicial no minimizado, la tarjeta está oculta con fade y transform */
-  .hero-card-col:not(.hero-card-visible) {
-    opacity: 0;
-    transform: translateX(50px) scale(0.94);
-    pointer-events: none;
-    max-height: 0;
-    overflow: hidden;
-  }
-
-  .hero-card-col.hero-card-visible {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-    pointer-events: auto;
-    max-height: 800px;
-  }
+  display: block;
+  transition: transform 0.5s ease;
 }
 
 .hero-commerce-card {
@@ -262,15 +242,15 @@
 
 .hero-card-summary {
   color: #334155 !important;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
 .hero-card-steps-preview {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px;
+  gap: 8px;
+  padding: 10px 12px;
   background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #edf2f7;
@@ -284,7 +264,7 @@
 
 .hero-step-item .fw-semibold {
   color: #0f172a !important;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .step-mini-num {
@@ -302,26 +282,26 @@
 }
 
 .mini-text {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #475569 !important;
   font-weight: 500;
 }
 
 
 /* --------------------------------------------------------------------------
-   Indicador de Scroll Flotante (Flecha hacia abajo animada)
+   Indicador de Scroll Flotante
    -------------------------------------------------------------------------- */
 
 .hero-scroll-indicator {
   position: absolute;
-  bottom: 24px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   cursor: pointer;
   transition: opacity 0.4s ease, transform 0.4s ease;
   user-select: none;
@@ -330,12 +310,12 @@
 .hero-scroll-indicator.indicator-hidden {
   opacity: 0;
   pointer-events: none;
-  transform: translate(-50%, 20px);
+  transform: translate(-50%, 15px);
 }
 
 .scroll-arrow-box {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -344,7 +324,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1rem;
   animation: scrollBounce 2s infinite ease-in-out;
   transition: all 0.2s ease;
 }
@@ -357,7 +337,7 @@
 
 .scroll-hint-text {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -369,10 +349,10 @@
     transform: translateY(0);
   }
   40% {
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   60% {
-    transform: translateY(4px);
+    transform: translateY(3px);
   }
 }
 

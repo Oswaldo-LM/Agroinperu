@@ -101,7 +101,16 @@ export class Home
   onWindowScroll(): void {
     if (typeof window !== 'undefined') {
       const offset = window.scrollY || document.documentElement.scrollTop || 0;
-      this.scrolled.set(offset > 50);
+      // Histeresis suave para evitar parpadeos y permitir leer arriba con libertad
+      if (this.scrolled()) {
+        if (offset <= 20) {
+          this.scrolled.set(false);
+        }
+      } else {
+        if (offset > 80) {
+          this.scrolled.set(true);
+        }
+      }
     }
   }
 
@@ -109,7 +118,7 @@ export class Home
   bajarSeccion(): void {
     if (typeof window !== 'undefined') {
       window.scrollTo({
-        top: 360,
+        top: 480,
         behavior: 'smooth'
       });
     }
