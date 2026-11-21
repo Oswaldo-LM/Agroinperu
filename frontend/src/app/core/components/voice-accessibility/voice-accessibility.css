@@ -4,7 +4,56 @@
 
 .voice-accessibility-root {
   position: relative;
-  z-index: 1090;
+  z-index: 99990;
+}
+
+/* --------------------------------------------------------------------------
+   TOAST FLOTANTE DE NOTIFICACIÓN DE ATAJO / ESTADO
+   -------------------------------------------------------------------------- */
+.accessibility-shortcut-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 14px;
+  border: 2px solid #10b981;
+  z-index: 99999;
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.45),
+    0 0 15px rgba(16, 185, 129, 0.3);
+  pointer-events: none;
+  min-width: 260px;
+  max-width: calc(100vw - 48px);
+}
+
+.toast-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.toast-desc {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.animate-toast-in {
+  animation: toastIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* --------------------------------------------------------------------------

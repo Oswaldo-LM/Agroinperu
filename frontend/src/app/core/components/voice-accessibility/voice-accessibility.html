@@ -6,6 +6,27 @@
   aria-label="Herramientas de accesibilidad por voz y comandos"
 >
   <!-- ======================================================================
+       TOAST FLOTANTE DE NOTIFICACIÓN DE ATAJO / ESTADO
+       ====================================================================== -->
+  @if (voiceService.notificacionAtajo()) {
+    <div
+      class="accessibility-shortcut-toast animate-toast-in shadow-lg"
+      role="status"
+      aria-live="assertive"
+    >
+      <div class="d-flex align-items-center gap-2.5">
+        <div class="shortcut-toast-icon">
+          <i [class]="'bi ' + voiceService.notificacionAtajo()!.icono + ' fs-4 text-emerald'"></i>
+        </div>
+        <div class="d-flex flex-column lh-sm">
+          <strong class="toast-title">Accesibilidad por Voz</strong>
+          <span class="toast-desc">{{ voiceService.notificacionAtajo()!.texto }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ======================================================================
        BOTÓN FLOTANTE DISPARADOR
        ====================================================================== -->
   <button
@@ -238,11 +259,11 @@
           <div class="fw-bold mb-1.5 text-secondary">
             <i class="bi bi-keyboard me-1"></i> Atajos de teclado accesibles:
           </div>
-          <ul class="list-unstyled mb-0 d-flex flex-column gap-1 text-muted">
-            <li><kbd>Alt + A</kbd> : Abrir/Cerrar panel de accesibilidad</li>
-            <li><kbd>Alt + N</kbd> : Narrar contenido de la página</li>
-            <li><kbd>Alt + C</kbd> : Activar/Desactivar comandos por voz</li>
-            <li><kbd>Alt + S</kbd> o <kbd>Esc</kbd> : Silenciar voz de inmediato</li>
+          <ul class="list-unstyled mb-0 d-flex flex-column gap-1.5 text-muted">
+            <li><kbd>Alt + A</kbd> o <kbd>Ctrl + Shift + A</kbd> : Abrir/Cerrar panel</li>
+            <li><kbd>Alt + N</kbd> o <kbd>Ctrl + Shift + N</kbd> : Narrar página</li>
+            <li><kbd>Alt + C</kbd> o <kbd>Ctrl + Shift + C</kbd> : Comandos de voz</li>
+            <li><kbd>Alt + S</kbd> o <kbd>Esc</kbd> : Silenciar de inmediato</li>
           </ul>
         </div>
       </div>

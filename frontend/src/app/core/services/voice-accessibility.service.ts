@@ -7,6 +7,11 @@ export interface ComandoAyuda {
   categoria: 'Navegación' | 'Búsqueda' | 'Lectura' | 'Control';
 }
 
+export interface NotificacionAtajo {
+  texto: string;
+  icono: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -32,6 +37,10 @@ export class VoiceAccessibilityService {
 
   readonly velocidad = signal<number>(1.0);
   readonly volumen = signal<number>(1.0);
+
+  // Notificación flotante visual para atajos de teclado
+  readonly notificacionAtajo = signal<NotificacionAtajo | null>(null);
+  private toastTimeout: any = null;
 
   // Referencias internas
   private synthesis: SpeechSynthesis | null = null;
@@ -127,6 +136,20 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
+  // FEEDBACK VISUAL INMEDIATO PARA ATAJOS
+  // --------------------------------------------------------------------------
+
+  mostrarNotificacionAtajo(texto: string, icono: string): void {
+    clearTimeout(this.toastTimeout);
+    this.notificacionAtajo.set({ texto, icono });
+    this.toastTimeout = setTimeout(() => {
+      this.ngZone.run(() => {
+        this.notificacionAtajo.set(null);
+      });
+    }, 3200);
+  }
+
+  // --------------------------------------------------------------------------
   // INICIALIZACIÓN DE SÍNTESIS DE VOZ (TTS)
   // --------------------------------------------------------------------------
 
@@ -201,7 +224,7 @@ export class VoiceAccessibilityService {
               );
               this.estaEscuchando.set(false);
             } else if (event.error === 'no-speech') {
-              // Silencio normal, no es error crítico
+              // Silencio normal
             } else {
               this.errorMicrofono.set(`Aviso de micrófono: ${event.error}`);
             }
@@ -230,62 +253,136 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
-  // ATAJOS DE TECLADO PARA ACCESIBILIDAD
+  // ATAJOS DE TECLADO PARA ACCESIBILIDAD (ROBUSTO Y CON NGZONE)
   // --------------------------------------------------------------------------
 
   private configurarAtajosTeclado(): void {
     if (typeof window === 'undefined') return;
 
-    window.addEventListener('keydown', (event: KeyboardEvent) => {
-      // Escape: Silenciar inmediatamente cualquier narración
-      if (event.key === 'Escape') {
-        if (this.estaHablando()) {
-          this.detenerHablar();
-          event.preventDefault();
+    window.addEventListener(
+      'keydown',
+      (event: KeyboardEvent) => {
+        const key = event.key ? event.key.toLowerCase() : '';
+        const code = event.code || '';
+
+        // 1. Tecla Escape (sin modificador): Cancelar o silenciar de inmediato
+        if (key === 'escape' || code === 'Escape') {
+          this.ngZone.run(() => {
+            let accionRealizada = false;
+            if (this.estaHablando()) {
+              this.detenerHablar();
+              accionRealizada = true;
+            }
+            if (this.modalComandosAbierto()) {
+              this.cerrarModalComandos();
+              accionRealizada = true;
+            }
+            if (this.panelAbierto()) {
+              this.panelAbierto.set(false);
+              accionRealizada = true;
+            }
+            if (accionRealizada) {
+              event.preventDefault();
+              event.stopPropagation();
+              this.mostrarNotificacionAtajo(
+                'Acción cancelada / Voz silenciada',
+                'bi-volume-mute-fill',
+              );
+            }
+          });
+          return;
         }
-        if (this.modalComandosAbierto()) {
-          this.cerrarModalComandos();
+
+        // Combinaciones de teclas modificadoras soportadas:
+        // - Alt (izquierdo o AltGr)
+        // - Ctrl + Shift (compatibilidad total sin conflicto con menús del navegador)
+        // - Ctrl + Alt
+        // - Alt + Shift
+        const hasAlt = event.altKey;
+        const hasCtrlShift = event.ctrlKey && event.shiftKey;
+        const hasCtrlAlt = event.ctrlKey && event.altKey;
+        const hasAltShift = event.altKey && event.shiftKey;
+
+        const isModifierActive = hasAlt || hasCtrlShift || hasCtrlAlt || hasAltShift;
+        if (!isModifierActive) return;
+
+        const isKeyA = key === 'a' || code === 'KeyA';
+        const isKeyN = key === 'n' || code === 'KeyN';
+        const isKeyC = key === 'c' || code === 'KeyC';
+        const isKeyV = key === 'v' || code === 'KeyV';
+        const isKeyS = key === 's' || code === 'KeyS';
+        const isKeyH = key === 'h' || code === 'KeyH';
+
+        // Atajo: Alt + A  o  Ctrl + Shift + A (Abrir/Cerrar Panel de Accesibilidad)
+        if (isKeyA) {
           event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.alternarPanel();
+            const abierto = this.panelAbierto();
+            const mensaje = abierto
+              ? 'Panel de accesibilidad abierto'
+              : 'Panel de accesibilidad cerrado';
+            this.mostrarNotificacionAtajo(mensaje, abierto ? 'bi-universal-access' : 'bi-x-circle');
+            this.hablar(mensaje, true);
+          });
+          return;
         }
-        return;
-      }
 
-      // Alt + A: Abrir/Cerrar panel de accesibilidad
-      if (event.altKey && (event.key === 'a' || event.key === 'A')) {
-        event.preventDefault();
-        this.alternarPanel();
-        const estado = this.panelAbierto()
-          ? 'Panel de accesibilidad abierto'
-          : 'Panel de accesibilidad cerrado';
-        this.hablar(estado, true);
-        return;
-      }
+        // Atajo: Alt + N  o  Ctrl + Shift + N (Narrar página actual)
+        if (isKeyN) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.mostrarNotificacionAtajo(
+              'Narrando contenido de la página...',
+              'bi-megaphone-fill',
+            );
+            this.narrarPagina();
+          });
+          return;
+        }
 
-      // Alt + N: Narrar contenido de la página actual
-      if (event.altKey && (event.key === 'n' || event.key === 'N')) {
-        event.preventDefault();
-        this.narrarPagina();
-        return;
-      }
+        // Atajo: Alt + C / Alt + V  o  Ctrl + Shift + C / Ctrl + Shift + V (Alternar comandos por voz)
+        if (isKeyC || isKeyV) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.alternarEscucha();
+            const escuchando = this.estaEscuchando();
+            const mensaje = escuchando
+              ? 'Escuchando comandos por voz'
+              : 'Comandos por voz pausados';
+            this.mostrarNotificacionAtajo(mensaje, escuchando ? 'bi-mic-fill' : 'bi-mic-mute-fill');
+          });
+          return;
+        }
 
-      // Alt + C o Alt + V: Alternar comandos por voz
-      if (
-        event.altKey &&
-        (event.key === 'c' || event.key === 'C' || event.key === 'v' || event.key === 'V')
-      ) {
-        event.preventDefault();
-        this.alternarEscucha();
-        return;
-      }
+        // Atajo: Alt + S  o  Ctrl + Shift + S (Silenciar de inmediato)
+        if (isKeyS) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.detenerHablar();
+            this.mostrarNotificacionAtajo('Narración silenciada', 'bi-volume-mute-fill');
+            this.hablar('Narración silenciada', true);
+          });
+          return;
+        }
 
-      // Alt + S: Detener o silenciar narración
-      if (event.altKey && (event.key === 's' || event.key === 'S')) {
-        event.preventDefault();
-        this.detenerHablar();
-        this.hablar('Narración silenciada', true);
-        return;
-      }
-    });
+        // Atajo: Alt + H  o  Ctrl + Shift + H (Guía de comandos)
+        if (isKeyH) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.abrirModalComandos();
+            this.mostrarNotificacionAtajo('Guía de comandos abierta', 'bi-question-circle-fill');
+          });
+          return;
+        }
+      },
+      { capture: true },
+    );
   }
 
   // --------------------------------------------------------------------------
@@ -298,7 +395,7 @@ export class VoiceAccessibilityService {
     const procesarElemento = (el: HTMLElement | null) => {
       if (!this.modoLectorHover() || !el) return;
 
-      // Ignorar si estamos dentro del mismo panel de accesibilidad para evitar redundancia
+      // Ignorar si estamos dentro del panel de accesibilidad para evitar redundancia
       if (el.closest('.accessibility-panel-wrapper') || el.closest('.accessibility-floating-btn')) {
         return;
       }
@@ -369,7 +466,7 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
-  // SÍNTESIS DE VOZ PÚBLICA
+  // SÍNTESIS DE VOZ PÚBLICA (ROBUSTA)
   // --------------------------------------------------------------------------
 
   hablar(texto: string, prioridad = true, callback?: () => void): void {
@@ -380,7 +477,17 @@ export class VoiceAccessibilityService {
     }
 
     try {
+      // Reanudar el motor de síntesis si el navegador lo puso en pausa
+      if (this.synthesis.paused) {
+        this.synthesis.resume();
+      }
+
+      if (!this.voice) {
+        this.cargarVoces();
+      }
+
       const utterance = new SpeechSynthesisUtterance(texto.trim());
+      utterance.lang = 'es-PE';
       if (this.voice) {
         utterance.voice = this.voice;
       }
@@ -704,7 +811,6 @@ export class VoiceAccessibilityService {
     }
 
     // 6. Búsqueda por voz
-    // Ej: "buscar mangueras", "busca tubería de pvc", "encontrar codos"
     const regexBuscar = /(?:buscar|busca|encontrar|encuentra|consultar|ver)\s+(?:por\s+)?(.+)/i;
     const matchBuscar = comando.match(regexBuscar);
     if (matchBuscar && matchBuscar[1]) {
