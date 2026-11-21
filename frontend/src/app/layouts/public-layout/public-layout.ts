@@ -14,6 +14,10 @@ import {
   AuthService
 } from '../../core/services/auth.service';
 
+import {
+  VoiceAccessibilityService
+} from '../../core/services/voice-accessibility.service';
+
 
 @Component({
   selector:
@@ -35,6 +39,9 @@ export class PublicLayout {
 
   readonly authService =
     inject(AuthService);
+
+  readonly voiceService =
+    inject(VoiceAccessibilityService);
 
   private readonly router =
     inject(Router);
