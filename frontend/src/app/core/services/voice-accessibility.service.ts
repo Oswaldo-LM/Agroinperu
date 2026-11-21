@@ -283,8 +283,11 @@ export class VoiceAccessibilityService {
               // Silencio, normal, continuará escuchando si debeSeguirEscuchando está activo
             } else if (event.error === 'network') {
               this.errorMicrofono.set(
-                'Aviso de conexión con el servicio de voz de Google. Verifica tu conexión a internet.',
+                'Error de conexión con el servicio de voz de Google. Si usas Brave o Chromium, prueba en Microsoft Edge o Google Chrome. También puedes usar los botones rápidos o escribir tu comando abajo.',
               );
+              this.debeSeguirEscuchando = false;
+              this.estaEscuchando.set(false);
+              this.mostrarNotificacionAtajo('Error de red en servicio de voz', 'bi-wifi-off');
             } else {
               this.errorMicrofono.set(`Estado del micrófono: ${event.error}`);
             }
