@@ -293,6 +293,55 @@ export class VoiceAccessibilityService {
           return;
         }
 
+        // 2. Teclas de Función directas (F2, F4, F8, F9) - ¡Sin conflictos con el navegador!
+        // F2 o F4: Abrir / Cerrar Panel
+        if (code === 'F2' || key === 'f2' || code === 'F4' || key === 'f4') {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.alternarPanel();
+            const abierto = this.panelAbierto();
+            const mensaje = abierto
+              ? 'Panel de accesibilidad abierto'
+              : 'Panel de accesibilidad cerrado';
+            this.mostrarNotificacionAtajo(mensaje, abierto ? 'bi-universal-access' : 'bi-x-circle');
+            this.hablar(mensaje, true);
+          });
+          return;
+        }
+
+        // F8: Narrar contenido de la página actual
+        if (code === 'F8' || key === 'f8') {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.mostrarNotificacionAtajo(
+              'Narrando contenido de la página...',
+              'bi-megaphone-fill',
+            );
+            this.narrarPagina();
+          });
+          return;
+        }
+
+        // F9: Activar o Pausar comandos por voz
+        if (code === 'F9' || key === 'f9') {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.alternarEscucha();
+            const escuchando = this.estaEscuchando();
+            const mensaje = escuchando
+              ? 'Escuchando comandos por voz'
+              : 'Comandos por voz pausados';
+            this.mostrarNotificacionAtajo(
+              mensaje,
+              escuchando ? 'bi-mic-fill' : 'bi-mic-mute-fill',
+            );
+          });
+          return;
+        }
+
         // Combinaciones de teclas modificadoras soportadas:
         // - Alt (izquierdo o AltGr)
         // - Ctrl + Shift (compatibilidad total sin conflicto con menús del navegador)
