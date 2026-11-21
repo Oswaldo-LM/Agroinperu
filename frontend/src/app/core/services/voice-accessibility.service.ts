@@ -29,6 +29,7 @@ export class VoiceAccessibilityService {
   readonly estaEscuchando = signal<boolean>(false);
 
   readonly comandoDetectado = signal<string>('');
+  readonly transcripcionEnVivo = signal<string>('');
   readonly ultimoMensaje = signal<string>('');
   readonly errorMicrofono = signal<string | null>(null);
 
@@ -48,6 +49,7 @@ export class VoiceAccessibilityService {
   private recognition: any = null;
   private hoverDebounceTimer: any = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
+  private debeSeguirEscuchando = false;
 
   // Lista de comandos disponibles documentados
   readonly comandosDisponibles: ComandoAyuda[] = [
@@ -150,6 +152,38 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
+  // SONIDO DE ACTIVACIÓN DE MICRÓFONO (CHIME SUAVE)
+  // --------------------------------------------------------------------------
+
+  private reproducirChime(tipo: 'inicio' | 'fin'): void {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      if (tipo === 'inicio') {
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(783.99, ctx.currentTime + 0.12); // G5
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.18);
+      } else {
+        osc.frequency.setValueAtTime(783.99, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(523.25, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      }
+    } catch {}
+  }
+
+  // --------------------------------------------------------------------------
   // INICIALIZACIÓN DE SÍNTESIS DE VOZ (TTS)
   // --------------------------------------------------------------------------
 
@@ -170,7 +204,6 @@ export class VoiceAccessibilityService {
   private cargarVoces(): void {
     if (!this.synthesis) return;
     const voices = this.synthesis.getVoices();
-    // Preferir voz en español de Perú, Latinoamérica o España
     this.voice =
       voices.find((v) => v.lang.toLowerCase() === 'es-pe') ||
       voices.find((v) => v.lang.toLowerCase().startsWith('es-419')) ||
@@ -181,7 +214,7 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
-  // INICIALIZACIÓN DE RECONOCIMIENTO DE VOZ (STT)
+  // INICIALIZACIÓN ROBUSTA DE RECONOCIMIENTO DE VOZ (STT)
   // --------------------------------------------------------------------------
 
   private inicializarReconocimiento(): void {
@@ -194,52 +227,88 @@ export class VoiceAccessibilityService {
       this.soportaReconocimiento.set(true);
       try {
         this.recognition = new SpeechRecognition();
-        this.recognition.lang = 'es-PE';
-        this.recognition.continuous = true;
-        this.recognition.interimResults = false;
-        this.recognition.maxAlternatives = 1;
+        // Soportar español general para máxima compatibilidad
+        this.recognition.lang = 'es-ES';
+        this.recognition.continuous = false; // ciclo por frases: mucho más estable
+        this.recognition.interimResults = true; // mostrar lo que dice en tiempo real
+        this.recognition.maxAlternatives = 3;
 
         this.recognition.onstart = () => {
           this.ngZone.run(() => {
             this.estaEscuchando.set(true);
             this.errorMicrofono.set(null);
-            this.ultimoMensaje.set('Escuchando comandos por voz...');
+            this.transcripcionEnVivo.set('Escuchando...');
           });
         };
 
         this.recognition.onresult = (event: any) => {
-          const lastIndex = event.results.length - 1;
-          const transcript = event.results[lastIndex][0].transcript.trim();
+          // Ignorar lo que escuche si el asistente está narrando por altavoz
+          if (this.estaHablando()) return;
+
+          let textoIntermedio = '';
+          let textoFinal = '';
+
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              textoFinal += transcript;
+            } else {
+              textoIntermedio += transcript;
+            }
+          }
+
           this.ngZone.run(() => {
-            this.comandoDetectado.set(transcript);
-            this.procesarComandoVoz(transcript);
+            if (textoIntermedio) {
+              this.transcripcionEnVivo.set(`"${textoIntermedio}"`);
+            }
+            if (textoFinal) {
+              const limpio = textoFinal.trim();
+              this.comandoDetectado.set(limpio);
+              this.transcripcionEnVivo.set(`Detectado: "${limpio}"`);
+              this.procesarComandoVoz(limpio);
+            }
           });
         };
 
         this.recognition.onerror = (event: any) => {
           this.ngZone.run(() => {
-            if (event.error === 'not-allowed') {
+            console.warn('SpeechRecognition error:', event.error);
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
               this.errorMicrofono.set(
-                'Permiso de micrófono denegado. Permite el acceso para usar comandos por voz.',
+                'Permiso de micrófono bloqueado. Haz clic en el ícono de candado 🔒 junto a la URL y permite el micrófono.',
               );
+              this.debeSeguirEscuchando = false;
               this.estaEscuchando.set(false);
             } else if (event.error === 'no-speech') {
-              // Silencio normal
+              // Silencio, normal, continuará escuchando si debeSeguirEscuchando está activo
+            } else if (event.error === 'network') {
+              this.errorMicrofono.set(
+                'Aviso de conexión con el servicio de voz de Google. Verifica tu conexión a internet.',
+              );
             } else {
-              this.errorMicrofono.set(`Aviso de micrófono: ${event.error}`);
+              this.errorMicrofono.set(`Estado del micrófono: ${event.error}`);
             }
           });
         };
 
         this.recognition.onend = () => {
           this.ngZone.run(() => {
-            // Si el usuario no lo apagó intencionalmente, reconectar si sigue activo
-            if (this.estaEscuchando()) {
+            // Si el usuario quiere mantener la escucha y no está hablando el asistente, reiniciar ciclo
+            if (this.debeSeguirEscuchando && !this.estaHablando()) {
               try {
                 this.recognition.start();
               } catch {
-                this.estaEscuchando.set(false);
+                setTimeout(() => {
+                  if (this.debeSeguirEscuchando && !this.estaHablando()) {
+                    try {
+                      this.recognition.start();
+                    } catch {}
+                  }
+                }, 300);
               }
+            } else if (!this.debeSeguirEscuchando) {
+              this.estaEscuchando.set(false);
+              this.transcripcionEnVivo.set('');
             }
           });
         };
@@ -253,7 +322,7 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
-  // ATAJOS DE TECLADO PARA ACCESIBILIDAD (ROBUSTO Y CON NGZONE)
+  // ATAJOS DE TECLADO PARA ACCESIBILIDAD
   // --------------------------------------------------------------------------
 
   private configurarAtajosTeclado(): void {
@@ -265,7 +334,7 @@ export class VoiceAccessibilityService {
         const key = event.key ? event.key.toLowerCase() : '';
         const code = event.code || '';
 
-        // 1. Tecla Escape (sin modificador): Cancelar o silenciar de inmediato
+        // 1. Tecla Escape: Cancelar o silenciar de inmediato
         if (key === 'escape' || code === 'Escape') {
           this.ngZone.run(() => {
             let accionRealizada = false;
@@ -284,17 +353,13 @@ export class VoiceAccessibilityService {
             if (accionRealizada) {
               event.preventDefault();
               event.stopPropagation();
-              this.mostrarNotificacionAtajo(
-                'Acción cancelada / Voz silenciada',
-                'bi-volume-mute-fill',
-              );
+              this.mostrarNotificacionAtajo('Acción cancelada / Silenciado', 'bi-volume-mute-fill');
             }
           });
           return;
         }
 
-        // 2. Teclas de Función directas (F2, F4, F8, F9) - ¡Sin conflictos con el navegador!
-        // F2 o F4: Abrir / Cerrar Panel
+        // 2. Teclas de Función directas (F2, F4, F8, F9)
         if (code === 'F2' || key === 'f2' || code === 'F4' || key === 'f4') {
           event.preventDefault();
           event.stopPropagation();
@@ -310,43 +375,26 @@ export class VoiceAccessibilityService {
           return;
         }
 
-        // F8: Narrar contenido de la página actual
         if (code === 'F8' || key === 'f8') {
           event.preventDefault();
           event.stopPropagation();
           this.ngZone.run(() => {
-            this.mostrarNotificacionAtajo(
-              'Narrando contenido de la página...',
-              'bi-megaphone-fill',
-            );
+            this.mostrarNotificacionAtajo('Narrando página actual...', 'bi-megaphone-fill');
             this.narrarPagina();
           });
           return;
         }
 
-        // F9: Activar o Pausar comandos por voz
         if (code === 'F9' || key === 'f9') {
           event.preventDefault();
           event.stopPropagation();
           this.ngZone.run(() => {
             this.alternarEscucha();
-            const escuchando = this.estaEscuchando();
-            const mensaje = escuchando
-              ? 'Escuchando comandos por voz'
-              : 'Comandos por voz pausados';
-            this.mostrarNotificacionAtajo(
-              mensaje,
-              escuchando ? 'bi-mic-fill' : 'bi-mic-mute-fill',
-            );
           });
           return;
         }
 
-        // Combinaciones de teclas modificadoras soportadas:
-        // - Alt (izquierdo o AltGr)
-        // - Ctrl + Shift (compatibilidad total sin conflicto con menús del navegador)
-        // - Ctrl + Alt
-        // - Alt + Shift
+        // 3. Modificadores (Alt o Ctrl+Shift)
         const hasAlt = event.altKey;
         const hasCtrlShift = event.ctrlKey && event.shiftKey;
         const hasCtrlAlt = event.ctrlKey && event.altKey;
@@ -362,52 +410,38 @@ export class VoiceAccessibilityService {
         const isKeyS = key === 's' || code === 'KeyS';
         const isKeyH = key === 'h' || code === 'KeyH';
 
-        // Atajo: Alt + A  o  Ctrl + Shift + A (Abrir/Cerrar Panel de Accesibilidad)
         if (isKeyA) {
           event.preventDefault();
           event.stopPropagation();
           this.ngZone.run(() => {
             this.alternarPanel();
             const abierto = this.panelAbierto();
-            const mensaje = abierto
-              ? 'Panel de accesibilidad abierto'
-              : 'Panel de accesibilidad cerrado';
+            const mensaje = abierto ? 'Panel abierto' : 'Panel cerrado';
             this.mostrarNotificacionAtajo(mensaje, abierto ? 'bi-universal-access' : 'bi-x-circle');
             this.hablar(mensaje, true);
           });
           return;
         }
 
-        // Atajo: Alt + N  o  Ctrl + Shift + N (Narrar página actual)
         if (isKeyN) {
           event.preventDefault();
           event.stopPropagation();
           this.ngZone.run(() => {
-            this.mostrarNotificacionAtajo(
-              'Narrando contenido de la página...',
-              'bi-megaphone-fill',
-            );
+            this.mostrarNotificacionAtajo('Narrando página...', 'bi-megaphone-fill');
             this.narrarPagina();
           });
           return;
         }
 
-        // Atajo: Alt + C / Alt + V  o  Ctrl + Shift + C / Ctrl + Shift + V (Alternar comandos por voz)
         if (isKeyC || isKeyV) {
           event.preventDefault();
           event.stopPropagation();
           this.ngZone.run(() => {
             this.alternarEscucha();
-            const escuchando = this.estaEscuchando();
-            const mensaje = escuchando
-              ? 'Escuchando comandos por voz'
-              : 'Comandos por voz pausados';
-            this.mostrarNotificacionAtajo(mensaje, escuchando ? 'bi-mic-fill' : 'bi-mic-mute-fill');
           });
           return;
         }
 
-        // Atajo: Alt + S  o  Ctrl + Shift + S (Silenciar de inmediato)
         if (isKeyS) {
           event.preventDefault();
           event.stopPropagation();
@@ -419,7 +453,6 @@ export class VoiceAccessibilityService {
           return;
         }
 
-        // Atajo: Alt + H  o  Ctrl + Shift + H (Guía de comandos)
         if (isKeyH) {
           event.preventDefault();
           event.stopPropagation();
@@ -444,7 +477,6 @@ export class VoiceAccessibilityService {
     const procesarElemento = (el: HTMLElement | null) => {
       if (!this.modoLectorHover() || !el) return;
 
-      // Ignorar si estamos dentro del panel de accesibilidad para evitar redundancia
       if (el.closest('.accessibility-panel-wrapper') || el.closest('.accessibility-floating-btn')) {
         return;
       }
@@ -458,12 +490,10 @@ export class VoiceAccessibilityService {
       }
     };
 
-    // Lectura por teclado (Focus)
     window.addEventListener('focusin', (e: FocusEvent) => {
       procesarElemento(e.target as HTMLElement);
     });
 
-    // Lectura por mouse (Hover)
     window.addEventListener('mouseover', (e: MouseEvent) => {
       const target = (e.target as HTMLElement)?.closest(
         'button, a, input, [role="button"], h1, h2, h3, h4, p, img, label',
@@ -502,7 +532,6 @@ export class VoiceAccessibilityService {
       return linkText ? `Enlace: ${linkText}` : 'Enlace';
     }
 
-    // Encabezados o párrafos
     const text = el.innerText?.trim();
     if (text && text.length < 200) {
       if (/^H[1-6]$/.test(el.tagName)) {
@@ -526,7 +555,6 @@ export class VoiceAccessibilityService {
     }
 
     try {
-      // Reanudar el motor de síntesis si el navegador lo puso en pausa
       if (this.synthesis.paused) {
         this.synthesis.resume();
       }
@@ -548,6 +576,12 @@ export class VoiceAccessibilityService {
         this.ngZone.run(() => {
           this.estaHablando.set(true);
           this.ultimoMensaje.set(texto);
+          // Pausar temporalmente el reconocimiento mientras el asistente habla para evitar eco
+          if (this.recognition && this.estaEscuchando()) {
+            try {
+              this.recognition.stop();
+            } catch {}
+          }
         });
       };
 
@@ -555,6 +589,16 @@ export class VoiceAccessibilityService {
         this.ngZone.run(() => {
           this.estaHablando.set(false);
           this.currentUtterance = null;
+          // Si el usuario tenía el micrófono encendido, reanudar escucha silenciosa
+          if (this.debeSeguirEscuchando && this.recognition) {
+            setTimeout(() => {
+              if (this.debeSeguirEscuchando && !this.estaHablando()) {
+                try {
+                  this.recognition.start();
+                } catch {}
+              }
+            }, 250);
+          }
           if (callback) callback();
         });
       };
@@ -563,6 +607,11 @@ export class VoiceAccessibilityService {
         this.ngZone.run(() => {
           this.estaHablando.set(false);
           this.currentUtterance = null;
+          if (this.debeSeguirEscuchando && this.recognition) {
+            try {
+              this.recognition.start();
+            } catch {}
+          }
         });
       };
 
@@ -590,7 +639,6 @@ export class VoiceAccessibilityService {
 
     this.detenerHablar();
 
-    // Obtener información contextual de la página
     const url = this.router.url;
     let tituloSeccion = 'Página actual';
 
@@ -610,13 +658,11 @@ export class VoiceAccessibilityService {
       tituloSeccion = 'Mi cuenta y perfil de cliente';
     }
 
-    // Extraer encabezados visibles
     const encabezados = Array.from(document.querySelectorAll('main h1, main h2, main h3'))
       .map((el) => (el as HTMLElement).innerText.trim())
       .filter((t) => t.length > 0 && t.length < 120)
       .slice(0, 5);
 
-    // Contar productos si existen en la vista
     const tarjetasProductos = document.querySelectorAll(
       '.product-card, .catalogo-card, [class*="producto"]',
     );
@@ -639,36 +685,47 @@ export class VoiceAccessibilityService {
   }
 
   // --------------------------------------------------------------------------
-  // CONTROL DE ESCUCHA DE COMANDOS DE VOZ
+  // CONTROL DE ESCUCHA DE COMANDOS DE VOZ (SIN FEEDBACK LOOP)
   // --------------------------------------------------------------------------
 
   iniciarEscucha(): void {
     if (!this.recognition) {
       this.errorMicrofono.set(
-        'Tu navegador no soporta reconocimiento de voz. Te recomendamos Google Chrome o Microsoft Edge.',
+        'Tu navegador actual no soporta la API de reconocimiento de voz. Usa Google Chrome o Microsoft Edge.',
       );
-      this.hablar('Tu navegador no soporta comandos por voz.', true);
+      this.mostrarNotificacionAtajo(
+        'Navegador no soporta micrófono',
+        'bi-exclamation-octagon-fill',
+      );
       return;
     }
 
     try {
       this.errorMicrofono.set(null);
+      this.debeSeguirEscuchando = true;
+      this.reproducirChime('inicio');
+      this.mostrarNotificacionAtajo('Micrófono activo: di un comando', 'bi-mic-fill');
+      this.transcripcionEnVivo.set('Escuchando tu voz...');
       this.recognition.start();
       this.estaEscuchando.set(true);
-      this.hablar('Micrófono activado. Te escucho.', true);
-    } catch (e) {
-      console.warn('Recognition start warning:', e);
+    } catch (e: any) {
+      // Si ya estaba iniciado, ignorar
+      console.warn('Recognition start aviso:', e);
+      this.estaEscuchando.set(true);
     }
   }
 
   detenerEscucha(): void {
+    this.debeSeguirEscuchando = false;
+    this.estaEscuchando.set(false);
+    this.transcripcionEnVivo.set('');
     if (this.recognition) {
-      this.estaEscuchando.set(false);
       try {
         this.recognition.stop();
       } catch {}
-      this.hablar('Comandos por voz pausados.', true);
     }
+    this.reproducirChime('fin');
+    this.mostrarNotificacionAtajo('Comandos por voz pausados', 'bi-mic-mute-fill');
   }
 
   alternarEscucha(): void {
@@ -683,10 +740,7 @@ export class VoiceAccessibilityService {
     const nuevo = !this.modoLectorHover();
     this.modoLectorHover.set(nuevo);
     if (nuevo) {
-      this.hablar(
-        'Modo lector interactivo activado. Pasando el cursor o con la tecla Tab escucharás los elementos.',
-        true,
-      );
+      this.hablar('Modo lector interactivo activado.', true);
     } else {
       this.hablar('Modo lector interactivo desactivado.', true);
     }
@@ -698,10 +752,7 @@ export class VoiceAccessibilityService {
 
   abrirModalComandos(): void {
     this.modalComandosAbierto.set(true);
-    this.hablar(
-      'Guía de comandos por voz abierta. Puedes decir por ejemplo: ir a catálogo, buscar mangueras, o narrar página.',
-      true,
-    );
+    this.hablar('Guía de comandos por voz abierta.', true);
   }
 
   cerrarModalComandos(): void {
@@ -710,14 +761,14 @@ export class VoiceAccessibilityService {
 
   cambiarVelocidad(nueva: number): void {
     this.velocidad.set(nueva);
-    this.hablar(`Velocidad configurada en ${nueva} veces.`, true);
+    this.hablar(`Velocidad ${nueva}`, true);
   }
 
   // --------------------------------------------------------------------------
-  // PROCESAMIENTO DE COMANDOS DE VOZ EN ESPAÑOL
+  // PROCESAMIENTO INTELIGENTE DE COMANDOS DE VOZ EN ESPAÑOL
   // --------------------------------------------------------------------------
 
-  private procesarComandoVoz(comandoBruto: string): void {
+  procesarComandoVoz(comandoBruto: string): void {
     const comando = comandoBruto.toLowerCase().trim();
 
     // 1. Control de voz y parada
@@ -729,6 +780,7 @@ export class VoiceAccessibilityService {
       comando.includes('stop')
     ) {
       this.detenerHablar();
+      this.mostrarNotificacionAtajo('Voz detenida', 'bi-volume-mute-fill');
       return;
     }
 
@@ -736,13 +788,13 @@ export class VoiceAccessibilityService {
     if (
       comando.includes('narrar') ||
       comando.includes('leer página') ||
+      comando.includes('leer pagina') ||
       comando.includes('leer contenido') ||
       comando.includes('lee la página') ||
       comando.includes('resumen')
     ) {
-      this.hablar('Narrando la página.', true, () => {
-        this.narrarPagina();
-      });
+      this.mostrarNotificacionAtajo('Narrando página...', 'bi-megaphone-fill');
+      this.narrarPagina();
       return;
     }
 
@@ -757,9 +809,14 @@ export class VoiceAccessibilityService {
       return;
     }
 
-    if (comando.includes('cerrar ayuda') || comando.includes('cerrar comandos')) {
+    if (
+      comando.includes('cerrar ayuda') ||
+      comando.includes('cerrar comandos') ||
+      comando.includes('cerrar')
+    ) {
       this.cerrarModalComandos();
-      this.hablar('Cerrando ayuda.', true);
+      this.panelAbierto.set(false);
+      this.hablar('Cerrando.', true);
       return;
     }
 
@@ -786,8 +843,10 @@ export class VoiceAccessibilityService {
       comando.includes('ir a inicio') ||
       comando.includes('ir al inicio') ||
       comando.includes('página principal') ||
-      comando.includes('abrir inicio')
+      comando.includes('abrir inicio') ||
+      comando.includes('home')
     ) {
+      this.mostrarNotificacionAtajo('Navegando a Inicio', 'bi-house-door-fill');
       this.hablar('Navegando a inicio.', true);
       this.router.navigate(['/']);
       return;
@@ -799,10 +858,14 @@ export class VoiceAccessibilityService {
       comando.includes('ir a catálogo') ||
       comando.includes('ir al catálogo') ||
       comando.includes('ver catálogo') ||
+      comando.includes('ver catalogo') ||
       comando.includes('ver productos') ||
       comando.includes('abrir catálogo') ||
-      comando === 'productos'
+      comando.includes('abrir catalogo') ||
+      comando === 'productos' ||
+      comando.includes('tienda')
     ) {
+      this.mostrarNotificacionAtajo('Navegando al Catálogo', 'bi-grid-3x3-gap-fill');
       this.hablar('Abriendo catálogo de productos.', true);
       this.router.navigate(['/catalogo']);
       return;
@@ -815,6 +878,7 @@ export class VoiceAccessibilityService {
       comando.includes('abrir carrito') ||
       comando.includes('compras')
     ) {
+      this.mostrarNotificacionAtajo('Abriendo Carrito', 'bi-cart3');
       this.hablar('Abriendo tu carrito de compras.', true);
       this.router.navigate(['/carrito']);
       return;
@@ -827,6 +891,7 @@ export class VoiceAccessibilityService {
       comando.includes('ingresar') ||
       comando.includes('entrar')
     ) {
+      this.mostrarNotificacionAtajo('Abriendo Login', 'bi-box-arrow-in-right');
       this.hablar('Abriendo página de inicio de sesión.', true);
       this.router.navigate(['/login']);
       return;
@@ -837,12 +902,14 @@ export class VoiceAccessibilityService {
       comando.includes('registro') ||
       comando.includes('crear cuenta')
     ) {
+      this.mostrarNotificacionAtajo('Abriendo Registro', 'bi-person-plus-fill');
       this.hablar('Abriendo formulario de registro.', true);
       this.router.navigate(['/registro']);
       return;
     }
 
     if (comando.includes('mis pedidos') || comando.includes('pedidos')) {
+      this.mostrarNotificacionAtajo('Abriendo Mis Pedidos', 'bi-box-seam');
       this.hablar('Abriendo tus pedidos.', true);
       this.router.navigate(['/cliente/pedidos']);
       return;
@@ -854,13 +921,15 @@ export class VoiceAccessibilityService {
       comando.includes('cuenta') ||
       comando.includes('perfil')
     ) {
+      this.mostrarNotificacionAtajo('Abriendo Mi Cuenta', 'bi-person-circle');
       this.hablar('Abriendo tu cuenta.', true);
       this.router.navigate(['/cliente/cuenta']);
       return;
     }
 
     // 6. Búsqueda por voz
-    const regexBuscar = /(?:buscar|busca|encontrar|encuentra|consultar|ver)\s+(?:por\s+)?(.+)/i;
+    const regexBuscar =
+      /(?:buscar|busca|encontrar|encuentra|consultar|ver|dame|quiero)\s+(?:por\s+)?(.+)/i;
     const matchBuscar = comando.match(regexBuscar);
     if (matchBuscar && matchBuscar[1]) {
       const termino = matchBuscar[1]
@@ -868,6 +937,7 @@ export class VoiceAccessibilityService {
         .trim();
 
       if (termino && termino !== 'página' && termino !== 'pagina') {
+        this.mostrarNotificacionAtajo(`Buscando: ${termino}`, 'bi-search');
         this.hablar(`Buscando ${termino} en el catálogo.`, true);
         this.router.navigate(['/catalogo'], { queryParams: { q: termino } });
         return;
@@ -878,7 +948,7 @@ export class VoiceAccessibilityService {
     if (comando.includes('arriba') || comando.includes('subir') || comando.includes('principio')) {
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        this.hablar('Subiendo al principio de la página.', true);
+        this.mostrarNotificacionAtajo('Subiendo arriba', 'bi-arrow-up-circle-fill');
       }
       return;
     }
@@ -886,7 +956,7 @@ export class VoiceAccessibilityService {
     if (comando.includes('abajo') || comando.includes('bajar') || comando.includes('final')) {
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        this.hablar('Bajando al final de la página.', true);
+        this.mostrarNotificacionAtajo('Bajando al final', 'bi-arrow-down-circle-fill');
       }
       return;
     }
@@ -912,15 +982,8 @@ export class VoiceAccessibilityService {
       return;
     }
 
-    if (comando.includes('velocidad normal')) {
-      this.cambiarVelocidad(1.0);
-      return;
-    }
-
     // 9. Comando no reconocido
-    this.hablar(
-      `Comando "${comando}" no reconocido. Puedes decir "ayuda" para escuchar los comandos disponibles.`,
-      false,
-    );
+    this.mostrarNotificacionAtajo(`No reconocido: "${comando}"`, 'bi-question-diamond-fill');
+    this.hablar(`Comando "${comando}" no reconocido. Di ayuda para escuchar los comandos.`, false);
   }
 }

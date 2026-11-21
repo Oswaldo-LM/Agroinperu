@@ -195,16 +195,53 @@
             [class.btn-danger]="voiceService.estaEscuchando()"
             [class.btn-outline-danger]="!voiceService.estaEscuchando()"
             (click)="voiceService.alternarEscucha()"
-            title="Activar o desactivar escucha de comandos por voz (Alt + C)"
+            title="Activar o desactivar escucha de comandos por voz (Tecla F9 o Alt + C)"
           >
             @if (voiceService.estaEscuchando()) {
               <i class="bi bi-mic-mute-fill fs-5"></i>
               <span>Pausar escucha por voz</span>
             } @else {
               <i class="bi bi-mic-fill fs-5"></i>
-              <span>Iniciar comandos por voz</span>
+              <span>Iniciar comandos por voz (F9)</span>
             }
           </button>
+
+          <!-- Caja de transcripción en tiempo real cuando el micro está activo -->
+          @if (voiceService.estaEscuchando()) {
+            <div
+              class="voice-listening-box p-2.5 rounded-3 mb-2.5 bg-danger-subtle border border-danger-subtle text-center animate-fade-in"
+            >
+              <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+                <span class="mic-dot-pulsing"></span>
+                <span class="small fw-bold text-danger">Micrófono abierto escuchando...</span>
+              </div>
+              <div class="small fw-semibold text-dark">
+                {{
+                  voiceService.transcripcionEnVivo() ||
+                    'Di en voz alta: "Catálogo", "Buscar mangueras", "Inicio"...'
+                }}
+              </div>
+            </div>
+          }
+
+          <!-- Simulador de comando rápido para prueba manual -->
+          <div class="input-group input-group-sm mb-2.5">
+            <input
+              #cmdInput
+              type="text"
+              class="form-control"
+              placeholder='Probar comando (ej: "catálogo")'
+              (keydown.enter)="voiceService.procesarComandoVoz(cmdInput.value); cmdInput.value = ''"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="voiceService.procesarComandoVoz(cmdInput.value); cmdInput.value = ''"
+              title="Ejecutar comando"
+            >
+              <i class="bi bi-play-fill"></i>
+            </button>
+          </div>
 
           <button
             type="button"
