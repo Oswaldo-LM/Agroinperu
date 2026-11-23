@@ -1,0 +1,384 @@
+<!-- ========================================================================
+     FILTROS SVG GLOBALES PARA SIMULACIÓN MATEMÁTICA DE DALTONISMO
+     Estándar: Brettel/Viénot/Mollon (1997) y Machado et al. (2009)
+     ======================================================================== -->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  class="colorblind-svg-defs"
+  style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;"
+  aria-hidden="true"
+>
+  <defs>
+    <!-- 1. Protanopía: Ceguera / Deficiencia de Conos L (Rojo) -->
+    <filter id="protanopia-sim-filter" color-interpolation-filters="linearRGB">
+      <feColorMatrix
+        type="matrix"
+        values="0.56667 0.43333 0.00000 0 0
+                0.55833 0.44167 0.00000 0 0
+                0.00000 0.24167 0.75833 0 0
+                0.00000 0.00000 0.00000 1 0"
+      />
+    </filter>
+
+    <!-- 2. Deuteranopía: Ceguera / Deficiencia de Conos M (Verde) -->
+    <filter id="deuteranopia-sim-filter" color-interpolation-filters="linearRGB">
+      <feColorMatrix
+        type="matrix"
+        values="0.62500 0.37500 0.00000 0 0
+                0.70000 0.30000 0.00000 0 0
+                0.00000 0.30000 0.70000 0 0
+                0.00000 0.00000 0.00000 1 0"
+      />
+    </filter>
+
+    <!-- 3. Tritanopía: Ceguera / Deficiencia de Conos S (Azul) -->
+    <filter id="tritanopia-sim-filter" color-interpolation-filters="linearRGB">
+      <feColorMatrix
+        type="matrix"
+        values="0.95000 0.05000 0.00000 0 0
+                0.00000 0.43333 0.56667 0 0
+                0.00000 0.47500 0.52500 0 0
+                0.00000 0.00000 0.00000 1 0"
+      />
+    </filter>
+
+    <!-- 4. Acromatopsia: Monocromatismo (Solo bastones, luminosidad) -->
+    <filter id="achromatopsia-sim-filter" color-interpolation-filters="linearRGB">
+      <feColorMatrix
+        type="matrix"
+        values="0.29900 0.58700 0.11400 0 0
+                0.29900 0.58700 0.11400 0 0
+                0.29900 0.58700 0.11400 0 0
+                0.00000 0.00000 0.00000 1 0"
+      />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ========================================================================
+     TOAST FLOTANTE DE NOTIFICACIÓN DE MODO DALTÓNICO
+     ======================================================================== -->
+@if (colorblindService.notificacion()) {
+  <div
+    class="colorblind-toast animate-toast-in shadow-lg"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="d-flex align-items-center gap-2.5">
+      <div class="colorblind-toast-icon">
+        <i [class]="'bi ' + colorblindService.notificacion()!.icono + ' fs-4 text-warning'"></i>
+      </div>
+      <div class="d-flex flex-column lh-sm">
+        <strong class="toast-title">Accesibilidad Visual</strong>
+        <span class="toast-desc">{{ colorblindService.notificacion()!.texto }}</span>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================================================
+     INDICADOR FLOTANTE INFERIOR DE MODO DALTÓNICO ACTIVO (Pill Badge)
+     ======================================================================== -->
+@if (colorblindService.estaActivo()) {
+  <aside
+    class="colorblind-active-pill shadow-lg animate-fade-in-up"
+    aria-label="Indicador de modo daltónico activo"
+  >
+    <div class="d-flex align-items-center gap-2">
+      <span
+        class="color-dot"
+        [style.backgroundColor]="colorblindService.infoActual().colorMuestra"
+      ></span>
+      <span class="pill-label">
+        <strong>{{ colorblindService.infoActual().nombre }}</strong>
+        <span class="pill-mode badge ms-1.5" [class.bg-primary]="colorblindService.modoAplicacion() === 'asistencia'" [class.bg-secondary]="colorblindService.modoAplicacion() === 'simulacion'">
+          {{ colorblindService.modoAplicacion() === 'asistencia' ? 'Asistida' : 'Simulación' }}
+        </span>
+      </span>
+
+      <div class="pill-actions d-flex align-items-center gap-1 ms-2">
+        <button
+          type="button"
+          class="btn btn-sm btn-light border-0 pill-btn"
+          (click)="abrirSelector()"
+          title="Cambiar o configurar modo daltónico"
+        >
+          <i class="bi bi-sliders"></i>
+          <span class="visually-hidden">Configurar</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-sm btn-light border-0 pill-btn pill-btn-close"
+          (click)="restablecer()"
+          title="Desactivar modo daltónico y volver a visión estándar"
+          aria-label="Desactivar modo daltónico"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+}
+
+<!-- ========================================================================
+     MODAL / PANEL DE CONFIGURACIÓN DE MODOS DALTÓNICOS
+     ======================================================================== -->
+@if (colorblindService.panelSelectorAbierto()) {
+  <div
+    class="colorblind-modal-backdrop"
+    (click)="cerrarSelector()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalColorblindTitle"
+  >
+    <div
+      class="colorblind-modal-dialog animate-modal-zoom shadow-lg"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Cabecera -->
+      <div class="modal-header d-flex align-items-center justify-content-between p-3.5 border-bottom">
+        <div class="d-flex align-items-center gap-2.5">
+          <div class="header-icon-box">
+            <i class="bi bi-palette2 fs-4 text-primary"></i>
+          </div>
+          <div>
+            <h2 id="modalColorblindTitle" class="h6 mb-0 fw-bold text-dark">
+              Modo Daltónico y Accesibilidad Cromática
+            </h2>
+            <small class="text-muted">
+              Adapta la interfaz de AGROINPERU a diferentes condiciones de visión
+            </small>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar ventana de modo daltónico"
+          (click)="cerrarSelector()"
+        ></button>
+      </div>
+
+      <!-- Selector Asistencia vs Simulación -->
+      <div class="mode-switch-bar p-3 bg-light border-bottom">
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
+          <div>
+            <strong class="d-block text-dark font-size-sm">Tipo de Aplicación:</strong>
+            <small class="text-muted">
+              {{ colorblindService.modoAplicacion() === 'asistencia'
+                ? 'Reemplaza colores críticos por paletas universales de alto contraste (WCAG AAA).'
+                : 'Aplica filtros ópticos para experimentar cómo percibe la pantalla cada condición.' }}
+            </small>
+          </div>
+
+          <div class="btn-group btn-group-sm mode-toggle-buttons" role="group">
+            <button
+              type="button"
+              class="btn"
+              [class.btn-primary]="colorblindService.modoAplicacion() === 'asistencia'"
+              [class.btn-outline-primary]="colorblindService.modoAplicacion() !== 'asistencia'"
+              (click)="cambiarModo('asistencia')"
+            >
+              <i class="bi bi-shield-check me-1"></i> Asistencia (Recomendado)
+            </button>
+            <button
+              type="button"
+              class="btn"
+              [class.btn-primary]="colorblindService.modoAplicacion() === 'simulacion'"
+              [class.btn-outline-primary]="colorblindService.modoAplicacion() !== 'simulacion'"
+              (click)="cambiarModo('simulacion')"
+            >
+              <i class="bi bi-eye-fill me-1"></i> Simulación
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuerpo: Cuadrícula de Modos -->
+      <div class="modal-body p-3.5 custom-scroll">
+        <div class="row g-2.5">
+          @for (tipo of colorblindService.listaTipos; track tipo.id) {
+            <div class="col-12 col-md-6">
+              <button
+                type="button"
+                class="mode-card w-100 text-start p-3 rounded-3"
+                [class.selected]="colorblindService.tipoActual() === tipo.id"
+                (click)="seleccionarTipo(tipo.id)"
+              >
+                <div class="d-flex align-items-start justify-content-between gap-2 mb-1.5">
+                  <div class="d-flex align-items-center gap-2">
+                    <span
+                      class="card-color-indicator"
+                      [style.backgroundColor]="tipo.colorMuestra"
+                    ></span>
+                    <div>
+                      <strong class="mode-name text-dark">{{ tipo.nombre }}</strong>
+                      <span class="badge badge-subtle ms-1.5">{{ tipo.badgeTexto }}</span>
+                    </div>
+                  </div>
+
+                  @if (colorblindService.tipoActual() === tipo.id) {
+                    <i class="bi bi-check-circle-fill text-primary fs-5" aria-hidden="true"></i>
+                  }
+                </div>
+
+                <div class="text-muted small mb-1">{{ tipo.subtitulo }}</div>
+                <p class="mode-desc mb-2 text-secondary">{{ tipo.descripcion }}</p>
+
+                <div class="mode-meta d-flex align-items-center justify-content-between pt-2 border-top">
+                  <small class="text-muted font-monospace">
+                    <i class="bi bi-people-fill me-1"></i>{{ tipo.prevalencia }}
+                  </small>
+                </div>
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Muestra en Vivo de Paleta y Contraste -->
+        <div class="live-preview-box mt-3 p-3 rounded-3 border bg-white">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="preview-title fw-bold text-dark font-size-sm">
+              <i class="bi bi-eye me-1.5 text-primary"></i> Vista Previa en Tiempo Real de Estados
+            </span>
+            <small class="text-muted">Prueba visual bajo el modo seleccionado</small>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <span class="badge-status-activo">Activo</span>
+            <span class="badge-status-inactivo">Inactivo</span>
+            <button type="button" class="btn btn-sm btn-success">Botón Éxito / Compra</button>
+            <button type="button" class="btn btn-sm btn-outline-success">Botón Contorno</button>
+            <button type="button" class="btn btn-sm btn-danger">Botón Peligro / Eliminar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie de la Modal -->
+      <div class="modal-footer d-flex align-items-center justify-content-between p-3 border-top bg-light">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-secondary"
+          (click)="abrirModalEducativa()"
+        >
+          <i class="bi bi-info-circle me-1"></i> Conocer más sobre daltonismo
+        </button>
+
+        <div class="d-flex align-items-center gap-2">
+          @if (colorblindService.estaActivo()) {
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              (click)="restablecer()"
+            >
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Restablecer a Estándar
+            </button>
+          }
+          <button
+            type="button"
+            class="btn btn-sm btn-primary px-3"
+            (click)="cerrarSelector()"
+          >
+            Aceptar y Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ========================================================================
+     MODAL EDUCATIVA: GUÍA DE DALTONISMO EN AGROINPERU
+     ======================================================================== -->
+@if (colorblindService.modalEducativaAbierta()) {
+  <div
+    class="colorblind-modal-backdrop"
+    (click)="cerrarModalEducativa()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalEduTitle"
+  >
+    <div
+      class="colorblind-modal-dialog animate-modal-zoom shadow-lg modal-dialog-edu"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="modal-header d-flex align-items-center justify-content-between p-3.5 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-book-half fs-4 text-primary"></i>
+          <div>
+            <h2 id="modalEduTitle" class="h6 mb-0 fw-bold text-dark">
+              Guía de Daltonismo y Accesibilidad Universal
+            </h2>
+            <small class="text-muted">Compromiso de AGROINPERU con la inclusión digital</small>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar guía educativa"
+          (click)="cerrarModalEducativa()"
+        ></button>
+      </div>
+
+      <div class="modal-body p-3.5 custom-scroll">
+        <div class="alert alert-info py-2 px-3 mb-3 small d-flex align-items-center gap-2">
+          <i class="bi bi-lightbulb-fill fs-5"></i>
+          <div>
+            En el sector agrícola, los colores verdes, rojos y ámbares son usados con frecuencia para indicar estado de cosechas, tuberías, válvulas o disponibilidad de stock. AGROINPERU implementa adaptaciones para que ningún agricultor o cliente sufra barreras de acceso.
+          </div>
+        </div>
+
+        <h3 class="h6 fw-bold text-dark mt-2 mb-2">Tipos Principales de Daltonismo:</h3>
+        <div class="edu-type-list d-flex flex-column gap-2 mb-3">
+          <div class="p-2.5 rounded border bg-light">
+            <strong class="text-primary">1. Deuteranopía (Deficiencia al Verde):</strong>
+            <p class="mb-0 text-muted small">
+              Falta o mal funcionamiento de los fotorreceptores M (verde). Las personas confunden verde con rojo o marrón. El <strong>Modo Deuteranopía Asistido</strong> transforma el verde corporativo a azul cobalto (#0072B2), garantizando contraste total.
+            </p>
+          </div>
+
+          <div class="p-2.5 rounded border bg-light">
+            <strong class="text-danger">2. Protanopía (Deficiencia al Rojo):</strong>
+            <p class="mb-0 text-muted small">
+              Ausencia de conos L (rojo). El color rojo se ve oscuro o negro. El <strong>Modo Protanopía Asistido</strong> refuerza los estados de alerta con naranja bermellón (#D55E00) e iconografía reforzada.
+            </p>
+          </div>
+
+          <div class="p-2.5 rounded border bg-light">
+            <strong class="text-info">3. Tritanopía (Deficiencia al Azul/Amarillo):</strong>
+            <p class="mb-0 text-muted small">
+              Muy infrecuente. Afecta los conos S. Se confunde azul con verde y amarillo con rosa. Se emplea magenta accesible y cian puro.
+            </p>
+          </div>
+
+          <div class="p-2.5 rounded border bg-light">
+            <strong class="text-dark">4. Acromatopsia (Monocromático):</strong>
+            <p class="mb-0 text-muted small">
+              La visión se basa únicamente en luminosidad y escala de grises. Se activan subrayados, bordes dobles e íconos distintivos sin depender del color.
+            </p>
+          </div>
+        </div>
+
+        <div class="edu-shortcut-tip p-2.5 rounded border border-warning bg-warning bg-opacity-10 small">
+          <strong><i class="bi bi-keyboard me-1"></i> Atajos y Comandos de Voz:</strong>
+          <ul class="mb-0 ps-3 mt-1">
+            <li>Puedes decir por micrófono: <em>"modo deuteranopía"</em>, <em>"modo protanopía"</em> o <em>"visión normal"</em>.</li>
+            <li>O presionar <strong>Alt + D</strong> (o <strong>Ctrl + Shift + D</strong>) para abrir directamente este panel.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer p-3 border-top bg-light text-end">
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="cerrarModalEducativa()"
+        >
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+}

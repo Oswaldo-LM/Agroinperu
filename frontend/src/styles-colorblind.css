@@ -1,0 +1,241 @@
+/* ==========================================================================
+   AGROINPERU S.A.C. — Adaptaciones Globales para Modo Daltónico
+   Soporte para: Deuteranopía, Protanopía, Tritanopía, Acromatopsia y Alto Contraste
+   Estándar: WCAG 2.1 / 2.2 Nivel AAA (Criterio 1.4.1 Uso del Color y 1.4.3 Contraste)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FILTROS DE SIMULACIÓN COLORIMÉTRICA (Modo Simulación)
+   Aplica matrices matemáticas de simulación visual a todo el body
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind-mode="simulacion"][data-colorblind="deuteranopia"] body {
+  filter: url('#deuteranopia-sim-filter') !important;
+}
+
+html[data-colorblind-mode="simulacion"][data-colorblind="protanopia"] body {
+  filter: url('#protanopia-sim-filter') !important;
+}
+
+html[data-colorblind-mode="simulacion"][data-colorblind="tritanopia"] body {
+  filter: url('#tritanopia-sim-filter') !important;
+}
+
+html[data-colorblind-mode="simulacion"][data-colorblind="achromatopsia"] body {
+  filter: url('#achromatopsia-sim-filter') !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. REGLAS COMUNES DE ACCESIBILIDAD PARA CUALQUIER MODO DALTÓNICO
+   Garantiza que la información nunca dependa exclusivamente del color
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind] a:not(.btn) {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+html[data-colorblind] .badge-status-activo::before {
+  content: "✓ " !important;
+  font-weight: 800 !important;
+  margin-right: 2px;
+}
+
+html[data-colorblind] .badge-status-inactivo::before {
+  content: "✕ " !important;
+  font-weight: 800 !important;
+  margin-right: 2px;
+}
+
+html[data-colorblind] .form-control:focus,
+html[data-colorblind] .form-select:focus {
+  outline: 3px solid currentColor !important;
+  outline-offset: 1px !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. DEUTERANOPÍA ASISTIDA (Deficiencia con el Verde - Más común)
+   AgroIn adapta su color institucional verde a Azul Cobalto Accesible (#0072B2)
+   según la paleta Okabe-Ito de accesibilidad universal
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) {
+  --agro-primary: #0072B2;
+  --agro-primary-hover: #005a8e;
+  --agro-primary-light: #2b88d8;
+  --agro-primary-subtle: #e6f0fa;
+  --agro-primary-text: #00446b;
+}
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) .btn-success {
+  background-color: #0072B2 !important;
+  border-color: #005a8e !important;
+  color: #ffffff !important;
+}
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) .btn-outline-success {
+  color: #0072B2 !important;
+  border-color: #0072B2 !important;
+}
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) .btn-outline-success:hover {
+  background-color: #0072B2 !important;
+  color: #ffffff !important;
+}
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) .badge-status-activo {
+  background-color: #e6f0fa !important;
+  color: #00446b !important;
+  border: 1.5px solid #0072B2 !important;
+}
+
+html[data-colorblind="deuteranopia"]:not([data-colorblind-mode="simulacion"]) .badge-status-activo .badge-status-dot {
+  background-color: #0072B2 !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. PROTANOPÍA ASISTIDA (Deficiencia con el Rojo)
+   El rojo crítico (eliminar, error, cancelar) pasa a Bermellón (#D55E00) con
+   alto brillo, y el verde se calibra a Turquesa Esmeralda (#009E73)
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind="protanopia"]:not([data-colorblind-mode="simulacion"]) {
+  --agro-primary: #009E73;
+  --agro-primary-hover: #007a59;
+  --agro-primary-light: #1fd19c;
+  --agro-primary-subtle: #e6f8f2;
+  --agro-primary-text: #005c43;
+}
+
+html[data-colorblind="protanopia"]:not([data-colorblind-mode="simulacion"]) .btn-danger {
+  background-color: #D55E00 !important;
+  border-color: #ad4c00 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 1px #ffffff, 0 0 0 3px #D55E00 !important;
+}
+
+html[data-colorblind="protanopia"]:not([data-colorblind-mode="simulacion"]) .text-danger {
+  color: #D55E00 !important;
+  font-weight: 700 !important;
+}
+
+html[data-colorblind="protanopia"]:not([data-colorblind-mode="simulacion"]) .badge-danger,
+html[data-colorblind="protanopia"]:not([data-colorblind-mode="simulacion"]) .bg-danger {
+  background-color: #D55E00 !important;
+  color: #ffffff !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. TRITANOPÍA ASISTIDA (Deficiencia Azul / Amarillo)
+   Sustituye azules y amarillos por Magenta Accesible (#CC79A7),
+   Cian (#56B4E9) y Rojo Cálido (#D55E00)
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind="tritanopia"]:not([data-colorblind-mode="simulacion"]) {
+  --agro-primary: #0284c7;
+  --agro-primary-hover: #0369a1;
+  --agro-primary-light: #38bdf8;
+  --agro-primary-subtle: #f0f9ff;
+  --agro-primary-text: #0c4a6e;
+}
+
+html[data-colorblind="tritanopia"]:not([data-colorblind-mode="simulacion"]) .btn-warning,
+html[data-colorblind="tritanopia"]:not([data-colorblind-mode="simulacion"]) .bg-warning {
+  background-color: #CC79A7 !important;
+  border-color: #a85885 !important;
+  color: #ffffff !important;
+}
+
+html[data-colorblind="tritanopia"]:not([data-colorblind-mode="simulacion"]) .badge-warning {
+  background-color: #fdf2f8 !important;
+  color: #831843 !important;
+  border: 1.5px solid #CC79A7 !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. ACROMATOPSIA ASISTIDA (Monocromatismo / Escala de Grises Total)
+   Maximiza luminancia, bordes, tipografía y formas inequívocas
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind="achromatopsia"]:not([data-colorblind-mode="simulacion"]) {
+  --agro-primary: #1e293b;
+  --agro-primary-hover: #0f172a;
+  --agro-primary-light: #475569;
+  --agro-primary-subtle: #f1f5f9;
+  --agro-primary-text: #0f172a;
+  --agro-bg: #f8fafc;
+  --agro-card-bg: #ffffff;
+  --agro-border: #334155;
+}
+
+html[data-colorblind="achromatopsia"]:not([data-colorblind-mode="simulacion"]) .card {
+  border: 2px solid #334155 !important;
+}
+
+html[data-colorblind="achromatopsia"]:not([data-colorblind-mode="simulacion"]) .btn {
+  border: 2px solid #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html[data-colorblind="achromatopsia"]:not([data-colorblind-mode="simulacion"]) .badge-status-activo {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+}
+
+html[data-colorblind="achromatopsia"]:not([data-colorblind-mode="simulacion"]) .badge-status-inactivo {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 2px dashed #0f172a !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. ALTO CONTRASTE (WCAG AAA - Daltonismo Severo o Baja Visión)
+   Líneas oscuras, textos hiper-definidos y botones destacados
+   -------------------------------------------------------------------------- */
+
+html[data-colorblind="high-contrast"] {
+  --agro-primary: #0056b3;
+  --agro-primary-hover: #003d80;
+  --agro-primary-light: #0d6efd;
+  --agro-primary-subtle: #d0e2ff;
+  --agro-primary-text: #002d62;
+  --agro-text: #000000;
+  --agro-text-muted: #1e293b;
+  --agro-border: #000000;
+}
+
+html[data-colorblind="high-contrast"] body {
+  color: #000000 !important;
+  font-weight: 500;
+}
+
+html[data-colorblind="high-contrast"] .card {
+  border: 2px solid #000000 !important;
+  box-shadow: 0 4px 0 #000000 !important;
+}
+
+html[data-colorblind="high-contrast"] .btn {
+  border: 2px solid #000000 !important;
+  font-weight: 700 !important;
+}
+
+html[data-colorblind="high-contrast"] .btn:focus-visible {
+  outline: 4px solid #F59E0B !important;
+  outline-offset: 2px !important;
+}
+
+html[data-colorblind="high-contrast"] .badge-status-activo {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #000000 !important;
+  font-weight: 800 !important;
+}
+
+html[data-colorblind="high-contrast"] .badge-status-inactivo {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 2px solid #000000 !important;
+  font-weight: 800 !important;
+}

@@ -1,10 +1,11 @@
 import { inject, Injectable, NgZone, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ColorblindService } from './colorblind.service';
 
 export interface ComandoAyuda {
   frases: string[];
   descripcion: string;
-  categoria: 'Navegación' | 'Búsqueda' | 'Lectura' | 'Control';
+  categoria: 'Navegación' | 'Búsqueda' | 'Lectura' | 'Control' | 'Daltonismo';
 }
 
 export interface NotificacionAtajo {
@@ -18,6 +19,7 @@ export interface NotificacionAtajo {
 export class VoiceAccessibilityService {
   private readonly router = inject(Router);
   private readonly ngZone = inject(NgZone);
+  readonly colorblindService = inject(ColorblindService);
 
   // Estados reactivos (Signals)
   readonly soportaSintesis = signal<boolean>(false);
@@ -127,6 +129,41 @@ export class VoiceAccessibilityService {
       categoria: 'Control',
       frases: ['"Ayuda"', '"Comandos"', '"¿Qué puedo decir?"'],
       descripcion: 'Abre la guía de ayuda y narra los comandos disponibles',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo deuteranopía"', '"Deuteranopía"', '"Daltónico verde"'],
+      descripcion: 'Adapta la paleta de colores para deficiencia visual al color verde',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo protanopía"', '"Protanopía"', '"Daltónico rojo"'],
+      descripcion: 'Adapta los contrastes y tonos rojos para deficiencia visual al color rojo',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo tritanopía"', '"Tritanopía"', '"Daltónico azul"'],
+      descripcion: 'Adapta la interfaz para deficiencia visual al color azul y amarillo',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo acromatopsia"', '"Acromatopsia"', '"Escala de grises"'],
+      descripcion: 'Ajusta la interfaz para visión monocromática reforzando contrastes y símbolos',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo alto contraste"', '"Alto contraste"'],
+      descripcion: 'Activa la paleta WCAG AAA de máximo contraste para baja visión',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Visión normal"', '"Modo normal"', '"Desactivar daltonismo"'],
+      descripcion: 'Restaura la paleta de colores estándar de AGROINPERU',
+    },
+    {
+      categoria: 'Daltonismo',
+      frases: ['"Modo daltónico"', '"Configurar daltonismo"', '"Daltonismo"'],
+      descripcion: 'Abre el panel interactivo de configuración de modos daltónicos',
     },
   ];
 
@@ -397,6 +434,17 @@ export class VoiceAccessibilityService {
           return;
         }
 
+        // F7: Atajo directo para Selector de Modo Daltónico
+        if (code === 'F7' || key === 'f7') {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.colorblindService.togglePanelSelector();
+            this.hablar('Menú de modo daltónico', true);
+          });
+          return;
+        }
+
         // 3. Modificadores (Alt o Ctrl+Shift)
         const hasAlt = event.altKey;
         const hasCtrlShift = event.ctrlKey && event.shiftKey;
@@ -412,6 +460,7 @@ export class VoiceAccessibilityService {
         const isKeyV = key === 'v' || code === 'KeyV';
         const isKeyS = key === 's' || code === 'KeyS';
         const isKeyH = key === 'h' || code === 'KeyH';
+        const isKeyD = key === 'd' || code === 'KeyD';
 
         if (isKeyA) {
           event.preventDefault();
@@ -462,6 +511,16 @@ export class VoiceAccessibilityService {
           this.ngZone.run(() => {
             this.abrirModalComandos();
             this.mostrarNotificacionAtajo('Guía de comandos abierta', 'bi-question-circle-fill');
+          });
+          return;
+        }
+
+        if (isKeyD) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.ngZone.run(() => {
+            this.colorblindService.togglePanelSelector();
+            this.hablar('Menú de modo daltónico', true);
           });
           return;
         }
@@ -837,6 +896,84 @@ export class VoiceAccessibilityService {
     ) {
       this.modoLectorHover.set(false);
       this.hablar('Modo lector interactivo desactivado.', true);
+      return;
+    }
+
+    // 4.1. Modos Daltónicos y Accesibilidad Cromática
+    if (
+      comando.includes('deuteranopía') ||
+      comando.includes('deuteranopia') ||
+      comando.includes('daltónico verde') ||
+      comando.includes('daltonico verde')
+    ) {
+      this.colorblindService.setTipo('deuteranopia');
+      this.hablar('Modo Deuteranopía activado. Paleta adaptada para deficiencia al verde con azul cobalto accesible.', true);
+      return;
+    }
+
+    if (
+      comando.includes('protanopía') ||
+      comando.includes('protanopia') ||
+      comando.includes('daltónico rojo') ||
+      comando.includes('daltonico rojo')
+    ) {
+      this.colorblindService.setTipo('protanopia');
+      this.hablar('Modo Protanopía activado. Paleta adaptada para deficiencia al rojo con bermellón de alto contraste.', true);
+      return;
+    }
+
+    if (
+      comando.includes('tritanopía') ||
+      comando.includes('tritanopia') ||
+      comando.includes('daltónico azul') ||
+      comando.includes('daltonico azul')
+    ) {
+      this.colorblindService.setTipo('tritanopia');
+      this.hablar('Modo Tritanopía activado. Paleta adaptada para deficiencia al azul y amarillo con magenta accesible.', true);
+      return;
+    }
+
+    if (
+      comando.includes('acromatopsia') ||
+      comando.includes('monocromático') ||
+      comando.includes('monocromatico') ||
+      comando.includes('escala de grises')
+    ) {
+      this.colorblindService.setTipo('achromatopsia');
+      this.hablar('Modo Acromatopsia activado. Interfaz monocromática optimizada con bordes y texturas.', true);
+      return;
+    }
+
+    if (
+      comando.includes('alto contraste')
+    ) {
+      this.colorblindService.setTipo('high-contrast');
+      this.hablar('Modo Alto Contraste activado con certificación doble A y triple A.', true);
+      return;
+    }
+
+    if (
+      comando.includes('visión normal') ||
+      comando.includes('vision normal') ||
+      comando.includes('desactivar daltonismo') ||
+      comando.includes('quitar daltonismo') ||
+      comando.includes('desactivar modo daltónico') ||
+      comando.includes('modo normal')
+    ) {
+      this.colorblindService.restablecer();
+      this.hablar('Visión estándar restaurada con la paleta original de AGROINPERU.', true);
+      return;
+    }
+
+    if (
+      comando.includes('modo daltónico') ||
+      comando.includes('modo daltonico') ||
+      comando.includes('daltonismo') ||
+      comando.includes('abrir daltonismo') ||
+      comando.includes('configurar daltonismo')
+    ) {
+      this.colorblindService.abrirPanelSelector();
+      this.hablar('Abriendo configuración de modos daltónicos.', true);
       return;
     }
 

@@ -300,7 +300,129 @@
           </button>
         </div>
 
-        <!-- SECCIÓN 3: VELOCIDAD DE VOZ -->
+        <!-- SECCIÓN 3: MODO DALTÓNICO Y ACCESIBILIDAD CROMÁTICA -->
+        <div class="accessibility-card mb-3 p-3 rounded-3 border">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-1.5">
+              <i class="bi bi-palette2 text-primary"></i>
+              <span class="small fw-bold">Modo Daltónico</span>
+            </div>
+            <span
+              class="badge"
+              [style.backgroundColor]="voiceService.colorblindService.infoActual().colorMuestra"
+              [class.text-white]="voiceService.colorblindService.tipoActual() !== 'high-contrast'"
+              [class.text-dark]="voiceService.colorblindService.tipoActual() === 'high-contrast'"
+            >
+              {{ voiceService.colorblindService.infoActual().nombre }}
+            </span>
+          </div>
+
+          <p class="small text-muted mb-2 lh-sm">
+            Adapta los colores para deficiencias de visión o simula la percepción cromática:
+          </p>
+
+          <!-- Botones rápidos de selección de tipo -->
+          <div class="d-grid gap-1.5 mb-2.5" style="grid-template-columns: repeat(3, 1fr);">
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'normal'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'normal'"
+              (click)="voiceService.colorblindService.setTipo('normal')"
+              title="Visión estándar normal"
+            >
+              Estándar
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'deuteranopia'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'deuteranopia'"
+              (click)="voiceService.colorblindService.setTipo('deuteranopia')"
+              title="Deuteranopía (Dificultad verde)"
+            >
+              Deuteranopía
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'protanopia'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'protanopia'"
+              (click)="voiceService.colorblindService.setTipo('protanopia')"
+              title="Protanopía (Dificultad rojo)"
+            >
+              Protanopía
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'tritanopia'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'tritanopia'"
+              (click)="voiceService.colorblindService.setTipo('tritanopia')"
+              title="Tritanopía (Dificultad azul/amarillo)"
+            >
+              Tritanopía
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'achromatopsia'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'achromatopsia'"
+              (click)="voiceService.colorblindService.setTipo('achromatopsia')"
+              title="Acromatopsia (Escala de grises)"
+            >
+              Acromatopsia
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm text-truncate px-1"
+              [class.btn-primary]="voiceService.colorblindService.tipoActual() === 'high-contrast'"
+              [class.btn-outline-secondary]="voiceService.colorblindService.tipoActual() !== 'high-contrast'"
+              (click)="voiceService.colorblindService.setTipo('high-contrast')"
+              title="Alto Contraste WCAG AAA"
+            >
+              Alto Contraste
+            </button>
+          </div>
+
+          <!-- Switch Asistencia vs Simulación -->
+          @if (voiceService.colorblindService.estaActivo()) {
+            <div class="d-flex align-items-center justify-content-between pt-2 border-top mb-2">
+              <span class="small text-secondary">Modalidad:</span>
+              <div class="btn-group btn-group-sm" role="group">
+                <button
+                  type="button"
+                  class="btn"
+                  [class.btn-primary]="voiceService.colorblindService.modoAplicacion() === 'asistencia'"
+                  [class.btn-outline-secondary]="voiceService.colorblindService.modoAplicacion() !== 'asistencia'"
+                  (click)="voiceService.colorblindService.setModoAplicacion('asistencia')"
+                >
+                  Asistencia
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  [class.btn-primary]="voiceService.colorblindService.modoAplicacion() === 'simulacion'"
+                  [class.btn-outline-secondary]="voiceService.colorblindService.modoAplicacion() !== 'simulacion'"
+                  (click)="voiceService.colorblindService.setModoAplicacion('simulacion')"
+                >
+                  Simulación
+                </button>
+              </div>
+            </div>
+          }
+
+          <button
+            type="button"
+            class="btn btn-sm btn-light border w-100 d-inline-flex align-items-center justify-content-center gap-1.5"
+            (click)="voiceService.colorblindService.abrirPanelSelector()"
+          >
+            <i class="bi bi-sliders"></i>
+            <span>Configuración completa y prueba de paleta</span>
+          </button>
+        </div>
+
+        <!-- SECCIÓN 4: VELOCIDAD DE VOZ -->
         <div class="accessibility-card mb-3 p-3 rounded-3 border">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <span class="small fw-bold">Velocidad de narración</span>
@@ -345,6 +467,7 @@
           </div>
           <ul class="list-unstyled mb-0 d-flex flex-column gap-1.5 text-muted">
             <li><kbd>F2</kbd> o <kbd>Alt + A</kbd> : Abrir/Cerrar panel</li>
+            <li><kbd>F7</kbd> o <kbd>Alt + D</kbd> : Modo Daltónico</li>
             <li><kbd>F8</kbd> o <kbd>Alt + N</kbd> : Narrar contenido</li>
             <li><kbd>F9</kbd> o <kbd>Alt + C</kbd> : Comandos de voz</li>
             <li><kbd>Esc</kbd> o <kbd>Alt + S</kbd> : Silenciar / Detener</li>
@@ -426,6 +549,7 @@
                           'bg-info text-dark': cmd.categoria === 'Búsqueda',
                           'bg-success': cmd.categoria === 'Lectura',
                           'bg-secondary': cmd.categoria === 'Control',
+                          'bg-warning text-dark': cmd.categoria === 'Daltonismo'
                         }"
                       >
                         {{ cmd.categoria }}
