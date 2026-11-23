@@ -6,22 +6,24 @@
 
 /* --------------------------------------------------------------------------
    1. FILTROS DE SIMULACIÓN COLORIMÉTRICA (Modo Simulación)
-   Aplica matrices matemáticas de simulación visual a todo el body
+   Aplica matrices matemáticas únicamente al contenedor de la aplicación
+   (#agroin-app-content) para NUNCA alterar position: fixed en las herramientas
+   de accesibilidad, modales o paneles flotantes.
    -------------------------------------------------------------------------- */
 
-html[data-colorblind-mode="simulacion"][data-colorblind="deuteranopia"] body {
+html[data-colorblind-mode="simulacion"][data-colorblind="deuteranopia"] #agroin-app-content {
   filter: url('#deuteranopia-sim-filter') !important;
 }
 
-html[data-colorblind-mode="simulacion"][data-colorblind="protanopia"] body {
+html[data-colorblind-mode="simulacion"][data-colorblind="protanopia"] #agroin-app-content {
   filter: url('#protanopia-sim-filter') !important;
 }
 
-html[data-colorblind-mode="simulacion"][data-colorblind="tritanopia"] body {
+html[data-colorblind-mode="simulacion"][data-colorblind="tritanopia"] #agroin-app-content {
   filter: url('#tritanopia-sim-filter') !important;
 }
 
-html[data-colorblind-mode="simulacion"][data-colorblind="achromatopsia"] body {
+html[data-colorblind-mode="simulacion"][data-colorblind="achromatopsia"] #agroin-app-content {
   filter: url('#achromatopsia-sim-filter') !important;
 }
 
@@ -30,7 +32,21 @@ html[data-colorblind-mode="simulacion"][data-colorblind="achromatopsia"] body {
    Garantiza que la información nunca dependa exclusivamente del color
    -------------------------------------------------------------------------- */
 
-html[data-colorblind] a:not(.btn) {
+/* NUNCA subrayar encabezados, navbar, logo, botones ni navegación */
+html[data-colorblind] .navbar a,
+html[data-colorblind] .navbar-brand,
+html[data-colorblind] .nav-link,
+html[data-colorblind] .nav-actions a,
+html[data-colorblind] header a,
+html[data-colorblind] .btn,
+html[data-colorblind] .text-decoration-none {
+  text-decoration: none !important;
+}
+
+/* Solo subrayar enlaces informativos dentro del texto si se requiere */
+html[data-colorblind] p a:not(.btn):not(.nav-link),
+html[data-colorblind] .content-text a:not(.btn),
+html[data-colorblind] .card-body p a:not(.btn) {
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
 }

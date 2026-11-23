@@ -3,8 +3,7 @@
    ========================================================================== */
 
 .voice-accessibility-root {
-  position: relative;
-  z-index: 99990;
+  position: static;
 }
 
 /* --------------------------------------------------------------------------
@@ -60,9 +59,10 @@
    BOTÓN FLOTANTE DISPARADOR
    -------------------------------------------------------------------------- */
 .accessibility-floating-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 999998 !important;
   width: 58px;
   height: 58px;
   border-radius: 50%;
@@ -136,9 +136,10 @@
    PANEL DESPLEGABLE
    -------------------------------------------------------------------------- */
 .accessibility-panel-wrapper {
-  position: fixed;
-  bottom: 96px;
-  right: 24px;
+  position: fixed !important;
+  bottom: 96px !important;
+  right: 24px !important;
+  z-index: 999999 !important;
   width: 380px;
   max-width: calc(100vw - 32px);
   max-height: calc(100vh - 120px);

@@ -44,16 +44,16 @@
    2. PILL FLOTANTE DE MODO ACTIVO (Inferior Izquierdo)
    -------------------------------------------------------------------------- */
 .colorblind-active-pill {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 24px !important;
   background-color: rgba(16, 26, 46, 0.95);
   backdrop-filter: blur(8px);
   color: #ffffff;
   padding: 8px 14px;
   border-radius: 50rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 9998;
+  z-index: 999995 !important;
   display: flex;
   align-items: center;
   transition: all 0.2s ease;
