@@ -67,6 +67,11 @@
           Registrar devolución
         </h4>
 
+        @if (error()) {
+          <div class="alert alert-danger mb-3">
+            {{ error() }}
+          </div>
+        }
 
         <div class="row g-3 mb-3">
 
@@ -163,11 +168,24 @@
 
               <textarea
                 class="form-control"
+                [class.is-invalid]="
+                  form.controls.motivo.invalid &&
+                  form.controls.motivo.touched
+                "
                 rows="3"
                 maxlength="500"
                 formControlName="motivo"
                 placeholder="Describe el motivo de la devolución...">
               </textarea>
+
+              @if (
+                form.controls.motivo.invalid &&
+                form.controls.motivo.touched
+              ) {
+                <div class="invalid-feedback">
+                  El motivo de devolución es obligatorio.
+                </div>
+              }
 
             </div>
 
