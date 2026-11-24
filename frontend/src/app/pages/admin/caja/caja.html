@@ -579,12 +579,28 @@
 
                     <input
                       type="number"
-                      min="0"
                       step="0.01"
                       class="form-control"
+                      [class.is-invalid]="
+                        formApertura.controls.monto_apertura.invalid &&
+                        formApertura.controls.monto_apertura.touched
+                      "
                       formControlName="monto_apertura">
 
                   </div>
+
+                  @if (
+                    formApertura.controls.monto_apertura.invalid &&
+                    formApertura.controls.monto_apertura.touched
+                  ) {
+                    <div class="text-danger small mt-1">
+                      @if (formApertura.controls.monto_apertura.hasError('required')) {
+                        El monto de apertura es obligatorio.
+                      } @else if (formApertura.controls.monto_apertura.hasError('min')) {
+                        El monto de apertura debe ser mayor o igual a 0.
+                      }
+                    </div>
+                  }
 
 
                   <div class="form-text">
