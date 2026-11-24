@@ -311,7 +311,10 @@ export class Categorias
       this.categoriaService
         .actualizar(
           categoria.id_categoria,
-          datos
+          {
+            ...datos,
+            estado: categoria.estado
+          }
         )
         .subscribe({
 

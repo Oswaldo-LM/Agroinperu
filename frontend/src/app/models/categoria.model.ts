@@ -38,6 +38,9 @@ export interface ActualizarCategoriaDto {
 
   descripcion?:
     string | null;
+
+  estado?:
+    EstadoCategoria;
 }
 
 
