@@ -28,6 +28,10 @@ import {
 } from '../../../core/services/modal-confirm.service';
 
 import {
+  AuthService
+} from '../../../core/services/auth.service';
+
+import {
   EstadoVenta,
   VentaWebDetalle,
   VentaWebResumen
@@ -65,6 +69,9 @@ export class PedidosWeb
 
   private readonly modalConfirmService =
     inject(ModalConfirmService);
+
+  readonly authService =
+    inject(AuthService);
 
 
   readonly ventas =
@@ -655,6 +662,80 @@ export class PedidosWeb
             this.obtenerMensajeError(
               error
             )
+          );
+        }
+      });
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | Anular pedido web
+  |--------------------------------------------------------------------------
+  */
+
+  async anularPedido(): Promise<void> {
+
+    const venta =
+      this.ventaSeleccionada();
+
+    if (
+      !venta ||
+      !this.authService.esAdmin() ||
+      this.procesando()
+    ) {
+      return;
+    }
+
+    if (venta.estado !== 'PENDIENTE_PAGO') {
+      this.error.set('Solo se pueden anular pedidos en estado Pendiente de pago.');
+      return;
+    }
+
+    const motivo =
+      await this.modalConfirmService.prompt({
+        titulo: 'Anular Pedido Web',
+        mensaje: `Ingresa el motivo de anulación para el pedido ${venta.codigo_venta}. Se liberará el stock reservado y volverá al stock disponible:`,
+        promptPlaceholder: 'Ej: Cliente desistió de la compra o no realizó el pago',
+        tipo: 'danger',
+        textoConfirmar: 'Confirmar Anulación',
+        textoCancelar: 'Cancelar',
+        promptRequerido: true
+      });
+
+    if (motivo === null) {
+      return;
+    }
+
+    const motivoLimpio =
+      motivo.trim();
+
+    if (!motivoLimpio) {
+      this.error.set('El motivo de anulación es obligatorio.');
+      return;
+    }
+
+    this.procesando.set(true);
+    this.limpiarMensajes();
+
+    this.pedidoWebService
+      .anular(
+        venta.id_venta,
+        motivoLimpio
+      )
+      .subscribe({
+        next: respuesta => {
+          this.procesando.set(false);
+          this.mensaje.set(
+            respuesta.message ??
+            'Pedido anulado correctamente y stock liberado.'
+          );
+          this.refrescarPedido();
+        },
+        error: error => {
+          this.procesando.set(false);
+          this.error.set(
+            this.obtenerMensajeError(error)
           );
         }
       });

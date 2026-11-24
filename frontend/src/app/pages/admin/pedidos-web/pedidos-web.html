@@ -726,29 +726,41 @@
         }
 
 
-        <!-- FLUJO DEL PEDIDO -->
+        <!-- ACCIONES Y FLUJO DEL PEDIDO -->
 
-        @if (
-          siguienteEstado();
-          as siguiente
-        ) {
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-4">
 
-          <div
-            class="d-flex justify-content-end">
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              [disabled]="procesando()"
-              (click)="avanzarEstado()">
-
-              {{ textoSiguienteEstado() }}
-
-            </button>
-
+          <div>
+            @if (
+              authService.esAdmin() &&
+              venta.estado === 'PENDIENTE_PAGO'
+            ) {
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                [disabled]="procesando()"
+                (click)="anularPedido()">
+                Anular pedido
+              </button>
+            }
           </div>
 
-        }
+          <div class="d-flex gap-2">
+            @if (
+              siguienteEstado();
+              as siguiente
+            ) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="procesando()"
+                (click)="avanzarEstado()">
+                {{ textoSiguienteEstado() }}
+              </button>
+            }
+          </div>
+
+        </div>
 
 
         @if (
