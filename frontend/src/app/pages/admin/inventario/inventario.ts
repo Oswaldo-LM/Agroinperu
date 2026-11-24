@@ -563,6 +563,7 @@ stockFisicoSeleccionado():
 
     this.limpiarMensajes();
 
+    this.form.markAllAsTouched();
 
     const productoId =
       Number(
@@ -572,8 +573,7 @@ stockFisicoSeleccionado():
 
 
     const motivo =
-      this.form.controls
-        .motivo.value
+      (this.form.controls.motivo.value ?? '')
         .trim();
 
 
