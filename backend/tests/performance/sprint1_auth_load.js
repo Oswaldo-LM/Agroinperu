@@ -25,7 +25,7 @@ export default function () {
     headers: { 'Content-Type': 'application/json' },
   };
 
-  const res = http.post(${BASE_URL}/auth/login, payload, params);
+  const res = http.post(BASE_URL + '/auth/login', payload, params);
 
   check(res, {
     'Sprint 1 - Login validado (200 o 401)': (r) => r.status === 200 || r.status === 401,

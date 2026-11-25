@@ -16,7 +16,7 @@ export const options = {
 const BASE_URL = __ENV.API_URL || 'http://host.docker.internal:3000/api';
 
 export default function () {
-  const res = http.get(${BASE_URL}/pedidos-web);
+  const res = http.get(BASE_URL + '/pedidos-web');
 
   check(res, {
     'Sprint 3 - Consulta pedidos (200 o 401)': (r) => r.status === 200 || r.status === 401,

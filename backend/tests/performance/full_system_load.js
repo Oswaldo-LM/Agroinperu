@@ -18,7 +18,7 @@ const BASE_URL = __ENV.API_URL || 'http://host.docker.internal:3000/api';
 
 export default function () {
   group('1. Catalogo e Inventario (Sprint 2)', function () {
-    const resProd = http.get(${BASE_URL}/productos);
+    const resProd = http.get(BASE_URL + '/productos');
     check(resProd, {
       'Catalogo status 200': (r) => r.status === 200,
       'Catalogo resp < 200ms': (r) => r.timings.duration < 200,
@@ -26,7 +26,7 @@ export default function () {
   });
 
   group('2. Categorias y Filtros (Sprint 2)', function () {
-    const resCat = http.get(${BASE_URL}/categorias);
+    const resCat = http.get(BASE_URL + '/categorias');
     check(resCat, {
       'Categorias status 200': (r) => r.status === 200,
       'Categorias resp < 150ms': (r) => r.timings.duration < 150,
@@ -34,7 +34,7 @@ export default function () {
   });
 
   group('3. Pedidos Web (Sprint 3)', function () {
-    const resPed = http.get(${BASE_URL}/pedidos-web);
+    const resPed = http.get(BASE_URL + '/pedidos-web');
     check(resPed, {
       'Pedidos status 200/401': (r) => r.status === 200 || r.status === 401,
       'Pedidos resp < 250ms': (r) => r.timings.duration < 250,
