@@ -262,10 +262,12 @@ export class VoiceAccessibilityService {
               this.transcripcionEnVivo.set(`"${textoIntermedio}"`);
             }
             if (textoFinal) {
-              const limpio = textoFinal.trim();
-              this.comandoDetectado.set(limpio);
-              this.transcripcionEnVivo.set(`Detectado: "${limpio}"`);
-              this.procesarComandoVoz(limpio);
+              const limpio = this.limpiarPuntuacion(textoFinal);
+              if (limpio) {
+                this.comandoDetectado.set(limpio);
+                this.transcripcionEnVivo.set(`Detectado: "${limpio}"`);
+                this.procesarComandoVoz(limpio);
+              }
             }
           });
         };
@@ -771,8 +773,16 @@ export class VoiceAccessibilityService {
   // PROCESAMIENTO INTELIGENTE DE COMANDOS DE VOZ EN ESPAÑOL
   // --------------------------------------------------------------------------
 
+  private limpiarPuntuacion(texto: string): string {
+    return texto
+      .replace(/[.,;:!?¡¿"'()«»…]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
   procesarComandoVoz(comandoBruto: string): void {
-    const comando = comandoBruto.toLowerCase().trim();
+    const comando = this.limpiarPuntuacion(comandoBruto).toLowerCase();
+    if (!comando) return;
 
     // 1. Control de voz y parada
     if (
@@ -863,6 +873,9 @@ export class VoiceAccessibilityService {
       comando.includes('ver catálogo') ||
       comando.includes('ver catalogo') ||
       comando.includes('ver productos') ||
+      comando.includes('nuestros productos') ||
+      comando.includes('todos los productos') ||
+      comando.includes('mostrar productos') ||
       comando.includes('abrir catálogo') ||
       comando.includes('abrir catalogo') ||
       comando === 'productos' ||
@@ -935,14 +948,19 @@ export class VoiceAccessibilityService {
       /(?:buscar|busca|encontrar|encuentra|consultar|ver|dame|quiero)\s+(?:por\s+)?(.+)/i;
     const matchBuscar = comando.match(regexBuscar);
     if (matchBuscar && matchBuscar[1]) {
-      const termino = matchBuscar[1]
-        .replace(/^(en\s+el\s+catálogo|en\s+el\s+catalogo|productos?)/i, '')
-        .trim();
+      const termino = this.limpiarPuntuacion(
+        matchBuscar[1].replace(/^(?:en\s+el\s+cat[aá]logo|nuestros\s+productos?|productos?)/i, '')
+      );
 
-      if (termino && termino !== 'página' && termino !== 'pagina') {
+      if (termino && termino !== 'página' && termino !== 'pagina' && termino !== 'todo' && termino !== 'todos') {
         this.mostrarNotificacionAtajo(`Buscando: ${termino}`, 'bi-search');
         this.hablar(`Buscando ${termino} en el catálogo.`, true);
         this.router.navigate(['/catalogo'], { queryParams: { q: termino } });
+        return;
+      } else {
+        this.mostrarNotificacionAtajo('Navegando al Catálogo', 'bi-grid-3x3-gap-fill');
+        this.hablar('Abriendo catálogo de productos.', true);
+        this.router.navigate(['/catalogo']);
         return;
       }
     }
