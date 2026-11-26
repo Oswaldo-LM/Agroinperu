@@ -1,4 +1,5 @@
 # language: es
+@sprint2
 Característica: Gestión y reactivación de categorías del catálogo
   Como administrador del sistema AgroInPerú
   Quiero reactivar categorías que fueron previamente inactivadas
