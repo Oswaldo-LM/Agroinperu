@@ -11,6 +11,7 @@ import {
 } from '@angular/common';
 
 import {
+  ActivatedRoute,
   Router
 } from '@angular/router';
 
@@ -49,66 +50,58 @@ import {
 export class Catalogo
   implements OnInit {
 
-    private readonly carritoService =
-  inject(CarritoService);
+  private readonly carritoService =
+    inject(CarritoService);
 
+  private readonly route =
+    inject(ActivatedRoute);
 
-readonly agregandoProducto =
-  signal<number | null>(
-    null
-  );
+  readonly agregandoProducto =
+    signal<number | null>(
+      null
+    );
 
-
-readonly mensaje =
-  signal<string | null>(
-    null
-  );
+  readonly mensaje =
+    signal<string | null>(
+      null
+    );
 
   private readonly catalogoService =
     inject(
       CatalogoPublicoService
     );
 
-
   readonly authService =
     inject(AuthService);
 
-
   private readonly router =
     inject(Router);
-
 
   readonly productos =
     signal<ProductoPublico[]>(
       []
     );
 
-
   readonly categorias =
     signal<CategoriaPublica[]>(
       []
     );
 
-
   readonly cargando =
     signal(true);
-
 
   readonly error =
     signal<string | null>(
       null
     );
 
-
   readonly busqueda =
     signal('');
-
 
   readonly categoriaSeleccionada =
     signal<number | null>(
       null
     );
-
 
   readonly productosFiltrados =
     computed(
@@ -119,10 +112,8 @@ readonly mensaje =
             .trim()
             .toLowerCase();
 
-
         const categoriaId =
           this.categoriaSeleccionada();
-
 
         return this.productos()
           .filter(
@@ -134,25 +125,20 @@ readonly mensaje =
                   producto.categoria_id
                 ) === categoriaId;
 
-
               const coincideTexto =
                 !texto ||
-
                 producto.nombre
                   .toLowerCase()
                   .includes(texto) ||
-
                 producto.codigo
                   .toLowerCase()
                   .includes(texto) ||
-
                 (
                   producto.descripcion ??
                   ''
                 )
                   .toLowerCase()
                   .includes(texto);
-
 
               return (
                 coincideCategoria &&
@@ -166,6 +152,18 @@ readonly mensaje =
 
   ngOnInit(): void {
 
+    this.route.queryParams.subscribe(params => {
+      if (params['categoria']) {
+        const id = Number(params['categoria']);
+        if (Number.isInteger(id) && id > 0) {
+          this.categoriaSeleccionada.set(id);
+        }
+      }
+      if (params['q'] !== undefined) {
+        this.busqueda.set(params['q']);
+      }
+    });
+
     this.cargarCatalogo();
   }
 
@@ -176,19 +174,15 @@ readonly mensaje =
       true
     );
 
-
     this.error.set(
       null
     );
 
-
     let productosListos =
       false;
 
-
     let categoriasListas =
       false;
-
 
     const finalizar = () => {
 
@@ -203,7 +197,6 @@ readonly mensaje =
       }
     };
 
-
     this.catalogoService
       .listarProductos()
       .subscribe({
@@ -214,30 +207,24 @@ readonly mensaje =
             respuesta.data
           );
 
-
           productosListos =
             true;
 
-
           finalizar();
         },
-
 
         error: () => {
 
           productosListos =
             true;
 
-
           this.error.set(
             'No se pudo cargar el catálogo.'
           );
 
-
           finalizar();
         }
       });
-
 
     this.catalogoService
       .listarCategorias()
@@ -249,25 +236,20 @@ readonly mensaje =
             respuesta.data
           );
 
-
           categoriasListas =
             true;
 
-
           finalizar();
         },
-
 
         error: () => {
 
           categoriasListas =
             true;
 
-
           this.error.set(
             'No se pudieron cargar las categorías.'
           );
-
 
           finalizar();
         }
@@ -292,14 +274,10 @@ readonly mensaje =
     const id =
       Number(valor);
 
-
     this.categoriaSeleccionada.set(
-
       Number.isInteger(id) &&
       id > 0
-
         ? id
-
         : null
     );
   }
@@ -324,124 +302,102 @@ readonly mensaje =
     );
   }
 
+
   agregarAlCarrito(
-  producto: ProductoPublico
-): void {
-
-  this.error.set(
-    null
-  );
-
-
-  this.mensaje.set(
-    null
-  );
-
-
-  if (
-    !this.authService
-      .esCliente()
-  ) {
-
-    this.router.navigate(
-      ['/login'],
-      {
-        queryParams: {
-          returnUrl:
-            '/catalogo'
-        }
-      }
-    );
-
-
-    return;
-  }
-
-
-  if (
-    Number(
-      producto.stock_disponible
-    ) <= 0
-  ) {
+    producto: ProductoPublico
+  ): void {
 
     this.error.set(
-      'El producto no tiene stock disponible.'
+      null
     );
 
-    return;
-  }
+    this.mensaje.set(
+      null
+    );
 
+    if (
+      !this.authService
+        .esCliente()
+    ) {
 
-  this.agregandoProducto.set(
-    producto.id_producto
-  );
+      this.router.navigate(
+        ['/login'],
+        {
+          queryParams: {
+            returnUrl:
+              '/catalogo'
+          }
+        }
+      );
 
+      return;
+    }
 
-  this.carritoService
-    .agregarProducto(
-      producto.id_producto,
-      1
-    )
-    .subscribe({
+    if (
+      Number(
+        producto.stock_disponible
+      ) <= 0
+    ) {
 
-      next: respuesta => {
+      this.error.set(
+        'El producto no tiene stock disponible.'
+      );
 
-        this.agregandoProducto.set(
-          null
-        );
+      return;
+    }
 
+    this.agregandoProducto.set(
+      producto.id_producto
+    );
 
-        this.mensaje.set(
-          respuesta.message ??
-          `"${producto.nombre}" fue agregado al carrito.`
-        );
-      },
+    this.carritoService
+      .agregarProducto(
+        producto.id_producto,
+        1
+      )
+      .subscribe({
 
+        next: respuesta => {
 
-      error: error => {
-
-        this.agregandoProducto.set(
-          null
-        );
-
-
-        if (
-          error.status === 401 ||
-          error.status === 403
-        ) {
-
-          this.router.navigate(
-            ['/login'],
-            {
-              queryParams: {
-                returnUrl:
-                  '/catalogo'
-              }
-            }
+          this.agregandoProducto.set(
+            null
           );
 
+          this.mensaje.set(
+            respuesta.message ??
+            `"${producto.nombre}" fue agregado al carrito.`
+          );
+        },
 
-          return;
+        error: error => {
+
+          this.agregandoProducto.set(
+            null
+          );
+
+          if (
+            error.status === 401 ||
+            error.status === 403
+          ) {
+
+            this.router.navigate(
+              ['/login'],
+              {
+                queryParams: {
+                  returnUrl:
+                    '/catalogo'
+                }
+              }
+            );
+
+            return;
+          }
+
+          this.error.set(
+            error.error?.message ??
+            'No se pudo agregar el producto al carrito.'
+          );
         }
-
-
-        this.error.set(
-          error.error?.message ??
-          'No se pudo agregar el producto al carrito.'
-        );
-      }
-    });
-}
-
-  
-
-
-  
-
-
-    /*
-     * En el siguiente paso
-     * conectaremos aquí el carrito.
-     */
-  
+      });
+  }
 }

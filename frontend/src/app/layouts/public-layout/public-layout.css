@@ -1,3 +1,8 @@
+/* ==========================================================================
+   PUBLIC LAYOUT — Navbar + Footer Profesional (AGROINPERU)
+   Adaptable a cualquier resolución y nivel de zoom
+   ========================================================================== */
+
 :host {
   display: flex;
   flex-direction: column;
@@ -8,52 +13,336 @@ main {
   flex: 1;
 }
 
-.bg-slate-900 {
-  background-color: #0f172a !important;
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+
+.navbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  width: 100%;
 }
 
-.border-bottom-subtle {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15);
+.navbar {
+  background-color: var(--agro-dark, #101A2E) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  padding: 0.6rem 0;
+}
+
+.brand-logo-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.brand-logo {
+  border-radius: 8px;
+  object-fit: contain;
 }
 
 .brand-text {
+  font-weight: 800;
+  font-size: clamp(1rem, 0.5vw + 0.9rem, 1.15rem);
   letter-spacing: 0.5px;
+  color: #ffffff !important;
 }
 
+.brand-tagline {
+  font-size: 0.65rem;
+  color: #94a3b8 !important;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+
+/* Nav links */
+
 .nav-link {
-  color: #cbd5e1 !important;
+  color: #e2e8f0 !important;
   font-weight: 500;
-  font-size: 0.92rem;
-  padding: 8px 14px !important;
-  border-radius: 6px;
-  transition: all 0.15s ease-in-out;
+  font-size: clamp(0.85rem, 0.3vw + 0.78rem, 0.92rem);
+  padding: 0.45rem clamp(0.5rem, 0.6vw, 0.85rem) !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
-  color: #34d399 !important;
-  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link.active {
-  color: #10b981 !important;
+  color: #ffffff !important;
   font-weight: 600;
-  background-color: rgba(16, 185, 129, 0.1);
+  background-color: rgba(7, 155, 112, 0.28);
+  position: relative;
 }
 
-.footer-publico {
-  margin-top: 60px;
-  border-top: 1px solid #1e293b;
-  background-color: #0b1120;
-  color: #94a3b8;
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 2px;
+  background-color: var(--agro-primary, #079B70);
+  border-radius: 2px;
 }
 
-.footer-subtitle {
+
+/* Buscador integrado en Navbar (Elástico y Adaptable con Zoom) */
+
+.navbar-search-wrapper {
+  flex: 1 1 auto;
+  min-width: 150px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.nav-search-group {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.nav-search-group:focus-within {
+  border-color: var(--agro-primary, #079B70);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 3px rgba(7, 155, 112, 0.3);
+}
+
+.nav-search-input {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: clamp(0.8rem, 0.2vw + 0.76rem, 0.86rem);
+  padding: 0.45rem 0.75rem;
+}
+
+.nav-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.65) !important;
   font-size: 0.82rem;
-  color: #64748b;
+}
+
+.nav-search-input:focus {
+  box-shadow: none !important;
+}
+
+.nav-search-btn {
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  padding: 0.45rem 0.75rem;
+  transition: color 0.15s ease;
+}
+
+.nav-search-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* Acciones Navbar (Flexibles y sin desbordes) */
+
+.nav-actions {
+  flex-shrink: 0;
+}
+
+.btn-nav-outline {
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.55rem, 0.6vw, 0.85rem);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav-outline:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.btn-nav-primary {
+  background: var(--agro-primary, #079B70);
+  border: 1px solid var(--agro-primary, #079B70);
+  color: #ffffff !important;
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.65rem, 0.7vw, 0.95rem);
+  border-radius: 9px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav-primary:hover {
+  background: var(--agro-primary-hover, #068a63);
+  border-color: var(--agro-primary-hover, #068a63);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(7, 155, 112, 0.45);
+}
+
+.btn-nav-danger {
+  color: #fca5a5 !important;
+  border: 1px solid rgba(252, 165, 165, 0.35);
+  background: rgba(239, 68, 68, 0.1);
+  font-size: clamp(0.78rem, 0.2vw + 0.72rem, 0.84rem);
+  padding: 0.42rem clamp(0.55rem, 0.6vw, 0.85rem);
+  border-radius: 9px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav-danger:hover {
+  color: #ffffff !important;
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+
+.footer-main {
+  background-color: var(--agro-dark, #101A2E);
+  color: #cbd5e1;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-top {
+  padding: clamp(2.5rem, 4vw, 3.8rem) 0 2.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-logo {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.footer-sac {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.footer-desc {
+  color: #cbd5e1;
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
+  line-height: 1.65;
+  max-width: 360px;
+}
+
+.footer-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.76rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+}
+
+.footer-heading {
+  color: #ffffff !important;
+  font-size: clamp(0.8rem, 0.2vw + 0.76rem, 0.86rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.6rem;
+}
+
+.footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
+  transition: all 0.15s ease;
+}
+
+.footer-links a:hover {
+  color: #34d399 !important;
+  padding-left: 4px;
+}
+
+.footer-contact i {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.footer-contact span {
+  font-size: clamp(0.82rem, 0.2vw + 0.78rem, 0.9rem);
+  color: #f1f5f9;
+}
+
+.footer-bottom {
+  padding: 1.3rem 0;
 }
 
 .footer-copyright {
-  color: #64748b;
-  font-size: 0.8rem;
+  color: #94a3b8;
+  font-size: clamp(0.74rem, 0.2vw + 0.7rem, 0.82rem);
+  line-height: 1.5;
+}
+
+.footer-built {
+  color: #94a3b8;
+  font-size: clamp(0.72rem, 0.2vw + 0.68rem, 0.8rem);
+}
+
+
+/* --------------------------------------------------------------------------
+   Responsive & Zoom Handling
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1199.98px) {
+
+  .navbar-search-wrapper {
+    max-width: 100%;
+    margin: 0.75rem 0;
+  }
+
+  .nav-actions {
+    padding-top: 0.85rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  .nav-link.active::after {
+    display: none;
+  }
 }

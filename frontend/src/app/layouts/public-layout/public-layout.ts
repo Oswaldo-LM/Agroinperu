@@ -14,6 +14,10 @@ import {
   AuthService
 } from '../../core/services/auth.service';
 
+import {
+  VoiceAccessibilityService
+} from '../../core/services/voice-accessibility.service';
+
 
 @Component({
   selector:
@@ -36,16 +40,27 @@ export class PublicLayout {
   readonly authService =
     inject(AuthService);
 
+  readonly voiceService =
+    inject(VoiceAccessibilityService);
 
   private readonly router =
     inject(Router);
+
+
+  buscar(termino: string): void {
+    const q = termino?.trim();
+    if (q) {
+      this.router.navigate(['/catalogo'], { queryParams: { q } });
+    } else {
+      this.router.navigate(['/catalogo']);
+    }
+  }
 
 
   cerrarSesion(): void {
 
     this.authService
       .cerrarSesion();
-
 
     this.router
       .navigateByUrl('/');
