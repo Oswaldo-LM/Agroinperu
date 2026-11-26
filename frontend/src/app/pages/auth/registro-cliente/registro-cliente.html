@@ -82,6 +82,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  [class.is-invalid]="form.controls.numero_documento.touched && form.controls.numero_documento.invalid"
                   formControlName="numero_documento">
 
               </div>
@@ -97,6 +98,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  [class.is-invalid]="form.controls.nombres.touched && form.controls.nombres.invalid"
                   formControlName="nombres">
 
               </div>
@@ -112,6 +114,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  [class.is-invalid]="form.controls.apellidos.touched && form.controls.apellidos.invalid"
                   formControlName="apellidos">
 
               </div>
@@ -127,6 +130,7 @@
                 <input
                   type="email"
                   class="form-control"
+                  [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
                   formControlName="email">
 
               </div>
@@ -172,6 +176,7 @@
                 <input
                   type="password"
                   class="form-control"
+                  [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
                   formControlName="password">
 
 
@@ -194,6 +199,7 @@
                 <input
                   type="password"
                   class="form-control"
+                  [class.is-invalid]="form.controls.confirmar_password.touched && form.controls.confirmar_password.invalid"
                   formControlName="confirmar_password">
 
               </div>

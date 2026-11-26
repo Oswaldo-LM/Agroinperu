@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Guía de Instalación y Ejecución de k6 - AgroIn Perú S.A.C.</title>
+<style>
+  @page { size: A4; margin: 20mm; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #2c3e50; font-size: 11pt; }
+  h1 { color: #1b5e20; border-bottom: 2px solid #2e7d32; padding-bottom: 6px; font-size: 20pt; margin-top: 0; }
+  h2 { color: #2e7d32; border-bottom: 1px solid #c8e6c9; padding-bottom: 4px; font-size: 14pt; margin-top: 22px; }
+  h3 { color: #388e3c; font-size: 12pt; margin-top: 14px; }
+  pre { background: #f4f6f8; padding: 12px; border-radius: 5px; border: 1px solid #dfe2e5; font-family: Consolas, monospace; font-size: 9.5pt; line-height: 1.45; }
+  code { font-family: Consolas, monospace; background: #eef2f5; padding: 2px 5px; border-radius: 3px; color: #b71c1c; }
+  table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+  th, td { border: 1px solid #cfd8dc; padding: 8px 12px; text-align: left; font-size: 10pt; }
+  th { background-color: #e8f5e9; color: #1b5e20; }
+  .box { background: #f1f8e9; border-left: 5px solid #4caf50; padding: 14px; margin-bottom: 20px; border-radius: 4px; }
+  .tip { background: #e3f2fd; border-left: 5px solid #1976d2; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h1 style="margin: 0 0 8px 0; font-size: 18pt;">AGROIN PERÚ S.A.C.</h1>
+  <p style="margin: 3px 0;"><strong>MANUAL TÉCNICO:</strong> Instalación y Ejecución de Grafana k6</p>
+  <p style="margin: 3px 0;"><strong>Propósito:</strong> Pruebas de Rendimiento y Carga del Capítulo III (Sección 3.x.3)</p>
+  <p style="margin: 3px 0;"><strong>Rama Git:</strong> <code>feature/pruebas-rendimiento-k6</code></p>
+</div>
+
+<h2>1. ¿Qué es Grafana k6?</h2>
+<p><strong>k6</strong> es una herramienta moderna de código abierto para pruebas de carga y rendimiento de APIs y servicios web. Permite evaluar la concurrencia de usuarios simulados (VUs), tiempos de respuesta (latencia), percentiles y tasas de fallos.</p>
+
+<h2>2. Métodos de Instalación en Windows</h2>
+<p>Elige <strong>uno</strong> de los siguientes métodos según tu preferencia:</p>
+
+<h3>Opción A: Instalación con Winget (Recomendada en Windows 10/11)</h3>
+<p>Abre <strong>PowerShell</strong> o <strong>CMD</strong> y ejecuta:</p>
+<pre>winget install k6 --source winget</pre>
+<p><em>(Al finalizar, cierra y vuelve a abrir tu terminal para recargar el PATH).</em></p>
+
+<h3>Opción B: Instalador Oficial .MSI (Descarga Directa)</h3>
+<ol>
+  <li>Ingresa a: <code>https://github.com/grafana/k6/releases/latest</code></li>
+  <li>En la sección <strong>Assets</strong>, descarga el instalador: <code>k6-vX.XX.X-amd64.msi</code></li>
+  <li>Ejecútalo y completa el asistente de instalación.</li>
+</ol>
+
+<h3>Opción C: Uso directo con Docker (Sin instalar nada en Windows)</h3>
+<p>Si ya cuentas con Docker Desktop activo, no requieres instalar k6 en Windows. Puedes ejecutarlo mediante la imagen oficial:</p>
+<pre>docker pull grafana/k6:latest</pre>
+
+<h2>3. Verificación de la Instalación</h2>
+<p>Para comprobar que k6 está listo en tu sistema, escribe en la terminal:</p>
+<pre>k6 version</pre>
+<p>Debe responder con la versión instalada (ej. <code>k6 v0.5x.x (...) windows/amd64</code>).</p>
+
+<h2>4. Ejecución de las Pruebas de Rendimiento en AgroIn</h2>
+<p>Asegúrate de tener levantado el backend (puerto 3000) y sitúate en la raíz del proyecto (<code>AgroIn</code>):</p>
+
+<h3>4.1. Si instalaste k6 en Windows:</h3>
+<pre># Prueba integral del sistema (15 usuarios concurrentes - Recomendada para el informe):
+k6 run backend/tests/performance/full_system_load.js
+
+# Pruebas individuales por Sprint:
+k6 run backend/tests/performance/sprint1_auth_load.js
+k6 run backend/tests/performance/sprint2_productos_load.js
+k6 run backend/tests/performance/sprint3_pedidos_load.js</pre>
+
+<h3>4.2. Si ejecutas k6 mediante Docker:</h3>
+<pre>docker run --rm -i -v "C:UserslmoreDocumentsAgroInackend	estsperformance:/scripts" grafana/k6 run /scripts/full_system_load.js</pre>
+
+<div class="tip">
+  <strong>Captura para el Informe (Capítulo III):</strong><br>
+  Toma captura de pantalla a la consola al finalizar la prueba. Deben apreciarse:
+  <ul>
+    <li>El logo de <strong>k6</strong>.</li>
+    <li>Los checks en verde <code>✓</code> de cada endpoint evaluado.</li>
+    <li>La tabla resumen con <code>http_req_duration: avg &lt; 180ms, p(95) &lt; 300ms</code> y <code>vus: 15</code>.</li>
+  </ul>
+</div>
+
+</body>
+</html>

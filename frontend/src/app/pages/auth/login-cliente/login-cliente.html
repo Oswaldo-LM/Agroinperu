@@ -60,7 +60,24 @@
                 id="email"
                 type="email"
                 class="form-control"
+                [class.is-invalid]="
+                  form.controls.email.invalid &&
+                  form.controls.email.touched
+                "
                 formControlName="email">
+
+              @if (
+                form.controls.email.invalid &&
+                form.controls.email.touched
+              ) {
+                <div class="invalid-feedback">
+                  @if (form.controls.email.hasError('required')) {
+                    El correo electrónico es obligatorio.
+                  } @else if (form.controls.email.hasError('email')) {
+                    Formato de correo electrónico inválido.
+                  }
+                </div>
+              }
 
             </div>
 
@@ -79,7 +96,24 @@
                 id="password"
                 type="password"
                 class="form-control"
+                [class.is-invalid]="
+                  form.controls.password.invalid &&
+                  form.controls.password.touched
+                "
                 formControlName="password">
+
+              @if (
+                form.controls.password.invalid &&
+                form.controls.password.touched
+              ) {
+                <div class="invalid-feedback">
+                  @if (form.controls.password.hasError('required')) {
+                    La contraseña es obligatoria.
+                  } @else if (form.controls.password.hasError('minlength')) {
+                    La contraseña debe tener al menos 8 caracteres.
+                  }
+                </div>
+              }
 
             </div>
 

@@ -176,7 +176,8 @@
 
               <select
                 class="form-select"
-                formControlName="producto_id">
+                formControlName="producto_id"
+                (change)="onProductoChange($any($event.target).value)">
 
                 <option [ngValue]="0">
                   Seleccionar...

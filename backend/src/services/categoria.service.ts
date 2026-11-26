@@ -107,7 +107,9 @@ export class CategoriaService {
       'INACTIVO'
     ];
 
-    if (!estadosPermitidos.includes(datos.estado)) {
+    const estadoFinal = datos.estado ?? categoriaActual.estado;
+
+    if (!estadosPermitidos.includes(estadoFinal)) {
       throw new Error('ESTADO_INVALIDO');
     }
 
@@ -127,7 +129,7 @@ export class CategoriaService {
         {
           nombre,
           descripcion,
-          estado: datos.estado
+          estado: estadoFinal
         }
       );
 

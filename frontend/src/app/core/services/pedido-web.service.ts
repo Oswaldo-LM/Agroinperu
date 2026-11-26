@@ -89,4 +89,19 @@ export class PedidoWebService {
         }
       );
   }
+
+
+  anular(
+    ventaId: number,
+    motivo: string
+  ): Observable<OperacionVentaResponse> {
+
+    return this.http
+      .put<OperacionVentaResponse>(
+        `${this.apiUrl}/${ventaId}/anular`,
+        {
+          motivo
+        }
+      );
+  }
 }

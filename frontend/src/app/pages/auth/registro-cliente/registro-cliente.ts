@@ -141,17 +141,27 @@ export class RegistroCliente {
 
   registrar(): void {
 
-    if (
-      this.form.invalid ||
-      this.guardando()
-    ) {
-
-      this.form
-        .markAllAsTouched();
-
+    if (this.guardando()) {
       return;
     }
 
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+
+      if (this.form.controls.email.hasError('email')) {
+        this.error.set('Ingrese un correo electrónico válido (ej. usuario@gmail.com).');
+      } else if (this.form.controls.password.hasError('minlength')) {
+        this.error.set('La contraseña debe tener al menos 8 caracteres.');
+      } else if (this.form.controls.numero_documento.hasError('required')) {
+        this.error.set('El número de documento es obligatorio.');
+      } else if (this.form.controls.nombres.hasError('required') || this.form.controls.apellidos.hasError('required')) {
+        this.error.set('Los nombres y apellidos son campos obligatorios.');
+      } else {
+        this.error.set('Por favor, complete todos los campos obligatorios correctamente.');
+      }
+
+      return;
+    }
 
     this.error.set(
       null
@@ -305,9 +315,26 @@ export class RegistroCliente {
       error instanceof
       HttpErrorResponse
     ) {
+      const msg = error.error?.message;
+      if (msg === 'EMAIL_DUPLICADO') {
+        return 'Ya existe una cuenta registrada con este correo electrónico.';
+      }
+      if (msg === 'DOCUMENTO_DUPLICADO') {
+        return 'Ya existe un cliente registrado con este número de documento.';
+      }
+      if (msg === 'DNI_INVALIDO') {
+        return 'El DNI debe contener exactamente 8 dígitos.';
+      }
+      if (msg === 'RUC_INVALIDO') {
+        return 'El RUC debe contener exactamente 11 dígitos.';
+      }
+
+      if (error.status === 0) {
+        return 'No se pudo conectar con el servidor backend (puerto 3000). Verifique que el backend esté ejecutándose.';
+      }
 
       return (
-        error.error?.message ??
+        msg ??
         'No se pudo registrar la cuenta.'
       );
     }

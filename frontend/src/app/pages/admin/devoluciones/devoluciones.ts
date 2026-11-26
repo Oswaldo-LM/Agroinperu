@@ -673,16 +673,16 @@ export class Devoluciones
 
     this.limpiarMensajes();
 
+    this.form.markAllAsTouched();
 
-    if (
-      this.form.invalid
-    ) {
-
+    const valores =
       this.form
-        .markAllAsTouched();
+        .getRawValue();
 
-      return;
-    }
+
+    const motivo =
+      (valores.motivo ?? '')
+        .trim();
 
 
     if (
@@ -698,20 +698,22 @@ export class Devoluciones
     }
 
 
-    const valores =
-      this.form
-        .getRawValue();
-
-
-    const motivo =
-      valores.motivo
-        .trim();
-
-
     if (!motivo) {
 
       this.error.set(
         'El motivo de devolución es obligatorio.'
+      );
+
+      return;
+    }
+
+
+    if (
+      this.form.invalid
+    ) {
+
+      this.error.set(
+        'Completa los campos obligatorios del formulario.'
       );
 
       return;

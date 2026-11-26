@@ -1115,3 +1115,42 @@ ALTER TABLE TB_PRODUCTO
 ADD CONSTRAINT uk_producto_codigo_barras
 UNIQUE (codigo_barras);
 
+
+
+-- ============================================================
+-- 18. CARGA DE DATOS INICIALES
+-- ============================================================
+
+-- 1. TB_CATEGORIA
+INSERT INTO TB_CATEGORIA (id_categoria, nombre, descripcion, estado, fecha_creacion, fecha_actualizacion) VALUES 
+(1, 'Accesorios HDPE', 'Accesorios y conexiones para tuberías de polietileno HDPE.', 'ACTIVO', '2026-09-12 09:35:25', '2026-10-17 10:33:08'),
+(2, 'Accesorios PVC', 'Accesorios para instalaciones agrícolas e industriales en PVC.', 'ACTIVO', '2026-09-12 09:35:25', '2026-10-17 10:33:09'),
+(3, 'Mangueras', 'Mangueras para riego, conducción de agua y aplicaciones industriales.', 'ACTIVO', '2026-09-12 09:35:25', NULL),
+(4, 'Válvulas', 'Válvulas para control y regulación del flujo de agua.', 'ACTIVO', '2026-09-12 09:35:25', NULL),
+(5, 'Tuberías', 'Tuberías para sistemas de riego y conducción de fluidos.', 'ACTIVO', '2026-09-12 09:35:25', NULL),
+(6, 'Tornillos', 'Wa', 'ACTIVO', '2026-10-13 21:05:17', NULL);
+
+-- 2. TB_USUARIO
+INSERT INTO TB_USUARIO (id_usuario, nombre, email, password_hash, rol, estado, fecha_creacion, fecha_actualizacion) VALUES 
+(1, 'Administrador', 'admin@agroinperu.com', '$2b$12$oQBRdLlbLiVRu6qAa6EVXOBaQ/1X5RxWMTl8jGPjVyKci/TTsxkoC', 'ADMIN', 'ACTIVO', '2026-09-15 12:27:00', NULL),
+(2, 'Cajero Prueba', 'cajero@agroinperu.com', '$2b$12$faxqauEnuE0bVg8px2CeO.wfNfPsz2uhAfthCrtDGxRigIABc/6r6', 'CAJERO', 'ACTIVO', '2026-09-15 12:27:00', '2026-10-17 10:33:53');
+
+-- 3. TB_CLIENTE
+INSERT INTO TB_CLIENTE (id_cliente, tipo_cliente, tipo_documento, numero_documento, nombres, apellidos, razon_social, email, password_hash, telefono, direccion, estado, fecha_registro, fecha_actualizacion) VALUES 
+(1, 'PERSONA', 'DNI', '70000001', 'Cliente', 'Prueba', NULL, 'cliente@agroinperu.com', '$2b$12$wEGbkFWfM7UdcEDZXtcxNufTNKdtqPG1qPTMcSUQGh5t4OGfuzf6W', '999999999', 'Lima', 'ACTIVO', '2026-09-15 12:27:00', '2026-10-17 10:36:36');
+
+-- 4. TB_PRODUCTO
+INSERT INTO TB_PRODUCTO (id_producto, categoria_id, codigo, codigo_barras, nombre, descripcion, unidad_medida, precio, stock_disponible, stock_reservado, stock_minimo, imagen_url, visible_web, estado, fecha_creacion, fecha_actualizacion) VALUES 
+(1, 5, 'HDPE-CODO-001', '7750000000040', 'Codo HDPE 90° 32 mm', 'Codo de compresión HDPE de 90 grados para tubería de 32 mm. HOLA', 'UNIDAD', 12.50, 51.00, 0.00, 10.00, 'https://res.cloudinary.com/lpvpiyz5/image/upload/f_auto/q_auto/codo-rosca-hembra-32mm-x-1-riego-enlace-hdpe-pn16-sab.webp', 1, 'ACTIVO', '2026-09-12 09:35:25', '2026-10-17 10:32:39'),
+(2, 2, 'PVC-TEE-001', '7750000000028', 'Tee PVC 1 pulgada', 'Conexión Tee de PVC de 1 pulgada para distribución de agua.', 'UNIDAD', 8.90, 80.00, 0.00, 15.00, NULL, 1, 'ACTIVO', '2026-09-12 09:35:25', NULL),
+(3, 3, 'MANG-RIEGO-001', '7750000000035', 'Manguera de riego 1 pulgada', 'Manguera flexible para sistemas de riego agrícola.', 'METRO', 4.50, 250.00, 0.00, 50.00, 'https://res.cloudinary.com/lpvpiyz5/image/upload/f_auto/q_auto/manguera-hdpe-1-pulgada-1.jpg', 1, 'ACTIVO', '2026-09-12 09:35:25', '2026-09-24 13:00:01'),
+(4, 4, 'VALV-BOLA-001', '7750000000042', 'Válvula de bola PVC 1 pulgada', 'Válvula de bola PVC para apertura y cierre de flujo de agua.', 'UNIDAD', 24.90, 40.00, 0.00, 8.00, NULL, 1, 'ACTIVO', '2026-09-12 09:35:25', NULL),
+(5, 5, 'TUB-HDPE-001', '7750000000059', 'Tubería HDPE 32 mm', 'Tubería HDPE de 32 mm para conducción de agua y sistemas de riego.', 'ROLLO', 189.90, 20.00, 0.00, 5.00, NULL, 1, 'ACTIVO', '2026-09-12 09:35:25', NULL);
+
+-- 5. TB_MOVIMIENTO_STOCK
+INSERT INTO TB_MOVIMIENTO_STOCK (id_movimiento, producto_id, venta_id, usuario_id, tipo_movimiento, cantidad, stock_disponible_anterior, stock_disponible_nuevo, stock_reservado_anterior, stock_reservado_nuevo, motivo, fecha_movimiento) VALUES 
+(1, 1, NULL, 1, 'ENTRADA', 1.00, 50.00, 51.00, 0.00, 0.00, 'Llegada de stock', '2026-10-17 10:13:48');
+
+-- 6. TB_CARRITO
+INSERT INTO TB_CARRITO (id_carrito, cliente_id, venta_id, estado, fecha_creacion, fecha_actualizacion) VALUES 
+(1, 1, NULL, 'ACTIVO', '2026-09-15 13:08:17', NULL);

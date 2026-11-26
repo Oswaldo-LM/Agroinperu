@@ -17,5 +17,5 @@ export interface CrearCategoriaDto {
 export interface ActualizarCategoriaDto {
   nombre: string;
   descripcion?: string | null;
-  estado: EstadoCategoria;
+  estado?: EstadoCategoria;
 }

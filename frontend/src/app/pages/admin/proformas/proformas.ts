@@ -488,6 +488,7 @@ export class Proformas
 
     this.limpiarMensajes();
 
+    this.productoSeleccionadoId.set(0);
 
     this.detalle.set(
       null
@@ -538,43 +539,27 @@ export class Proformas
     this.items.set(
       []
     );
+
+    this.productoSeleccionadoId.set(0);
   }
 
 
-  productoSeleccionado():
-    Producto | null {
+  readonly productoSeleccionadoId =
+    signal<number>(0);
 
-    const productoId =
-      Number(
-        this.productoForm.controls
-          .producto_id.value
-      );
+  readonly productoSeleccionado =
+    computed(() => {
+      const id = this.productoSeleccionadoId();
+      if (!id || id <= 0) return null;
+      return this.productos().find(p => Number(p.id_producto) === id) ?? null;
+    });
 
-
-    if (
-      !Number.isInteger(
-        productoId
-      ) ||
-
-      productoId <= 0
-    ) {
-
-      return null;
-    }
-
-
-    return (
-      this.productos()
-        .find(
-          producto =>
-            Number(
-              producto.id_producto
-            ) ===
-            productoId
-        )
-      ??
-      null
-    );
+  onProductoChange(valor: unknown): void {
+    const rawVal = typeof valor === 'string' && valor.includes(':') 
+      ? valor.split(':')[1]?.trim() 
+      : valor;
+    const numId = Number(rawVal);
+    this.productoSeleccionadoId.set(Number.isFinite(numId) ? numId : 0);
   }
 
 
@@ -721,6 +706,8 @@ export class Proformas
       cantidad:
         1
     });
+
+    this.productoSeleccionadoId.set(0);
   }
 
 

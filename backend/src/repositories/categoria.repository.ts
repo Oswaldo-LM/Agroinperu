@@ -125,7 +125,7 @@ export class CategoriaRepository {
       [
         datos.nombre,
         datos.descripcion ?? null,
-        datos.estado,
+        datos.estado ?? 'ACTIVO',
         id
       ]
     );
